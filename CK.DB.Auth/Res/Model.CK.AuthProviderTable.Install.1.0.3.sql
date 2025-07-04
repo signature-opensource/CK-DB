@@ -1,4 +1,4 @@
-﻿--[beginscript]
+--[beginscript]
 --
 -- This table is populated directly by the settle scripts of the packages that
 -- implement providers by calling sAuthProviderRegister.
@@ -14,8 +14,8 @@ create table CK.tAuthProvider
 	ProviderName varchar(64) collate Latin1_General_100_CI_AS not null,
 	constraint CK_CK_AuthProvider_ProviderName check (CharIndex( '.', ProviderName ) = 0),
 	-- Table name with its schema that holds at least UserId and LastLoginTime columns.
-	UserProviderSchemaTableName nvarchar(128) not null,
-    -- This bit indicates that this provider can handle more than one client sheme.
+	UserProviderSchemaTableName nvarchar(128) collate Latin1_General_100_BIN2 not null,
+    -- This bit indicates that this provider can handle more than one client scheme.
 	IsMultiScheme bit not null, 
 
 	constraint PK_CK_AuthProvider primary key( AuthProviderId ),
