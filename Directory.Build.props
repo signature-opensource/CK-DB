@@ -29,7 +29,7 @@
   <!--</BasicDefinitions>-->
   <!--<StandardProperties>-->
   <PropertyGroup>
-    <RepositoryUrl>https://github.com/Invenietis/CK-DB</RepositoryUrl>
+    <RepositoryUrl>https://github.com/signature-opensource/CK-DB</RepositoryUrl>
     <ProductName>CK</ProductName>
     <Company>Signature Code</Company>
     <Authors>Signature Code</Authors>
