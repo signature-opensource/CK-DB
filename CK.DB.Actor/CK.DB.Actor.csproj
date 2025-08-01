@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Description>
@@ -7,6 +7,7 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="CK.IO.Actor" Version="0.0.0--05iubi7-develop" />
     <PackageReference Include="CK.SqlServer.Setup.Model" Version="30.0.1--0009-develop" />
   </ItemGroup>
   <ItemGroup>
