@@ -49,12 +49,12 @@ public class UserTests
             int id = u.CreateUser( ctx, 1, testName );
             Assert.That( id, Is.GreaterThan( 1 ) );
 
-            int idRejected = u.CreateUser( ctx, 1, testName );
-            Assert.That( idRejected, Is.EqualTo( -1 ) );
+
+            Should.Throw<SqlDetailedException>( () => u.CreateUser( ctx, 1, testName ) );
 
             u.DestroyUser( ctx, 1, id );
 
-            u.Database.ExecuteReader( "select * from CK.tUser where UserName = @0", testName )
+            u.Database.ExecuteReader( "select * from CK.tUser where UserName = @0", testName )!
                 .Rows.ShouldBeEmpty();
         }
     }

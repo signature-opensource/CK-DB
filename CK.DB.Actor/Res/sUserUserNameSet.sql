@@ -3,25 +3,31 @@
 -- There is no guaranty that the actual value will be the same as the one requested (if auto numbering 
 -- is injected for example). 
 --
-create procedure CK.sUserUserNameSet
+alter procedure CK.sUserUserNameSet
 (
     @ActorId int,
     @UserId int,
-    @UserName nvarchar(127),
-	@Done bit output
+    @UserName nvarchar(127) /*input*/output,
+	@Success bit output
 )
 as begin
     if @ActorId <= 0 throw 50000, 'Security.AnonymousNotAllowed', 1;
 
 	--[beginsp]
 
-	set @Done = 1;
+	set @Success = 1;
 	if exists( select * from CK.tUser where UserName = @UserName and UserId <> @UserId )
 	begin
-		set @Done = 0;
+        declare @ClashUserName nvarchar( 255 ) = @UserName;
+
+		select @UserName = UserName
+		from CK.tUser
+		where UserId = @UserId;
+
+		set @Success = 0;
 		--<UserNameSetClash />
 	end
-	if @Done = 1
+	if @Success = 1
 	begin
 		--<PreUserNameSet revert />
 
