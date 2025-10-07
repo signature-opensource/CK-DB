@@ -7,8 +7,8 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.IO.Actor" Version="0.40.2--0004-develop" />
-    <PackageReference Include="CK.SqlServer.Setup.Model" Version="31.0.3--0004-develop" />
+    <PackageReference Include="CK.IO.Actor" Version="0.41.0" />
+    <PackageReference Include="CK.SqlServer.Setup.Model" Version="32.0.0" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="**\*.sql;**\*.tql;**\*.y4" Exclude="bin\**;obj\**;CodeCakeBuilder\**;packages\**;@(EmbeddedResource)" />
