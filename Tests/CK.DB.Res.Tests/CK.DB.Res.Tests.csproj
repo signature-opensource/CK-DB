@@ -6,7 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\CK.DB.Res\CK.DB.Res.csproj" />
-    <PackageReference Include="CK.DB.Tests.NUnit" Version="32.0.2--0004-develop" />
+    <PackageReference Include="CK.DB.Tests.NUnit" Version="32.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="5.1.0" />
   </ItemGroup>
