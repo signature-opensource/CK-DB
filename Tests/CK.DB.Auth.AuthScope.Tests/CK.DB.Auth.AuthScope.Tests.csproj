@@ -6,7 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\CK.DB.Auth.AuthScope\CK.DB.Auth.AuthScope.csproj" />
-    <PackageReference Include="CK.DB.Tests.NUnit" Version="32.0.2--0002-develop" />
+    <PackageReference Include="CK.DB.Tests.NUnit" Version="32.0.2--0003-develop" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="5.1.0" />
   </ItemGroup>
