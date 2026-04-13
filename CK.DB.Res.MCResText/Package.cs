@@ -3,18 +3,18 @@ using CK.Core;
 namespace CK.DB.Res.MCResText;
 
 /// <summary>
-/// This package brings culture support (XLCID and LCID).
+/// This package brings culture support through CK.DB.Globalization.
 /// </summary>
 [SqlPackage( Schema = "CK", ResourcePath = "Res" )]
 public class Package : SqlPackage
 {
     ResTable _resTable;
-    Culture.Package _culture;
+    Globalization.Package _globalization;
 
-    void StObjConstruct( ResTable resTable, Culture.Package culture )
+    void StObjConstruct( ResTable resTable, Globalization.Package globalization )
     {
         _resTable = resTable;
-        _culture = culture;
+        _globalization = globalization;
     }
 
     /// <summary>
@@ -23,9 +23,9 @@ public class Package : SqlPackage
     public ResTable ResTable => _resTable;
 
     /// <summary>
-    /// Gets the Culture package.
+    /// Gets the Globalization package.
     /// </summary>
-    public Culture.Package Culture => _culture;
+    public Globalization.Package Globalization => _globalization;
 
     /// <summary>
     /// Gets the tMCResText table from this package.

@@ -10,6 +10,11 @@ namespace CK.DB.Res.MCResText.Tests;
 [TestFixture]
 public class MCResTextTests
 {
+    // CultureIds from CK.DB.Globalization.
+    const int EnCultureId = 221277614;  // "en"
+    const int FrCultureId = 210333265;  // "fr"
+    const int DeCultureId = 223899012;  // "de"
+
     [Test]
     public void fallbaks_between_french_and_english_cultures()
     {
@@ -19,17 +24,18 @@ public class MCResTextTests
             int noValuesId, enId, frId, bothId;
             AssumeFallbackTestEnglishAndFrenchResources( p, ctx, out noValuesId, out enId, out frId, out bothId );
 
-            CheckString( p, noValuesId, 9, DBNull.Value, DBNull.Value );
-            CheckString( p, noValuesId, 12, DBNull.Value, DBNull.Value );
+            CheckString( p, noValuesId, EnCultureId, DBNull.Value, DBNull.Value );
+            CheckString( p, noValuesId, FrCultureId, DBNull.Value, DBNull.Value );
 
-            CheckString( p, enId, 9, "Only in English.", 9 );
-            CheckString( p, enId, 12, "Only in English.", 9 );
+            CheckString( p, enId, EnCultureId, "Only in English.", EnCultureId );
+            CheckString( p, enId, FrCultureId, "Only in English.", EnCultureId );
 
-            CheckString( p, frId, 9, "Seulement en Français.", 12 );
-            CheckString( p, frId, 12, "Seulement en Français.", 12 );
+            // fr's parent is en; asking en when only fr is set has no fallback (en is root).
+            CheckString( p, frId, EnCultureId, DBNull.Value, DBNull.Value );
+            CheckString( p, frId, FrCultureId, "Seulement en Français.", FrCultureId );
 
-            CheckString( p, bothId, 9, "English (and French).", 9 );
-            CheckString( p, bothId, 12, "Français (et Anglais).", 12 );
+            CheckString( p, bothId, EnCultureId, "English (and French).", EnCultureId );
+            CheckString( p, bothId, FrCultureId, "Français (et Anglais).", FrCultureId );
         }
     }
 
@@ -45,32 +51,33 @@ public class MCResTextTests
             int deId = p.ResTable.Create( ctx );
             int allId = p.ResTable.Create( ctx );
 
-            Culture.Tests.ExtendedCultureTests.RegisterGerman( p.Culture, ctx );
+            RegisterGerman( p, ctx );
 
-            p.MCResTextTable.SetText( ctx, deId, 7, "Nur in deutscher Sprache." );
-            p.MCResTextTable.SetText( ctx, allId, 12, "Français (et Anglais et Allemand)." );
-            p.MCResTextTable.SetText( ctx, allId, 9, "English (and French and German)." );
-            p.MCResTextTable.SetText( ctx, allId, 7, "Deutsch (und Englisch und Französisch)." );
+            p.MCResTextTable.SetText( ctx, deId, DeCultureId, "Nur in deutscher Sprache." );
+            p.MCResTextTable.SetText( ctx, allId, FrCultureId, "Français (et Anglais et Allemand)." );
+            p.MCResTextTable.SetText( ctx, allId, EnCultureId, "English (and French and German)." );
+            p.MCResTextTable.SetText( ctx, allId, DeCultureId, "Deutsch (und Englisch und Französisch)." );
 
-            CheckString( p, noValuesId, 9, DBNull.Value, DBNull.Value );
-            CheckString( p, noValuesId, 12, DBNull.Value, DBNull.Value );
-            CheckString( p, noValuesId, 7, DBNull.Value, DBNull.Value );
+            CheckString( p, noValuesId, EnCultureId, DBNull.Value, DBNull.Value );
+            CheckString( p, noValuesId, FrCultureId, DBNull.Value, DBNull.Value );
+            CheckString( p, noValuesId, DeCultureId, DBNull.Value, DBNull.Value );
 
-            CheckString( p, enId, 9, "Only in English.", 9 );
-            CheckString( p, enId, 12, "Only in English.", 9 );
-            CheckString( p, enId, 7, "Only in English.", 9 );
+            CheckString( p, enId, EnCultureId, "Only in English.", EnCultureId );
+            CheckString( p, enId, FrCultureId, "Only in English.", EnCultureId );
+            CheckString( p, enId, DeCultureId, "Only in English.", EnCultureId );
 
-            CheckString( p, frId, 9, "Seulement en Français.", 12 );
-            CheckString( p, frId, 12, "Seulement en Français.", 12 );
-            CheckString( p, frId, 7, "Seulement en Français.", 12 );
+            // en is root so no fallback. de's chain is de -> en (fr not reachable from de).
+            CheckString( p, frId, EnCultureId, DBNull.Value, DBNull.Value );
+            CheckString( p, frId, FrCultureId, "Seulement en Français.", FrCultureId );
+            CheckString( p, frId, DeCultureId, DBNull.Value, DBNull.Value );
 
-            CheckString( p, bothId, 9, "English (and French).", 9 );
-            CheckString( p, bothId, 12, "Français (et Anglais).", 12 );
-            CheckString( p, bothId, 7, "English (and French).", 9 );
+            CheckString( p, bothId, EnCultureId, "English (and French).", EnCultureId );
+            CheckString( p, bothId, FrCultureId, "Français (et Anglais).", FrCultureId );
+            CheckString( p, bothId, DeCultureId, "English (and French).", EnCultureId );
 
-            CheckString( p, allId, 9, "English (and French and German).", 9 );
-            CheckString( p, allId, 12, "Français (et Anglais et Allemand).", 12 );
-            CheckString( p, allId, 7, "Deutsch (und Englisch und Französisch).", 7 );
+            CheckString( p, allId, EnCultureId, "English (and French and German).", EnCultureId );
+            CheckString( p, allId, FrCultureId, "Français (et Anglais et Allemand).", FrCultureId );
+            CheckString( p, allId, DeCultureId, "Deutsch (und Englisch und Französisch).", DeCultureId );
         }
     }
 
@@ -78,103 +85,27 @@ public class MCResTextTests
     {
         noValuesId = p.ResTable.Create( ctx );
         enId = p.ResTable.Create( ctx );
-        p.MCResTextTable.SetText( ctx, enId, 9, "Only in English." );
+        p.MCResTextTable.SetText( ctx, enId, EnCultureId, "Only in English." );
         frId = p.ResTable.Create( ctx );
-        p.MCResTextTable.SetText( ctx, frId, 12, "Seulement en Français." );
+        p.MCResTextTable.SetText( ctx, frId, FrCultureId, "Seulement en Français." );
         bothId = p.ResTable.Create( ctx );
-        p.MCResTextTable.SetText( ctx, bothId, 9, "English (and French)." );
-        p.MCResTextTable.SetText( ctx, bothId, 12, "Français (et Anglais)." );
+        p.MCResTextTable.SetText( ctx, bothId, EnCultureId, "English (and French)." );
+        p.MCResTextTable.SetText( ctx, bothId, FrCultureId, "Français (et Anglais)." );
     }
 
-    static void CheckString( Package p, int resId, int lcid, object expectedValue, object expectedLCID )
+    static void RegisterGerman( Package p, SqlStandardCallContext ctx )
     {
-        p.Database.ExecuteScalar( "select Value from CK.vMCResText where ResId=@0 and XLCID = @1", resId, lcid )
+        p.Database.ExecuteNonQuery(
+            "if not exists (select 1 from CK.tCulture where CultureId = @0) exec CK.sCultureRegister @0, @1, @2, @3, @4, @5, @6, @7;",
+            DeCultureId, "de", "de", "German", "Deutsch", "German", 1, EnCultureId );
+    }
+
+    static void CheckString( Package p, int resId, int cultureId, object expectedValue, object expectedMatchedCultureId )
+    {
+        p.Database.ExecuteScalar( "select Value from CK.vMCResText where ResId=@0 and CultureId = @1", resId, cultureId )
             .ShouldBe( expectedValue );
-        p.Database.ExecuteScalar( "select LCID from CK.vMCResText where ResId=@0 and XLCID = @1", resId, lcid )
-            .ShouldBe( expectedLCID );
-    }
-
-    [Test]
-    public void setting_and_clearing_string_values_can_use_XLCID()
-    {
-        var p = SharedEngine.Map.StObjs.Obtain<Package>();
-        using( var ctx = new SqlStandardCallContext() )
-        {
-            Culture.Tests.ExtendedCultureTests.RegisterSpanish( p.Culture, ctx );
-            Culture.Tests.ExtendedCultureTests.RegisterArabic( p.Culture, ctx );
-            int xlcid1 = p.Culture.AssumeXLCID( ctx, new[] { 1, 9, 10, 12 } );
-            xlcid1.ShouldBeGreaterThan( 0xFFFF );
-            int xlcid9 = p.Culture.AssumeXLCID( ctx, new[] { 9, 1, 12, 10 } );
-            xlcid9.ShouldBeGreaterThan( 0xFFFF );
-            int xlcid10 = p.Culture.AssumeXLCID( ctx, new[] { 10, 1, 9, 12 } );
-            xlcid10.ShouldBeGreaterThan( 0xFFFF );
-            int resId = p.ResTable.Create( ctx );
-
-            CheckString( p, resId, 1, DBNull.Value, DBNull.Value );
-            CheckString( p, resId, 9, DBNull.Value, DBNull.Value );
-            CheckString( p, resId, 10, DBNull.Value, DBNull.Value );
-            CheckString( p, resId, 12, DBNull.Value, DBNull.Value );
-            CheckString( p, resId, xlcid1, DBNull.Value, DBNull.Value );
-            CheckString( p, resId, xlcid9, DBNull.Value, DBNull.Value );
-            CheckString( p, resId, xlcid10, DBNull.Value, DBNull.Value );
-
-            p.MCResTextTable.SetText( ctx, resId, xlcid1, "الأزمة في مصر" );
-            CheckString( p, resId, 1, "الأزمة في مصر", 1 );
-            CheckString( p, resId, 9, "الأزمة في مصر", 1 );
-            CheckString( p, resId, 10, "الأزمة في مصر", 1 );
-            CheckString( p, resId, 12, "الأزمة في مصر", 1 );
-            CheckString( p, resId, xlcid1, "الأزمة في مصر", 1 );
-            CheckString( p, resId, xlcid9, "الأزمة في مصر", 1 );
-            CheckString( p, resId, xlcid10, "الأزمة في مصر", 1 );
-
-            p.MCResTextTable.SetText( ctx, resId, xlcid10, "¡Hola! (España)" );
-            CheckString( p, resId, 1, "الأزمة في مصر", 1 );
-            CheckString( p, resId, 9, "¡Hola! (España)", 10 );
-            CheckString( p, resId, 10, "¡Hola! (España)", 10 );
-            CheckString( p, resId, 12, "¡Hola! (España)", 10 );
-            CheckString( p, resId, xlcid1, "الأزمة في مصر", 1 );
-            CheckString( p, resId, xlcid9, "الأزمة في مصر", 1 );
-            CheckString( p, resId, xlcid10, "¡Hola! (España)", 10 );
-
-            p.MCResTextTable.SetText( ctx, resId, 12, "Liberté!" );
-            CheckString( p, resId, 1, "الأزمة في مصر", 1 );
-            CheckString( p, resId, 9, "Liberté!", 12 );
-            CheckString( p, resId, 10, "¡Hola! (España)", 10 );
-            CheckString( p, resId, 12, "Liberté!", 12 );
-            CheckString( p, resId, xlcid1, "الأزمة في مصر", 1 );
-            CheckString( p, resId, xlcid9, "الأزمة في مصر", 1 );
-            CheckString( p, resId, xlcid10, "¡Hola! (España)", 10 );
-
-            p.MCResTextTable.SetText( ctx, resId, xlcid1, null );
-            CheckString( p, resId, 1, "Liberté!", 12 );
-            CheckString( p, resId, 9, "Liberté!", 12 );
-            CheckString( p, resId, 10, "¡Hola! (España)", 10 );
-            CheckString( p, resId, 12, "Liberté!", 12 );
-            CheckString( p, resId, xlcid1, "¡Hola! (España)", 10 );
-            CheckString( p, resId, xlcid9, "Liberté!", 12 );
-            CheckString( p, resId, xlcid10, "¡Hola! (España)", 10 );
-
-            p.MCResTextTable.SetText( ctx, resId, xlcid10, null );
-            CheckString( p, resId, 1, "Liberté!", 12 );
-            CheckString( p, resId, 9, "Liberté!", 12 );
-            CheckString( p, resId, 10, "Liberté!", 12 );
-            CheckString( p, resId, 12, "Liberté!", 12 );
-            CheckString( p, resId, xlcid1, "Liberté!", 12 );
-            CheckString( p, resId, xlcid9, "Liberté!", 12 );
-            CheckString( p, resId, xlcid10, "Liberté!", 12 );
-
-
-            Assert.DoesNotThrow( () => p.ResTable.Destroy( ctx, resId ) );
-
-            CheckString( p, resId, 1, null, null );
-            CheckString( p, resId, 9, null, null );
-            CheckString( p, resId, 10, null, null );
-            CheckString( p, resId, 12, null, null );
-            CheckString( p, resId, xlcid1, null, null );
-            CheckString( p, resId, xlcid9, null, null );
-            CheckString( p, resId, xlcid10, null, null );
-
-        }
+        p.Database.ExecuteScalar( "select MatchedCultureId from CK.vMCResText where ResId=@0 and CultureId = @1", resId, cultureId )
+            .ShouldBe( expectedMatchedCultureId );
     }
 
     [Test]
@@ -193,7 +124,7 @@ public class MCResTextTests
             p.Database.ExecuteReader( "select Value from CK.vMCResText where ResId=@0", bothId )
                 .Rows.ShouldBeEmpty();
 
-            Assert.DoesNotThrow( () => p.MCResTextTable.SetText( ctx, bothId, 9, null ) );
+            Assert.DoesNotThrow( () => p.MCResTextTable.SetText( ctx, bothId, EnCultureId, null ) );
         }
 
     }

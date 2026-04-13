@@ -1,8 +1,8 @@
-﻿-- SetupConfig: {}
+-- SetupConfig: {}
 create transformer on CK.sCultureDestroy
 as
 begin
-	
-	inject "delete from CK.tMCResHtml where LCID = @XLCID;" into "PreDestroyLCID";
+
+	inject "delete from CK.tMCResHtml where CultureId = @CultureId;" into "PreDestroy";
 
 end
