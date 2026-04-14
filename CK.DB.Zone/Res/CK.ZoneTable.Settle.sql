@@ -15,7 +15,8 @@ begin
                                 @TableName = 'tActor',   
                                 @ColumnName = 'ActorId', 
                                 @ExistingValue = @StrValue,    
-                                @NewValue = '3';
+                                @NewValue = '3',
+                                @EnableWithCheck = 1;
     -- We move the 'Administrators' (Id=2) group into the PlatformZone, auto registering its potential
     -- users in the AdminZone.
     exec CK.sGroupMove 1, @GroupId = 2, @NewZoneId = 3, @Option = 2 /*AutoUserRegistration*/;
