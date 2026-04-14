@@ -17,7 +17,8 @@ begin
                                 @TableName = 'tActor',   
                                 @ColumnName = 'ActorId', 
                                 @ExistingValue = '2',    
-                                @NewValue = @StrValue;
+                                @NewValue = @StrValue,
+                                @EnableWithCheck = 1;
     -- We let the ActorId = 2 in the table.
 end
 else
@@ -35,7 +36,8 @@ exec CKCore.sRefBazookation @SchemaName = 'CK',
                             @TableName = 'tActor',   
                             @ColumnName = 'ActorId', 
                             @ExistingValue = @StrValue,    
-                            @NewValue = '2';
+                            @NewValue = '2',
+                            @EnableWithCheck = 1;
 
 -- If an ActorId n°3 exists, we move it (whatever it is).
 -- The n°3 is deleted: it is up to the CK.DB.Zone to set the "AdminZone" here.
@@ -50,7 +52,8 @@ begin
                                 @TableName = 'tActor',   
                                 @ColumnName = 'ActorId', 
                                 @ExistingValue = '3',    
-                                @NewValue = @StrValue;
+                                @NewValue = @StrValue,
+                                @EnableWithCheck = 1;
     delete CK.tActor where ActorId = 3;
 end
 
