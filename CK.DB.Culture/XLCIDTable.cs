@@ -7,7 +7,6 @@ namespace CK.DB.Culture;
 /// </summary>
 [SqlTable( "tXLCID", Package = typeof( Package ) )]
 [Versions( "1.0.0" )]
-[SqlObjectItem( "vXLCID" )]
 public class XLCIDTable : SqlTable
 {
 }
