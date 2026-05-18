@@ -15,8 +15,11 @@ public class MCResHtmlTests
     const int FrCultureId = 210333265;  // "fr"
     const int DeCultureId = 223899012;  // "de"
     // Test-only CultureIds (registered on the fly under fr and de).
-    const int FrCaCultureId = 990000001;
+    const int FrCaCultureId = 1621867518;
     const int DeAtCultureId = 990000002;
+    // Test-only orphan culture (no link to English): used to validate the
+    // ultimate English fallback that the view applies regardless of chain.
+    const int OrphanCultureId = 990000003;
 
     [Test]
     public void fallbaks_between_french_and_english_cultures()
@@ -183,6 +186,40 @@ public class MCResHtmlTests
             CheckString( p, resId, FrCaCultureId, null, null );
             CheckString( p, resId, DeCultureId, null, null );
             CheckString( p, resId, DeAtCultureId, null, null );
+        }
+    }
+
+    [Test]
+    public void english_is_the_ultimate_fallback_for_cultures_not_linked_to_english()
+    {
+        var p = SharedEngine.Map.StObjs.Obtain<Package>();
+        using( var ctx = new SqlStandardCallContext() )
+        {
+            // Register an orphan root culture: no ParentCultureId so its chain does NOT include English.
+            p.Database.ExecuteNonQuery(
+                "if not exists (select 1 from CK.tCulture where CultureId = @0) exec CK.sCultureRegister @0, @1, @2, @3, @4, @5, @6, null;",
+                OrphanCultureId, "zz", "zz", "Orphan", "Orphan", "Orphan", 1 );
+
+            int resId = p.ResTable.Create( ctx );
+
+            // No value anywhere: orphan resolves to null.
+            CheckString( p, resId, OrphanCultureId, DBNull.Value, DBNull.Value );
+
+            // Only English is set: the orphan, although unrelated, falls back to English.
+            p.MCResHtmlTable.SetHtml( ctx, resId, EnCultureId, "English value." );
+            CheckString( p, resId, EnCultureId, "English value.", EnCultureId );
+            CheckString( p, resId, OrphanCultureId, "English value.", EnCultureId );
+
+            // A value set on the orphan itself wins over the English fallback.
+            p.MCResHtmlTable.SetHtml( ctx, resId, OrphanCultureId, "Orphan value." );
+            CheckString( p, resId, OrphanCultureId, "Orphan value.", OrphanCultureId );
+            CheckString( p, resId, EnCultureId, "English value.", EnCultureId );
+
+            // Clearing the orphan-specific value restores the English fallback.
+            p.MCResHtmlTable.SetHtml( ctx, resId, OrphanCultureId, null );
+            CheckString( p, resId, OrphanCultureId, "English value.", EnCultureId );
+
+            p.ResTable.Destroy( ctx, resId );
         }
     }
 
