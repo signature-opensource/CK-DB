@@ -20,6 +20,9 @@ public class MCResHtmlTests
     // Test-only orphan culture (no link to English): used to validate the
     // ultimate English fallback that the view applies regardless of chain.
     const int OrphanCultureId = 990000003;
+    // Second orphan culture used to validate the last-resort fallback to any
+    // existing translation when neither the requested chain nor English have a value.
+    const int OrphanCultureId2 = 990000004;
 
     [Test]
     public void fallbaks_between_french_and_english_cultures()
@@ -36,8 +39,7 @@ public class MCResHtmlTests
             CheckString( p, enId, EnCultureId, "Only in English.", EnCultureId );
             CheckString( p, enId, FrCultureId, "Only in English.", EnCultureId );
 
-            // fr's parent is en; asking en when only fr is set has no fallback (en is root).
-            CheckString( p, frId, EnCultureId, DBNull.Value, DBNull.Value );
+            CheckString( p, frId, EnCultureId, "Seulement en Français.", FrCultureId );
             CheckString( p, frId, FrCultureId, "Seulement en Français.", FrCultureId );
 
             CheckString( p, bothId, EnCultureId, "English (and French).", EnCultureId );
@@ -72,10 +74,10 @@ public class MCResHtmlTests
             CheckString( p, enId, FrCultureId, "Only in English.", EnCultureId );
             CheckString( p, enId, DeCultureId, "Only in English.", EnCultureId );
 
-            // en is root so no fallback. de's chain is de -> en (fr not reachable from de).
-            CheckString( p, frId, EnCultureId, DBNull.Value, DBNull.Value );
+            // Fallback on FrCultureId in frId because it's exist only in FrCultureId
+            CheckString( p, frId, EnCultureId, "Seulement en Français.", FrCultureId );
             CheckString( p, frId, FrCultureId, "Seulement en Français.", FrCultureId );
-            CheckString( p, frId, DeCultureId, DBNull.Value, DBNull.Value );
+            CheckString( p, frId, DeCultureId, "Seulement en Français.", FrCultureId );
 
             CheckString( p, bothId, EnCultureId, "English (and French).", EnCultureId );
             CheckString( p, bothId, FrCultureId, "Français (et Anglais).", FrCultureId );
@@ -220,6 +222,52 @@ public class MCResHtmlTests
             CheckString( p, resId, OrphanCultureId, "English value.", EnCultureId );
 
             p.ResTable.Destroy( ctx, resId );
+        }
+    }
+
+    [Test]
+    public void value_in_any_language_is_returned_when_neither_culture_chain_nor_english_have_a_value()
+    {
+        var p = SharedEngine.Map.StObjs.Obtain<Package>();
+        using( var ctx = new SqlStandardCallContext() )
+        {
+            // Register two orphan cultures (no parent), disconnected from English.
+            p.Database.ExecuteNonQuery(
+                "if not exists (select 1 from CK.tCulture where CultureId = @0) exec CK.sCultureRegister @0, @1, @2, @3, @4, @5, @6, null;",
+                OrphanCultureId, "zz", "zz", "Orphan", "Orphan", "Orphan", 1 );
+            p.Database.ExecuteNonQuery(
+                "if not exists (select 1 from CK.tCulture where CultureId = @0) exec CK.sCultureRegister @0, @1, @2, @3, @4, @5, @6, null;",
+                OrphanCultureId2, "zz2", "zz2", "Orphan2", "Orphan2", "Orphan2", 1 );
+
+            int resId = p.ResTable.Create( ctx );
+
+            // Only the second orphan culture holds a value. English has nothing, the requested
+            // chains lead nowhere: the view must serve that value as a last-resort fallback.
+            p.MCResHtmlTable.SetHtml( ctx, resId, OrphanCultureId2, "Hola" );
+
+            CheckString( p, resId, EnCultureId, "Hola", OrphanCultureId2 );
+            CheckString( p, resId, FrCultureId, "Hola", OrphanCultureId2 );
+            CheckString( p, resId, OrphanCultureId, "Hola", OrphanCultureId2 );
+            CheckString( p, resId, OrphanCultureId2, "Hola", OrphanCultureId2 );
+
+            // Once English is set, it takes precedence over the last-resort fallback for any
+            // culture that does not own a value of its own.
+            p.MCResHtmlTable.SetHtml( ctx, resId, EnCultureId, "English." );
+            CheckString( p, resId, EnCultureId, "English.", EnCultureId );
+            CheckString( p, resId, FrCultureId, "English.", EnCultureId );
+            CheckString( p, resId, OrphanCultureId, "English.", EnCultureId );
+            CheckString( p, resId, OrphanCultureId2, "Hola", OrphanCultureId2 );
+
+            // A value on the requested culture itself wins over both fallbacks.
+            p.MCResHtmlTable.SetHtml( ctx, resId, FrCultureId, "Français." );
+            CheckString( p, resId, FrCultureId, "Français.", FrCultureId );
+            CheckString( p, resId, EnCultureId, "English.", EnCultureId );
+
+            p.ResTable.Destroy( ctx, resId );
+            CheckString( p, resId, EnCultureId, null, null );
+            CheckString( p, resId, FrCultureId, null, null );
+            CheckString( p, resId, OrphanCultureId, null, null );
+            CheckString( p, resId, OrphanCultureId2, null, null );
         }
     }
 

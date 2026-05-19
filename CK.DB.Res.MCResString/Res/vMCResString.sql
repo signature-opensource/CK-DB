@@ -1,9 +1,14 @@
 -- SetupConfig: {}
 --
--- For each (Resource, Culture) the view first walks the ParentCultureId
--- chain to locate a stored value. If the chain yields nothing, the English
--- culture (CultureId 221277614) is used as the ultimate fallback, even when
--- it is not part of the requested culture's parent chain.
+-- For each (Resource, Culture) the view resolves the value in three steps:
+--   1. Walk the ParentCultureId chain from the requested culture and pick
+--      the closest stored value.
+--   2. If nothing is found, fall back to the English culture
+--      (CultureId 221277614), even when it is not part of the requested
+--      culture's parent chain.
+--   3. If nothing is still found but the resource exists in some other
+--      language, return that value (smallest CultureId wins, for
+--      deterministic results).
 --
 create view CK.vMCResString
 as
@@ -19,8 +24,8 @@ as
 	)
 	select  r.ResId,
 			root.CultureId,
-			coalesce( v.MatchedCultureId, en.MatchedCultureId ) as MatchedCultureId,
-			coalesce( v.Value, en.Value ) as Value
+			coalesce( v.MatchedCultureId, en.MatchedCultureId, any_lang.MatchedCultureId ) as MatchedCultureId,
+			coalesce( v.Value, en.Value, any_lang.Value ) as Value
 		from CK.tRes r
 		cross join (select CultureId from CK.tCulture where CultureId <> 0) root
 		outer apply (select top(1) s.CultureId as MatchedCultureId, s.Value
@@ -30,4 +35,8 @@ as
 						order by ch.Depth) v
 		outer apply (select s.CultureId as MatchedCultureId, s.Value
 						from CK.tMCResString s
-						where s.CultureId = 221277614 and s.ResId = r.ResId) en;
+						where s.CultureId = 221277614 and s.ResId = r.ResId) en
+		outer apply (select top(1) s.CultureId as MatchedCultureId, s.Value
+						from CK.tMCResString s
+						where s.ResId = r.ResId
+						order by s.CultureId) any_lang;
