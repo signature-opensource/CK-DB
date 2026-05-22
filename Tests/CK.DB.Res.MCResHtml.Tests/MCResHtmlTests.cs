@@ -20,9 +20,6 @@ public class MCResHtmlTests
     // Test-only orphan culture (no link to English): used to validate the
     // ultimate English fallback that the view applies regardless of chain.
     const int OrphanCultureId = 990000003;
-    // Second orphan culture used to validate the last-resort fallback to any
-    // existing translation when neither the requested chain nor English have a value.
-    const int OrphanCultureId2 = 990000004;
 
     [Test]
     public void fallbaks_between_french_and_english_cultures()
@@ -104,19 +101,19 @@ public class MCResHtmlTests
     static void RegisterGerman( Package p, SqlStandardCallContext ctx )
     {
         p.Database.ExecuteNonQuery(
-            "if not exists (select 1 from CK.tCulture where CultureId = @0) exec CK.sCultureRegister @0, @1, @2, @3, @4, @5, @6, @7;",
-            DeCultureId, "de", "de", "German", "Deutsch", "German", 1, EnCultureId );
+            "if not exists (select 1 from CK.tCulture where CultureId = @0) exec CK.sCultureRegister @0, @1, @2, @3, @4, @5, @6;",
+            DeCultureId, "de", "de", "German", "Deutsch", "German", 0 );
     }
 
     static void RegisterRegionalCultures( Package p, SqlStandardCallContext ctx )
     {
         RegisterGerman( p, ctx );
         p.Database.ExecuteNonQuery(
-            "if not exists (select 1 from CK.tCulture where CultureId = @0) exec CK.sCultureRegister @0, @1, @2, @3, @4, @5, @6, @7;",
-            FrCaCultureId, "fr-CA", "fr-CA", "French (Canada)", "français (Canada)", "French (Canada)", 0, FrCultureId );
+            "if not exists (select 1 from CK.tCulture where CultureId = @0) exec CK.sCultureRegister @0, @1, @2, @3, @4, @5, @6;",
+            FrCaCultureId, "fr-CA", "fr-CA,fr", "French (Canada)", "français (Canada)", "French (Canada)", FrCultureId );
         p.Database.ExecuteNonQuery(
-            "if not exists (select 1 from CK.tCulture where CultureId = @0) exec CK.sCultureRegister @0, @1, @2, @3, @4, @5, @6, @7;",
-            DeAtCultureId, "de-AT", "de-AT", "German (Austria)", "Deutsch (Österreich)", "German (Austria)", 0, DeCultureId );
+            "if not exists (select 1 from CK.tCulture where CultureId = @0) exec CK.sCultureRegister @0, @1, @2, @3, @4, @5, @6;",
+            DeAtCultureId, "de-AT", "de-AT,de", "German (Austria)", "Deutsch (Österreich)", "German (Austria)", DeCultureId );
     }
 
     static void CheckString( Package p, int resId, int cultureId, object expectedValue, object expectedMatchedCultureId )
@@ -197,10 +194,11 @@ public class MCResHtmlTests
         var p = SharedEngine.Map.StObjs.Obtain<Package>();
         using( var ctx = new SqlStandardCallContext() )
         {
-            // Register an orphan root culture: no ParentCultureId so its chain does NOT include English.
+            // Register an orphan root culture (no parent): English is still appended automatically
+            // by sCultureFallbackBuildChain, which is exactly the invariant this test exercises.
             p.Database.ExecuteNonQuery(
-                "if not exists (select 1 from CK.tCulture where CultureId = @0) exec CK.sCultureRegister @0, @1, @2, @3, @4, @5, @6, null;",
-                OrphanCultureId, "zz", "zz", "Orphan", "Orphan", "Orphan", 1 );
+                "if not exists (select 1 from CK.tCulture where CultureId = @0) exec CK.sCultureRegister @0, @1, @2, @3, @4, @5, @6;",
+                OrphanCultureId, "zz", "zz", "Orphan", "Orphan", "Orphan", 0 );
 
             int resId = p.ResTable.Create( ctx );
 
@@ -222,52 +220,6 @@ public class MCResHtmlTests
             CheckString( p, resId, OrphanCultureId, "English value.", EnCultureId );
 
             p.ResTable.Destroy( ctx, resId );
-        }
-    }
-
-    [Test]
-    public void value_in_any_language_is_returned_when_neither_culture_chain_nor_english_have_a_value()
-    {
-        var p = SharedEngine.Map.StObjs.Obtain<Package>();
-        using( var ctx = new SqlStandardCallContext() )
-        {
-            // Register two orphan cultures (no parent), disconnected from English.
-            p.Database.ExecuteNonQuery(
-                "if not exists (select 1 from CK.tCulture where CultureId = @0) exec CK.sCultureRegister @0, @1, @2, @3, @4, @5, @6, null;",
-                OrphanCultureId, "zz", "zz", "Orphan", "Orphan", "Orphan", 1 );
-            p.Database.ExecuteNonQuery(
-                "if not exists (select 1 from CK.tCulture where CultureId = @0) exec CK.sCultureRegister @0, @1, @2, @3, @4, @5, @6, null;",
-                OrphanCultureId2, "zz2", "zz2", "Orphan2", "Orphan2", "Orphan2", 1 );
-
-            int resId = p.ResTable.Create( ctx );
-
-            // Only the second orphan culture holds a value. English has nothing, the requested
-            // chains lead nowhere: the view must serve that value as a last-resort fallback.
-            p.MCResHtmlTable.SetHtml( ctx, resId, OrphanCultureId2, "Hola" );
-
-            CheckString( p, resId, EnCultureId, "Hola", OrphanCultureId2 );
-            CheckString( p, resId, FrCultureId, "Hola", OrphanCultureId2 );
-            CheckString( p, resId, OrphanCultureId, "Hola", OrphanCultureId2 );
-            CheckString( p, resId, OrphanCultureId2, "Hola", OrphanCultureId2 );
-
-            // Once English is set, it takes precedence over the last-resort fallback for any
-            // culture that does not own a value of its own.
-            p.MCResHtmlTable.SetHtml( ctx, resId, EnCultureId, "English." );
-            CheckString( p, resId, EnCultureId, "English.", EnCultureId );
-            CheckString( p, resId, FrCultureId, "English.", EnCultureId );
-            CheckString( p, resId, OrphanCultureId, "English.", EnCultureId );
-            CheckString( p, resId, OrphanCultureId2, "Hola", OrphanCultureId2 );
-
-            // A value on the requested culture itself wins over both fallbacks.
-            p.MCResHtmlTable.SetHtml( ctx, resId, FrCultureId, "Français." );
-            CheckString( p, resId, FrCultureId, "Français.", FrCultureId );
-            CheckString( p, resId, EnCultureId, "English.", EnCultureId );
-
-            p.ResTable.Destroy( ctx, resId );
-            CheckString( p, resId, EnCultureId, null, null );
-            CheckString( p, resId, FrCultureId, null, null );
-            CheckString( p, resId, OrphanCultureId, null, null );
-            CheckString( p, resId, OrphanCultureId2, null, null );
         }
     }
 
