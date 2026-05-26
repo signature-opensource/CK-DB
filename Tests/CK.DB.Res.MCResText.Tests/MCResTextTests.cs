@@ -11,11 +11,11 @@ namespace CK.DB.Res.MCResText.Tests;
 public class MCResTextTests
 {
     // CultureIds from CK.DB.Globalization.
-    const int EnCultureId = 221277614;  // "en"
-    const int FrCultureId = 210333265;  // "fr"
-    const int DeCultureId = 223899012;  // "de"
+    const int EnCultureId = 221272233;  // "en"
+    const int FrCultureId = 210327884;  // "fr"
+    const int DeCultureId = 223893631;  // "de"
     // Test-only CultureIds (registered on the fly under fr and de).
-    const int FrCaCultureId = 1621867518;
+    const int FrCaCultureId = 1621862137;
     const int DeAtCultureId = 990000002;
     // Test-only orphan culture (no link to English): used to validate the
     // ultimate English fallback that the view applies regardless of chain.

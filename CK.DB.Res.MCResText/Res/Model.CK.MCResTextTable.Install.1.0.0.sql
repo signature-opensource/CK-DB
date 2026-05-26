@@ -12,9 +12,9 @@ create table CK.tMCResText
 
 insert into CK.tMCResText( ResId, CultureId, Value ) values( 0, 0, N'' );
 
-insert into CK.tMCResText( ResId, CultureId, Value ) values( 0, 210333265, N'' );
-insert into CK.tMCResText( ResId, CultureId, Value ) values( 0, 221277614, N'' );
-insert into CK.tMCResText( ResId, CultureId, Value ) values( 1, 210333265, N'Système' );
-insert into CK.tMCResText( ResId, CultureId, Value ) values( 1, 221277614, N'System' );
+insert into CK.tMCResText( ResId, CultureId, Value ) values( 0, 210327884, N'' );
+insert into CK.tMCResText( ResId, CultureId, Value ) values( 0, 221272233, N'' );
+insert into CK.tMCResText( ResId, CultureId, Value ) values( 1, 210327884, N'Système' );
+insert into CK.tMCResText( ResId, CultureId, Value ) values( 1, 221272233, N'System' );
 
 --[endscript]
