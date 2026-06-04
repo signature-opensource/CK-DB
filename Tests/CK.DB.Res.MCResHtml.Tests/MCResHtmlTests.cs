@@ -10,6 +10,17 @@ namespace CK.DB.Res.MCResHtml.Tests;
 [TestFixture]
 public class MCResHtmlTests
 {
+    // CultureIds from CK.DB.Globalization.
+    const int EnCultureId = 221272233;  // "en"
+    const int FrCultureId = 210327884;  // "fr"
+    const int DeCultureId = 223893631;  // "de"
+    // Test-only CultureIds (registered on the fly under fr and de).
+    const int FrCaCultureId = 1621862137;
+    const int DeAtCultureId = 990000002;
+    // Test-only orphan culture (no link to English): used to validate the
+    // ultimate English fallback that the view applies regardless of chain.
+    const int OrphanCultureId = 990000003;
+
     [Test]
     public void fallbaks_between_french_and_english_cultures()
     {
@@ -19,17 +30,17 @@ public class MCResHtmlTests
             int noValuesId, enId, frId, bothId;
             AssumeFallbackTestEnglishAndFrenchResources( p, ctx, out noValuesId, out enId, out frId, out bothId );
 
-            CheckString( p, noValuesId, 9, DBNull.Value, DBNull.Value );
-            CheckString( p, noValuesId, 12, DBNull.Value, DBNull.Value );
+            CheckString( p, noValuesId, EnCultureId, DBNull.Value, DBNull.Value );
+            CheckString( p, noValuesId, FrCultureId, DBNull.Value, DBNull.Value );
 
-            CheckString( p, enId, 9, "Only in English.", 9 );
-            CheckString( p, enId, 12, "Only in English.", 9 );
+            CheckString( p, enId, EnCultureId, "Only in English.", EnCultureId );
+            CheckString( p, enId, FrCultureId, "Only in English.", EnCultureId );
 
-            CheckString( p, frId, 9, "Seulement en Français.", 12 );
-            CheckString( p, frId, 12, "Seulement en Français.", 12 );
+            CheckString( p, frId, EnCultureId, "Seulement en Français.", FrCultureId );
+            CheckString( p, frId, FrCultureId, "Seulement en Français.", FrCultureId );
 
-            CheckString( p, bothId, 9, "English (and French).", 9 );
-            CheckString( p, bothId, 12, "Français (et Anglais).", 12 );
+            CheckString( p, bothId, EnCultureId, "English (and French).", EnCultureId );
+            CheckString( p, bothId, FrCultureId, "Français (et Anglais).", FrCultureId );
         }
     }
 
@@ -45,32 +56,33 @@ public class MCResHtmlTests
             int deId = p.ResTable.Create( ctx );
             int allId = p.ResTable.Create( ctx );
 
-            Culture.Tests.ExtendedCultureTests.RegisterGerman( p.Culture, ctx );
+            RegisterGerman( p, ctx );
 
-            p.MCResHtmlTable.SetHtml( ctx, deId, 7, "Nur in deutscher Sprache." );
-            p.MCResHtmlTable.SetHtml( ctx, allId, 12, "Français (et Anglais et Allemand)." );
-            p.MCResHtmlTable.SetHtml( ctx, allId, 9, "English (and French and German)." );
-            p.MCResHtmlTable.SetHtml( ctx, allId, 7, "Deutsch (und Englisch und Französisch)." );
+            p.MCResHtmlTable.SetHtml( ctx, deId, DeCultureId, "Nur in deutscher Sprache." );
+            p.MCResHtmlTable.SetHtml( ctx, allId, FrCultureId, "Français (et Anglais et Allemand)." );
+            p.MCResHtmlTable.SetHtml( ctx, allId, EnCultureId, "English (and French and German)." );
+            p.MCResHtmlTable.SetHtml( ctx, allId, DeCultureId, "Deutsch (und Englisch und Französisch)." );
 
-            CheckString( p, noValuesId, 9, DBNull.Value, DBNull.Value );
-            CheckString( p, noValuesId, 12, DBNull.Value, DBNull.Value );
-            CheckString( p, noValuesId, 7, DBNull.Value, DBNull.Value );
+            CheckString( p, noValuesId, EnCultureId, DBNull.Value, DBNull.Value );
+            CheckString( p, noValuesId, FrCultureId, DBNull.Value, DBNull.Value );
+            CheckString( p, noValuesId, DeCultureId, DBNull.Value, DBNull.Value );
 
-            CheckString( p, enId, 9, "Only in English.", 9 );
-            CheckString( p, enId, 12, "Only in English.", 9 );
-            CheckString( p, enId, 7, "Only in English.", 9 );
+            CheckString( p, enId, EnCultureId, "Only in English.", EnCultureId );
+            CheckString( p, enId, FrCultureId, "Only in English.", EnCultureId );
+            CheckString( p, enId, DeCultureId, "Only in English.", EnCultureId );
 
-            CheckString( p, frId, 9, "Seulement en Français.", 12 );
-            CheckString( p, frId, 12, "Seulement en Français.", 12 );
-            CheckString( p, frId, 7, "Seulement en Français.", 12 );
+            // Fallback on FrCultureId in frId because it's exist only in FrCultureId
+            CheckString( p, frId, EnCultureId, "Seulement en Français.", FrCultureId );
+            CheckString( p, frId, FrCultureId, "Seulement en Français.", FrCultureId );
+            CheckString( p, frId, DeCultureId, "Seulement en Français.", FrCultureId );
 
-            CheckString( p, bothId, 9, "English (and French).", 9 );
-            CheckString( p, bothId, 12, "Français (et Anglais).", 12 );
-            CheckString( p, bothId, 7, "English (and French).", 9 );
+            CheckString( p, bothId, EnCultureId, "English (and French).", EnCultureId );
+            CheckString( p, bothId, FrCultureId, "Français (et Anglais).", FrCultureId );
+            CheckString( p, bothId, DeCultureId, "English (and French).", EnCultureId );
 
-            CheckString( p, allId, 9, "English (and French and German).", 9 );
-            CheckString( p, allId, 12, "Français (et Anglais et Allemand).", 12 );
-            CheckString( p, allId, 7, "Deutsch (und Englisch und Französisch).", 7 );
+            CheckString( p, allId, EnCultureId, "English (and French and German).", EnCultureId );
+            CheckString( p, allId, FrCultureId, "Français (et Anglais et Allemand).", FrCultureId );
+            CheckString( p, allId, DeCultureId, "Deutsch (und Englisch und Französisch).", DeCultureId );
         }
     }
 
@@ -78,102 +90,136 @@ public class MCResHtmlTests
     {
         noValuesId = p.ResTable.Create( ctx );
         enId = p.ResTable.Create( ctx );
-        p.MCResHtmlTable.SetHtml( ctx, enId, 9, "Only in English." );
+        p.MCResHtmlTable.SetHtml( ctx, enId, EnCultureId, "Only in English." );
         frId = p.ResTable.Create( ctx );
-        p.MCResHtmlTable.SetHtml( ctx, frId, 12, "Seulement en Français." );
+        p.MCResHtmlTable.SetHtml( ctx, frId, FrCultureId, "Seulement en Français." );
         bothId = p.ResTable.Create( ctx );
-        p.MCResHtmlTable.SetHtml( ctx, bothId, 9, "English (and French)." );
-        p.MCResHtmlTable.SetHtml( ctx, bothId, 12, "Français (et Anglais)." );
+        p.MCResHtmlTable.SetHtml( ctx, bothId, EnCultureId, "English (and French)." );
+        p.MCResHtmlTable.SetHtml( ctx, bothId, FrCultureId, "Français (et Anglais)." );
     }
 
-    static void CheckString( Package p, int resId, int lcid, object expectedValue, object expectedLCID )
+    static void RegisterGerman( Package p, SqlStandardCallContext ctx )
     {
-        p.Database.ExecuteScalar( "select Value from CK.vMCResHtml where ResId=@0 and XLCID = @1", resId, lcid )
+        p.Database.ExecuteNonQuery(
+            "if not exists (select 1 from CK.tCulture where CultureId = @0) exec CK.sCultureRegister @0, @1, @2, @3, @4, @5, @6;",
+            DeCultureId, "de", "de", "German", "Deutsch", "German", 0 );
+    }
+
+    static void RegisterRegionalCultures( Package p, SqlStandardCallContext ctx )
+    {
+        RegisterGerman( p, ctx );
+        p.Database.ExecuteNonQuery(
+            "if not exists (select 1 from CK.tCulture where CultureId = @0) exec CK.sCultureRegister @0, @1, @2, @3, @4, @5, @6;",
+            FrCaCultureId, "fr-CA", "fr-CA,fr", "French (Canada)", "français (Canada)", "French (Canada)", FrCultureId );
+        p.Database.ExecuteNonQuery(
+            "if not exists (select 1 from CK.tCulture where CultureId = @0) exec CK.sCultureRegister @0, @1, @2, @3, @4, @5, @6;",
+            DeAtCultureId, "de-AT", "de-AT,de", "German (Austria)", "Deutsch (Österreich)", "German (Austria)", DeCultureId );
+    }
+
+    static void CheckString( Package p, int resId, int cultureId, object expectedValue, object expectedMatchedCultureId )
+    {
+        p.Database.ExecuteScalar( "select Value from CK.vMCResHtml where ResId=@0 and CultureId = @1", resId, cultureId )
             .ShouldBe( expectedValue );
-        p.Database.ExecuteScalar( "select LCID from CK.vMCResHtml where ResId=@0 and XLCID = @1", resId, lcid )
-            .ShouldBe( expectedLCID );
+        p.Database.ExecuteScalar( "select MatchedCultureId from CK.vMCResHtml where ResId=@0 and CultureId = @1", resId, cultureId )
+            .ShouldBe( expectedMatchedCultureId );
     }
 
     [Test]
-    public void setting_and_clearing_string_values_can_use_XLCID()
+    public void setting_and_clearing_values_traverses_culture_hierarchy()
     {
         var p = SharedEngine.Map.StObjs.Obtain<Package>();
         using( var ctx = new SqlStandardCallContext() )
         {
-            Culture.Tests.ExtendedCultureTests.RegisterSpanish( p.Culture, ctx );
-            Culture.Tests.ExtendedCultureTests.RegisterArabic( p.Culture, ctx );
-            int xlcid1 = p.Culture.AssumeXLCID( ctx, new[] { 1, 9, 10, 12 } );
-            xlcid1.ShouldBeGreaterThan( 0xFFFF );
-            int xlcid9 = p.Culture.AssumeXLCID( ctx, new[] { 9, 1, 12, 10 } );
-            xlcid9.ShouldBeGreaterThan( 0xFFFF );
-            int xlcid10 = p.Culture.AssumeXLCID( ctx, new[] { 10, 1, 9, 12 } );
-            xlcid10.ShouldBeGreaterThan( 0xFFFF );
+            RegisterRegionalCultures( p, ctx );
             int resId = p.ResTable.Create( ctx );
 
-            CheckString( p, resId, 1, DBNull.Value, DBNull.Value );
-            CheckString( p, resId, 9, DBNull.Value, DBNull.Value );
-            CheckString( p, resId, 10, DBNull.Value, DBNull.Value );
-            CheckString( p, resId, 12, DBNull.Value, DBNull.Value );
-            CheckString( p, resId, xlcid1, DBNull.Value, DBNull.Value );
-            CheckString( p, resId, xlcid9, DBNull.Value, DBNull.Value );
-            CheckString( p, resId, xlcid10, DBNull.Value, DBNull.Value );
+            // No value: every culture in the hierarchy resolves to null.
+            CheckString( p, resId, EnCultureId, DBNull.Value, DBNull.Value );
+            CheckString( p, resId, FrCultureId, DBNull.Value, DBNull.Value );
+            CheckString( p, resId, FrCaCultureId, DBNull.Value, DBNull.Value );
+            CheckString( p, resId, DeCultureId, DBNull.Value, DBNull.Value );
+            CheckString( p, resId, DeAtCultureId, DBNull.Value, DBNull.Value );
 
-            p.MCResHtmlTable.SetHtml( ctx, resId, xlcid1, "الأزمة في مصر" );
-            CheckString( p, resId, 1, "الأزمة في مصر", 1 );
-            CheckString( p, resId, 9, "الأزمة في مصر", 1 );
-            CheckString( p, resId, 10, "الأزمة في مصر", 1 );
-            CheckString( p, resId, 12, "الأزمة في مصر", 1 );
-            CheckString( p, resId, xlcid1, "الأزمة في مصر", 1 );
-            CheckString( p, resId, xlcid9, "الأزمة في مصر", 1 );
-            CheckString( p, resId, xlcid10, "الأزمة في مصر", 1 );
+            // Value at the root: every descendant culture falls back to it.
+            p.MCResHtmlTable.SetHtml( ctx, resId, EnCultureId, "English root." );
+            CheckString( p, resId, EnCultureId, "English root.", EnCultureId );
+            CheckString( p, resId, FrCultureId, "English root.", EnCultureId );
+            CheckString( p, resId, FrCaCultureId, "English root.", EnCultureId );
+            CheckString( p, resId, DeCultureId, "English root.", EnCultureId );
+            CheckString( p, resId, DeAtCultureId, "English root.", EnCultureId );
 
-            p.MCResHtmlTable.SetHtml( ctx, resId, xlcid10, "¡Hola! (España)" );
-            CheckString( p, resId, 1, "الأزمة في مصر", 1 );
-            CheckString( p, resId, 9, "¡Hola! (España)", 10 );
-            CheckString( p, resId, 10, "¡Hola! (España)", 10 );
-            CheckString( p, resId, 12, "¡Hola! (España)", 10 );
-            CheckString( p, resId, xlcid1, "الأزمة في مصر", 1 );
-            CheckString( p, resId, xlcid9, "الأزمة في مصر", 1 );
-            CheckString( p, resId, xlcid10, "¡Hola! (España)", 10 );
+            // Value at mid level: fr and fr-CA see fr; de branch keeps en.
+            p.MCResHtmlTable.SetHtml( ctx, resId, FrCultureId, "Français." );
+            CheckString( p, resId, EnCultureId, "English root.", EnCultureId );
+            CheckString( p, resId, FrCultureId, "Français.", FrCultureId );
+            CheckString( p, resId, FrCaCultureId, "Français.", FrCultureId );
+            CheckString( p, resId, DeCultureId, "English root.", EnCultureId );
+            CheckString( p, resId, DeAtCultureId, "English root.", EnCultureId );
 
-            p.MCResHtmlTable.SetHtml( ctx, resId, 12, "Liberté!" );
-            CheckString( p, resId, 1, "الأزمة في مصر", 1 );
-            CheckString( p, resId, 9, "Liberté!", 12 );
-            CheckString( p, resId, 10, "¡Hola! (España)", 10 );
-            CheckString( p, resId, 12, "Liberté!", 12 );
-            CheckString( p, resId, xlcid1, "الأزمة في مصر", 1 );
-            CheckString( p, resId, xlcid9, "الأزمة في مصر", 1 );
-            CheckString( p, resId, xlcid10, "¡Hola! (España)", 10 );
+            // Value at leaf: only fr-CA sees it; fr stays on its own value.
+            p.MCResHtmlTable.SetHtml( ctx, resId, FrCaCultureId, "Québécois." );
+            CheckString( p, resId, EnCultureId, "English root.", EnCultureId );
+            CheckString( p, resId, FrCultureId, "Français.", FrCultureId );
+            CheckString( p, resId, FrCaCultureId, "Québécois.", FrCaCultureId );
 
-            p.MCResHtmlTable.SetHtml( ctx, resId, xlcid1, null );
-            CheckString( p, resId, 1, "Liberté!", 12 );
-            CheckString( p, resId, 9, "Liberté!", 12 );
-            CheckString( p, resId, 10, "¡Hola! (España)", 10 );
-            CheckString( p, resId, 12, "Liberté!", 12 );
-            CheckString( p, resId, xlcid1, "¡Hola! (España)", 10 );
-            CheckString( p, resId, xlcid9, "Liberté!", 12 );
-            CheckString( p, resId, xlcid10, "¡Hola! (España)", 10 );
+            // Value on a parallel branch: de and de-AT see de, fr branch is unchanged.
+            p.MCResHtmlTable.SetHtml( ctx, resId, DeCultureId, "Deutsch." );
+            CheckString( p, resId, FrCultureId, "Français.", FrCultureId );
+            CheckString( p, resId, FrCaCultureId, "Québécois.", FrCaCultureId );
+            CheckString( p, resId, DeCultureId, "Deutsch.", DeCultureId );
+            CheckString( p, resId, DeAtCultureId, "Deutsch.", DeCultureId );
 
-            p.MCResHtmlTable.SetHtml( ctx, resId, xlcid10, null );
-            CheckString( p, resId, 1, "Liberté!", 12 );
-            CheckString( p, resId, 9, "Liberté!", 12 );
-            CheckString( p, resId, 10, "Liberté!", 12 );
-            CheckString( p, resId, 12, "Liberté!", 12 );
-            CheckString( p, resId, xlcid1, "Liberté!", 12 );
-            CheckString( p, resId, xlcid9, "Liberté!", 12 );
-            CheckString( p, resId, xlcid10, "Liberté!", 12 );
+            // Clearing the leaf restores the fallback through the parent chain.
+            p.MCResHtmlTable.SetHtml( ctx, resId, FrCaCultureId, null );
+            CheckString( p, resId, FrCaCultureId, "Français.", FrCultureId );
 
+            // Clearing the mid level cascades fr-CA back to the root.
+            p.MCResHtmlTable.SetHtml( ctx, resId, FrCultureId, null );
+            CheckString( p, resId, FrCultureId, "English root.", EnCultureId );
+            CheckString( p, resId, FrCaCultureId, "English root.", EnCultureId );
 
+            // Destroying the resource clears every culture entry.
             Assert.DoesNotThrow( () => p.ResTable.Destroy( ctx, resId ) );
+            CheckString( p, resId, EnCultureId, null, null );
+            CheckString( p, resId, FrCultureId, null, null );
+            CheckString( p, resId, FrCaCultureId, null, null );
+            CheckString( p, resId, DeCultureId, null, null );
+            CheckString( p, resId, DeAtCultureId, null, null );
+        }
+    }
 
-            CheckString( p, resId, 1, null, null );
-            CheckString( p, resId, 9, null, null );
-            CheckString( p, resId, 10, null, null );
-            CheckString( p, resId, 12, null, null );
-            CheckString( p, resId, xlcid1, null, null );
-            CheckString( p, resId, xlcid9, null, null );
-            CheckString( p, resId, xlcid10, null, null );
+    [Test]
+    public void english_is_the_ultimate_fallback_for_cultures_not_linked_to_english()
+    {
+        var p = SharedEngine.Map.StObjs.Obtain<Package>();
+        using( var ctx = new SqlStandardCallContext() )
+        {
+            // Register an orphan root culture (no parent): English is still appended automatically
+            // by sCultureFallbackBuildChain, which is exactly the invariant this test exercises.
+            p.Database.ExecuteNonQuery(
+                "if not exists (select 1 from CK.tCulture where CultureId = @0) exec CK.sCultureRegister @0, @1, @2, @3, @4, @5, @6;",
+                OrphanCultureId, "zz", "zz", "Orphan", "Orphan", "Orphan", 0 );
 
+            int resId = p.ResTable.Create( ctx );
+
+            // No value anywhere: orphan resolves to null.
+            CheckString( p, resId, OrphanCultureId, DBNull.Value, DBNull.Value );
+
+            // Only English is set: the orphan, although unrelated, falls back to English.
+            p.MCResHtmlTable.SetHtml( ctx, resId, EnCultureId, "English value." );
+            CheckString( p, resId, EnCultureId, "English value.", EnCultureId );
+            CheckString( p, resId, OrphanCultureId, "English value.", EnCultureId );
+
+            // A value set on the orphan itself wins over the English fallback.
+            p.MCResHtmlTable.SetHtml( ctx, resId, OrphanCultureId, "Orphan value." );
+            CheckString( p, resId, OrphanCultureId, "Orphan value.", OrphanCultureId );
+            CheckString( p, resId, EnCultureId, "English value.", EnCultureId );
+
+            // Clearing the orphan-specific value restores the English fallback.
+            p.MCResHtmlTable.SetHtml( ctx, resId, OrphanCultureId, null );
+            CheckString( p, resId, OrphanCultureId, "English value.", EnCultureId );
+
+            p.ResTable.Destroy( ctx, resId );
         }
     }
 
@@ -193,7 +239,7 @@ public class MCResHtmlTests
             p.Database.ExecuteReader( "select Value from CK.vMCResHtml where ResId=@0", bothId )
                 .Rows.ShouldBeEmpty();
 
-            Assert.DoesNotThrow( () => p.MCResHtmlTable.SetHtml( ctx, bothId, 9, null ) );
+            Assert.DoesNotThrow( () => p.MCResHtmlTable.SetHtml( ctx, bothId, EnCultureId, null ) );
         }
 
     }

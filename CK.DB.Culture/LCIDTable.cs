@@ -8,7 +8,6 @@ namespace CK.DB.Culture;
 /// </summary>
 [SqlTable( "tLCID", Package = typeof( Package ) )]
 [Versions( "1.0.1, 1.0.2" )]
-[SqlObjectItem( "vLCID" )]
 public class LCIDTable : SqlTable
 {
     void StObjConstruct( XLCIDTable xlcid )
