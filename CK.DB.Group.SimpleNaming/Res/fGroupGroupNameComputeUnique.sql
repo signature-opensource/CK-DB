@@ -6,7 +6,9 @@
 create Function CK.fGroupGroupNameComputeUnique
 	(
 		@GroupId	int,
-		@GroupName	nvarchar(128)
+		@GroupName	nvarchar(128),
+		@PatternBefore nvarchar(10) = ' (',
+		@PaternAfter nvarchar(10) = ')'
 	)
 returns nvarchar(128) -- with SCHEMABINDING
 as 
@@ -17,13 +19,14 @@ begin
 	begin
 		return @GroupName;
 	end
-	if len(@GroupName) > 123 set @GroupName = left( @GroupName, 123 );
-	set @GroupName = @GroupName + ' (';
+    declare @MaxSize int = 128 - 2 /* @num width (0-99) */ - len( @PatternBefore ) - len( @PaternAfter );
+	if len( @GroupName ) > @MaxSize set @GroupName = left( @GroupName, @MaxSize );
+	set @GroupName = @GroupName + @PatternBefore;
 	declare @proposed nvarchar(128);
 	declare @num int = 1;
 	while @num <= 99 
 	begin
-		set @proposed = @GroupName + cast(@num as nvarchar(4)) + ')';
+		set @proposed = @GroupName + cast(@num as nvarchar(4)) + @PaternAfter;
 		if not exists( select '?'
 							from CK.tGroup g
 							where g.GroupId <> @GroupId and g.GroupName = @proposed ) 
