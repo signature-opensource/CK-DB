@@ -1,4 +1,5 @@
 using CK.Core;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CK.DB.Res.MCResHtml;
 
@@ -8,7 +9,9 @@ namespace CK.DB.Res.MCResHtml;
 [SqlPackage( Schema = "CK", ResourcePath = "Res" )]
 public class Package : SqlPackage
 {
+    [AllowNull]
     ResTable _resTable;
+    [AllowNull]
     Globalization.Package _globalization;
 
     void StObjConstruct( ResTable resTable, Globalization.Package globalization )

@@ -94,7 +94,7 @@ public class GroupTests
 
             g.AddUser( ctx, 1, groupId, userId );
 
-            Assert.DoesNotThrow( () => g.DestroyGroup( ctx, 1, groupId, true ) );
+            Should.NotThrow( () => g.DestroyGroup( ctx, 1, groupId, true ) );
 
             u.DestroyUser( ctx, 1, userId );
             g.Database.ExecuteReader( "select * from CK.tUser where UserId = @0", userId )
@@ -141,7 +141,7 @@ public class GroupTests
         using( var ctx = new SqlStandardCallContext() )
         {
             userId = u.CreateUser( ctx, 1, Guid.NewGuid().ToString() );
-            Assert.DoesNotThrow( () => g.AddUser( ctx, 1, 1, userId ) );
+            Should.NotThrow( () => g.AddUser( ctx, 1, 1, userId ) );
             g.Database.ExecuteScalar( "select count(*) from CK.tActorProfile where ActorId = @0 and GroupId <> @0", userId )
                 .ShouldBe( 1 );
             g.RemoveUser( ctx, 1, 1, userId );

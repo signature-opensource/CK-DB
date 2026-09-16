@@ -54,14 +54,14 @@ public class AuthScopeItem : IEquatable<AuthScopeItem>
     /// </summary>
     /// <param name="other">Other scope to test.</param>
     /// <returns>True if the scopes are considered equal, false otherwise.</returns>
-    public bool Equals( AuthScopeItem other ) => ScopeName == other.ScopeName && Status == other.Status;
+    public bool Equals( AuthScopeItem? other ) => other != null && ScopeName == other.ScopeName && Status == other.Status;
 
     /// <summary>
     /// Overridden to call <see cref="Equals(AuthScopeItem)"/>.
     /// </summary>
-    /// <param name="obj">The object to caompare to.</param>
+    /// <param name="obj">The object to compare to.</param>
     /// <returns>True if the scopes are considered equal, false otherwise.</returns>
-    public override sealed bool Equals( object obj ) => obj is AuthScopeItem && Equals( (AuthScopeItem)obj );
+    public sealed override bool Equals( object? obj ) => obj is AuthScopeItem item && Equals( item );
 
     /// <summary>
     /// Overridden to compute a has based on <see cref="ScopeName"/> and <see cref="Status"/>.

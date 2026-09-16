@@ -179,7 +179,7 @@ public class MCResHtmlTests
             CheckString( p, resId, FrCaCultureId, "English root.", EnCultureId );
 
             // Destroying the resource clears every culture entry.
-            Assert.DoesNotThrow( () => p.ResTable.Destroy( ctx, resId ) );
+            Should.NotThrow( () => p.ResTable.Destroy( ctx, resId ) );
             CheckString( p, resId, EnCultureId, null, null );
             CheckString( p, resId, FrCultureId, null, null );
             CheckString( p, resId, FrCaCultureId, null, null );
@@ -239,7 +239,7 @@ public class MCResHtmlTests
             p.Database.ExecuteReader( "select Value from CK.vMCResHtml where ResId=@0", bothId )
                 .Rows.ShouldBeEmpty();
 
-            Assert.DoesNotThrow( () => p.MCResHtmlTable.SetHtml( ctx, bothId, EnCultureId, null ) );
+            Should.NotThrow( () => p.MCResHtmlTable.SetHtml( ctx, bothId, EnCultureId, null ) );
         }
 
     }

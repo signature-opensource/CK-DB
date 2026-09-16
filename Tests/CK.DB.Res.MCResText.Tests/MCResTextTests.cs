@@ -116,7 +116,7 @@ public class MCResTextTests
             DeAtCultureId, "de-AT", "de-AT,de", "German (Austria)", "Deutsch (Österreich)", "German (Austria)", DeCultureId );
     }
 
-    static void CheckString( Package p, int resId, int cultureId, object expectedValue, object expectedMatchedCultureId )
+    static void CheckString( Package p, int resId, int cultureId, object? expectedValue, object? expectedMatchedCultureId )
     {
         p.Database.ExecuteScalar( "select Value from CK.vMCResText where ResId=@0 and CultureId = @1", resId, cultureId )
             .ShouldBe( expectedValue );
@@ -179,7 +179,7 @@ public class MCResTextTests
             CheckString( p, resId, FrCaCultureId, "English root.", EnCultureId );
 
             // Destroying the resource clears every culture entry.
-            Assert.DoesNotThrow( () => p.ResTable.Destroy( ctx, resId ) );
+            Should.NotThrow( () => p.ResTable.Destroy( ctx, resId ) );
             CheckString( p, resId, EnCultureId, null, null );
             CheckString( p, resId, FrCultureId, null, null );
             CheckString( p, resId, FrCaCultureId, null, null );
@@ -239,7 +239,7 @@ public class MCResTextTests
             p.Database.ExecuteReader( "select Value from CK.vMCResText where ResId=@0", bothId )
                 .Rows.ShouldBeEmpty();
 
-            Assert.DoesNotThrow( () => p.MCResTextTable.SetText( ctx, bothId, EnCultureId, null ) );
+            Should.NotThrow( () => p.MCResTextTable.SetText( ctx, bothId, EnCultureId, null ) );
         }
 
     }
