@@ -1,4 +1,4 @@
--- SetupConfig: { "Requires": [ "CK.sUserRemoveFromAllGroups" ] }
+-- SetupConfig: { "Requires": [ "CK.sMemberRemoveFromAllGroups" ] }
 --
 -- Destroys a User: automatically removes it from any Groups it may belong to.
 --
@@ -17,7 +17,7 @@ as begin
 	begin
 		--<PreDestroy revert />
 
-		exec CK.sUserRemoveFromAllGroups @ActorId, @UserId;
+		exec CK.sMemberRemoveFromAllGroups @ActorId, @UserId;
 
 		delete from CK.tActorProfile where ActorId = @UserId;
 		delete from CK.tUser where UserId = @UserId;

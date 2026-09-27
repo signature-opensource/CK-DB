@@ -42,7 +42,7 @@ public abstract partial class UserTable : SqlTable
     /// <param name="ctx">The call context.</param>
     /// <param name="actorId">The acting actor identifier.</param>
     /// <param name="userId">The user identifier that must be removed from all its groups.</param>
-    [SqlProcedure( "sUserRemoveFromAllGroups" )]
+    [SqlProcedure( "sMemberRemoveFromAllGroups" )]
     public abstract void RemoveFromAllGroups( ISqlCallContext ctx, int actorId, int userId );
 
     /// <summary>

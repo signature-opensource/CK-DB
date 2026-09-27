@@ -12,4 +12,4 @@ subordinated to a parent Zone.
 - [CK.DB.Acl](../CK.DB.Acl): Introduces Access Control Lists.
 
 CK.DB.Workspace (in its own repository), introduces the notion of Workspace. a Workspace is a Zone that has an Acl identifier 
-and and an Administrator group.
+and an Administrator group.

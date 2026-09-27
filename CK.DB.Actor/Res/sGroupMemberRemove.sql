@@ -2,7 +2,7 @@
 --
 -- Removes a User from a Group.
 --
-create procedure CK.sGroupUserRemove
+create procedure CK.sGroupMemberRemove
 (
 	@ActorId int,
 	@GroupId int,

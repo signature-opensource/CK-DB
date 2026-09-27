@@ -1,8 +1,8 @@
--- SetupConfig: { "Requires": [ "CK.sGroupUserRemove" ] }
+-- SetupConfig: { "Requires": [ "CK.sGroupMemberRemove" ] }
 --
 -- Clears a Group.
 --
-create procedure CK.sGroupRemoveAllUsers
+create procedure CK.sGroupRemoveAllMembers
 (
 	@ActorId int,
 	@GroupId int
@@ -23,7 +23,7 @@ as begin
 	fetch from @CUser into @UserId;
 	while @@FETCH_STATUS = 0
 	begin
-		exec CK.sGroupUserRemove @ActorId, @GroupId, @UserId;
+		exec CK.sGroupMemberRemove @ActorId, @GroupId, @UserId;
 		fetch next from @CUser into @UserId;
 	end
 	deallocate @CUser;

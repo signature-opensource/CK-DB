@@ -144,7 +144,7 @@ public abstract partial class UserTable : SqlTable
     /// <param name="actorId">The acting actor identifier.</param>
     /// <param name="userId">The user identifier that must be removed from all its groups.</param>
     /// <returns>True if user was successfully removed from all groups, false otherwise.</returns>
-    [SqlProcedure( "CK.sUserRemoveFromAllGroups" )]
+    [SqlProcedure( "CK.sMemberRemoveFromAllGroups" )]
     public abstract Task RemoveFromAllGroupsAsync( ISqlCallContext ctx, int actorId, int userId );
 
     /// <summary>
@@ -159,7 +159,7 @@ public abstract partial class UserTable : SqlTable
     /// </para>
     /// </returns>
     [CommandHandler]
-    [SqlProcedure( "CK.sUserRemoveFromAllGroups" )]
+    [SqlProcedure( "CK.sMemberRemoveFromAllGroups" )]
     public abstract Task<ICrisBasicCommandResult> RemoveFromAllGroupsAsync( ISqlCallContext ctx, [ParameterSource] IClearUserGroupsCommand command );
 
     /// <summary>

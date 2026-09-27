@@ -43,22 +43,22 @@ public abstract partial class GroupTable : SqlTable
     public abstract Task<ICreateGroupCommandResult> CreateGroupAsync( ISqlCallContext ctx, [ParameterSource] ICreateGroupCommand cmd );
 
     /// <summary>
-    /// Destroys a Group if and only if there is no more users inside.
+    /// Destroys a Group.
     /// Idempotent.
     /// </summary>
     /// <param name="ctx">The call context.</param>
     /// <param name="actorId">The acting actor identifier.</param>
     /// <param name="groupId">
     /// The group identifier to destroy. 
-    /// If <paramref name="forceDestroy"/> if false, it must be empty otherwise an exception is thrown.
+    /// When <paramref name="forceDestroy"/> is false (the default), it must be empty otherwise an exception is thrown.
     /// </param>
-    /// <param name="forceDestroy">True to remove all users before destroying the group.</param>
+    /// <param name="forceDestroy">True to remove all members before destroying the group.</param>
     /// <returns>True when group was successfully destroyed, false otherwise.</returns>
     [SqlProcedure( "sGroupDestroy" )]
     public abstract Task DestroyGroupAsync( ISqlCallContext ctx, int actorId, int groupId, bool forceDestroy = false );
 
     /// <summary>
-    /// Destroys a Group if and only if there is no more users inside.
+    /// Destroys a Group.
     /// </summary>
     /// <param name="ctx">The call context.</param>
     /// <param name="cmd">The incoming <see cref="IDestroyGroupCommand"/> command.</param>
@@ -73,19 +73,19 @@ public abstract partial class GroupTable : SqlTable
     public abstract Task<ICrisBasicCommandResult> DestroyGroupAsync( ISqlCallContext ctx, [ParameterSource] IDestroyGroupCommand cmd );
 
     /// <summary>
-    /// Adds a user into a group.
+    /// Adds a User or another kind of Actor (that must not be a Group) into a Group.
     /// Idempotent.
     /// </summary>
     /// <param name="ctx">The call context.</param>
     /// <param name="actorId">The acting actor identifier.</param>
     /// <param name="groupId">The group identifier.</param>
-    /// <param name="userId">The user identifier to add.</param>
-    /// <returns>True when target user was successfully added, false otherwise.</returns>
-    [SqlProcedure( "sGroupUserAdd" )]
-    public abstract Task AddUserAsync( ISqlCallContext ctx, int actorId, int groupId, int userId );
+    /// <param name="memberId">The actor identifier to add (must not be a group).</param>
+    /// <returns>The awaitable.</returns>
+    [SqlProcedure( "sGroupMemberAdd" )]
+    public abstract Task AddMemberAsync( ISqlCallContext ctx, int actorId, int groupId, int memberId );
 
     /// <summary>
-    /// Adds a user into a group.
+    /// Adds a member into a group.
     /// </summary>
     /// <param name="ctx">The call context.</param>
     /// <param name="cmd">The incoming <see cref="IAddUserToGroupCommand"/> command.</param>
@@ -96,20 +96,20 @@ public abstract partial class GroupTable : SqlTable
     /// </para>
     /// </returns>
     [CommandHandler]
-    [SqlProcedure( "sGroupUserAdd" )]
-    public abstract Task<ICrisBasicCommandResult> AddUserAsync( ISqlCallContext ctx, [ParameterSource] IAddUserToGroupCommand cmd );
+    [SqlProcedure( "sGroupMemberAdd" )]
+    public abstract Task<ICrisBasicCommandResult> AddMemberAsync( ISqlCallContext ctx, [ParameterSource] IAddUserToGroupCommand cmd );
 
     /// <summary>
-    /// Removes a user from a group.
+    /// Removes a user or another kind of actor (except group) from a group.
     /// Idempotent.
     /// </summary>
     /// <param name="ctx">The call context.</param>
     /// <param name="actorId">The acting actor identifier.</param>
     /// <param name="groupId">The group identifier.</param>
-    /// <param name="userId">The user identifier to remove.</param>
-    /// <returns>True when target user was removed, false otherwise.</returns>
-    [SqlProcedure( "sGroupUserRemove" )]
-    public abstract Task RemoveUserAsync( ISqlCallContext ctx, int actorId, int groupId, int userId );
+    /// <param name="memberId">The member identifier to remove.</param>
+    /// <returns>True when member was removed, false otherwise.</returns>
+    [SqlProcedure( "sGroupMemberRemove" )]
+    public abstract Task RemoveMemberAsync( ISqlCallContext ctx, int actorId, int groupId, int memberId );
 
     /// <summary>
     /// Removes a user from a group.
@@ -123,22 +123,22 @@ public abstract partial class GroupTable : SqlTable
     /// </para>
     /// </returns>
     [CommandHandler]
-    [SqlProcedure( "sGroupUserRemove" )]
-    public abstract Task<ICrisBasicCommandResult> RemoveUserAsync( ISqlCallContext ctx, [ParameterSource] IRemoveUserFromGroupCommand cmd );
+    [SqlProcedure( "sGroupMemberRemove" )]
+    public abstract Task<ICrisBasicCommandResult> RemoveMemberAsync( ISqlCallContext ctx, [ParameterSource] IRemoveUserFromGroupCommand cmd );
 
     /// <summary>
-    /// Removes all users from a group.
+    /// Removes all members from a group.
     /// Idempotent.
     /// </summary>
     /// <param name="ctx">The call context.</param>
     /// <param name="actorId">The acting actor identifier.</param>
     /// <param name="groupId">The group identifier to clear.</param>
-    /// <returns>True when all users were removed, false otherwise.</returns>
-    [SqlProcedure( "sGroupRemoveAllUsers" )]
-    public abstract Task RemoveAllUsersAsync( ISqlCallContext ctx, int actorId, int groupId );
+    /// <returns>True when all members were removed, false otherwise.</returns>
+    [SqlProcedure( "sGroupRemoveAllMembers" )]
+    public abstract Task RemoveAllMembersAsync( ISqlCallContext ctx, int actorId, int groupId );
 
     /// <summary>
-    /// Removes all users from a group.
+    /// Clears a Group: removes all its members.
     /// </summary>
     /// <param name="ctx">The call context.</param>
     /// <param name="cmd">The incoming <see cref="IRemoveAllUsersFromGroupCommand"/> command.</param>
@@ -149,6 +149,6 @@ public abstract partial class GroupTable : SqlTable
     /// </para>
     /// </returns>
     [CommandHandler]
-    [SqlProcedure( "sGroupRemoveAllUsers" )]
-    public abstract Task<ICrisBasicCommandResult> RemoveAllUsersAsync( ISqlCallContext ctx, [ParameterSource] IRemoveAllUsersFromGroupCommand cmd );
+    [SqlProcedure( "sGroupRemoveAllMembers" )]
+    public abstract Task<ICrisBasicCommandResult> RemoveAllMembersAsync( ISqlCallContext ctx, [ParameterSource] IRemoveAllUsersFromGroupCommand cmd );
 }

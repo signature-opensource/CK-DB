@@ -1,4 +1,4 @@
--- SetupConfig: { "Requires": [ "CK.sGroupRemoveAllUsers" ] }
+-- SetupConfig: { "Requires": [ "CK.sGroupRemoveAllMembers" ] }
 --
 -- Destroys a Group: can work only if there is no Users inside the Group except if @ForceDestroy = 1.
 --
@@ -18,7 +18,7 @@ as begin
 
 	if @ForceDestroy = 1
 	begin
-		exec CK.sGroupRemoveAllUsers @ActorId, @GroupId;
+		exec CK.sGroupRemoveAllMembers @ActorId, @GroupId;
 	end
 	else
 	begin
