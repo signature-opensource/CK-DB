@@ -26,23 +26,23 @@ public abstract partial class ZoneTable
     public abstract void DestroyZone( ISqlCallContext ctx, int actorId, int zoneId, bool forceDestroy = false );
 
     /// <summary>
-    /// Registers a user in a Zone: the user can then be added to groups of the zone.
+    /// Registers a member or another kind of Actor (but not a Group) in a Zone: the member can then be added to groups of the zone.
     /// </summary>
     /// <param name="ctx">The call context.</param>
     /// <param name="actorId">The acting actor identifier.</param>
-    /// <param name="zoneId">The Zone identifier into which the user must be added.</param>
-    /// <param name="userId">The user identifier to add.</param>
-    [SqlProcedure( "sZoneUserAdd" )]
-    public abstract void AddUser( ISqlCallContext ctx, int actorId, int zoneId, int userId );
+    /// <param name="zoneId">The Zone identifier into which the member must be added.</param>
+    /// <param name="memberId">The member identifier to add.</param>
+    [SqlProcedure( "sZoneMemberAdd" )]
+    public abstract void AddMember( ISqlCallContext ctx, int actorId, int zoneId, int memberId );
 
     /// <summary>
-    /// Removes a user from a Zone.
+    /// Removes a member from a Zone.
     /// </summary>
     /// <param name="ctx">The call context.</param>
     /// <param name="actorId">The acting actor identifier.</param>
     /// <param name="zoneId">The Zone identifier from which the user must be removed.</param>
-    /// <param name="userId">The user identifier to remove.</param>
-    [SqlProcedure( "sZoneUserRemove" )]
-    public abstract void RemoveUser( ISqlCallContext ctx, int actorId, int zoneId, int userId );
+    /// <param name="memberId">The member identifier to remove.</param>
+    [SqlProcedure( "sZoneMemberRemove" )]
+    public abstract void RemoveUser( ISqlCallContext ctx, int actorId, int zoneId, int memberId );
 
 }

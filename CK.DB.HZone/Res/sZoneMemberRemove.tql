@@ -1,16 +1,16 @@
 -- SetupConfig: {}
-create transformer on CK.sZoneUserRemove
+create transformer on CK.sZoneMemberRemove
 as
 begin
-	add parameter @AutoRemoveUserFromChildZone bit = 1;
+	add parameter @AutoRemoveMemberFromChildZone bit = 1;
 
 	inject "
-	if @AutoRemoveUserFromChildZone = 1
+	if @AutoRemoveMemberFromChildZone = 1
 	begin
 		-- Retrieves the parent hierarchical identifier.
 		declare @ParentHID hierarchyid;
 		select @ParentHID = z.HierarchicalId from CK.tZone z where z.ZoneId = @ZoneId;
-		-- Removes the user from child zones from deepest to direct children.
+		-- Removes the member from child zones from deepest to direct children.
 		declare @ChildZoneId int;
 		declare @CZone cursor;
 		set @CZone = cursor local fast_forward for 
@@ -24,7 +24,7 @@ begin
 		begin
 			if @ChildZoneId <> @ZoneId
 			begin
-				exec CK.sZoneUserRemove @ActorId, @ChildZoneId, @UserId, 0;
+				exec CK.sZoneMemberRemove @ActorId, @ChildZoneId, @MemberId, 0;
 			end
 			fetch next from @CZone into @ChildZoneId;
 		end
@@ -33,9 +33,9 @@ begin
 	into "PreZoneUserRemove";
 
 	-- This ensures that Zones are skipped while removing the
-	-- user from the zones's groups.
-	-- This enforces @AutoRemoveUserFromChildZone semantics and
-	-- avoids call recursion since sGroupMemberRemove calls sZoneUserRemove 
+	-- member from the zones's groups.
+	-- This enforces @AutoRemoveMemberFromChildZone semantics and
+	-- avoids call recursion since sGroupMemberRemove calls sZoneMemberRemove 
 	-- when the group is a zone.
 	in single statement {set @CGroup = cursor}
     begin

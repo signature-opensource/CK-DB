@@ -187,30 +187,19 @@ public class GroupTests
     }
 
     [Test]
-    public void sGroupMemberAdd_should_throw_when_adding_an_actor_that_is_not_a_user()
+    public void sGroupMemberAdd_should_throw_when_adding_an_actor_that_is_a_group()
     {
-        var groupTable = SharedEngine.Map.StObjs.Obtain<GroupTable>();
-        var actorTable = SharedEngine.Map.StObjs.Obtain<ActorTable>();
-        Debug.Assert( groupTable != null, nameof( groupTable ) + " != null" );
-        Debug.Assert( actorTable != null, nameof( actorTable ) + " != null" );
+        var groupTable = SharedEngine.Map.StObjs.Obtain<GroupTable>().ShouldNotBeNull();
+        var actorTable = SharedEngine.Map.StObjs.Obtain<ActorTable>().ShouldNotBeNull();
 
         using( var context = new SqlStandardCallContext() )
         {
             var groupId = groupTable.CreateGroup( context, 1 );
+            var actorThatIsAGroupId = groupTable.CreateGroup( context, 1 );
 
-            // Directly call the sActorCreate procedure: it is not exposed on the C# side
-            // since there is no point to call it... except from tests.
-            var cmd = new SqlCommand( "CK.sActorCreate" );
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.Add( "@ActorId", SqlDbType.Int ).Value = 1;
-            cmd.Parameters.Add( "@ActorIdResult", SqlDbType.Int ).Direction = ParameterDirection.Output;
-            actorTable.Database.ExecuteNonQuery( cmd );
-            var actorIdResult = Convert.ToInt32( cmd.Parameters["@ActorIdResult"].Value );
-
-            Util.Invokable( () => groupTable.AddMember( context, 1, groupId, actorIdResult ) )
-                      .ShouldThrow<SqlDetailedException>()
+            Should.Throw<SqlDetailedException>( () => groupTable.AddMember( context, 1, groupId, actorThatIsAGroupId ) )
                       .InnerException.ShouldBeOfType<SqlException>()
-                      .Message.ShouldBe( "User.NotAUser" );
+                      .Message.ShouldBe( "Group.GroupForbidden" );
         }
     }
 

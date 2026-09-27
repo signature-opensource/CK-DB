@@ -1,13 +1,13 @@
--- SetupConfig: { "AddRequires": [ "CK.sZoneUserRemove" ] }
+-- SetupConfig: { "AddRequires": [ "CK.sZoneMemberRemove" ] }
 create transformer on CK.sGroupMemberRemove
 as 
 begin
 	
 	inject "
-	-- if the group is actually a Zone, calls sZoneUserRemove
+	-- if the group is actually a Zone, calls sZoneMemberRemove
 	if exists( select * from CK.tZone where ZoneId = @GroupId )
 	begin
-		exec CK.sZoneUserRemove @ActorId, @GroupId, @UserId;
+		exec CK.sZoneMemberRemove @ActorId, @GroupId, @MemberId;
 	end
 	else
 	begin

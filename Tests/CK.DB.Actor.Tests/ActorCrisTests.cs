@@ -145,10 +145,10 @@ public class ActorCrisTests
             .Rows
             .ShouldNotBeEmpty();
 
-        var execClearCmd = await _exec.ExecuteRootCommandAsync( (IAbstractCommand)_pocoDir.Create<IClearUserGroupsCommand>( c =>
+        var execClearCmd = await _exec.ExecuteRootCommandAsync( (IAbstractCommand)_pocoDir.Create<IClearMemberGroupsCommand>( c =>
         {
             c.ActorId = 1;
-            c.UserId = userId;
+            c.MemberId = userId;
         } ) );
         var clearRes = execClearCmd.WithResult<ICrisBasicCommandResult>().Result;
         clearRes.ShouldNotBeNull();
@@ -256,7 +256,7 @@ public class ActorCrisTests
     {
         var groupId = await CreateGroupAsync();
 
-        var execCmd = await _exec.ExecuteRootCommandAsync( (IAbstractCommand)_pocoDir.Create<IRemoveAllUsersFromGroupCommand>( c =>
+        var execCmd = await _exec.ExecuteRootCommandAsync( (IAbstractCommand)_pocoDir.Create<IRemoveAllMembersFromGroupCommand>( c =>
         {
             c.ActorId = 1;
             c.GroupId = groupId;
@@ -271,11 +271,11 @@ public class ActorCrisTests
     {
         var groupId = await CreateGroupAsync();
         var userId = await CreateUserAsync();
-        var execCmd = await _exec.ExecuteRootCommandAsync( (IAbstractCommand)_pocoDir.Create<IAddUserToGroupCommand>( c =>
+        var execCmd = await _exec.ExecuteRootCommandAsync( (IAbstractCommand)_pocoDir.Create<IAddMemberToGroupCommand>( c =>
         {
             c.ActorId = 1;
             c.GroupId = groupId;
-            c.UserId = userId;
+            c.MemberId = userId;
         } ) );
         var execRes = execCmd.WithResult<ICrisBasicCommandResult>().Result;
         execRes.ShouldNotBeNull();
@@ -291,11 +291,11 @@ public class ActorCrisTests
         using var ctx = new SqlStandardCallContext();
         await _groupTable.AddMemberAsync( ctx, actorId: 1, groupId, userId );
 
-        var execCmd = await _exec.ExecuteRootCommandAsync( (IAbstractCommand)_pocoDir.Create<IRemoveUserFromGroupCommand>( c =>
+        var execCmd = await _exec.ExecuteRootCommandAsync( (IAbstractCommand)_pocoDir.Create<IRemoveMemberFromGroupCommand>( c =>
         {
             c.ActorId = 1;
             c.GroupId = groupId;
-            c.UserId = userId;
+            c.MemberId = userId;
         } ) );
         var execRes = execCmd.WithResult<ICrisBasicCommandResult>().Result;
         execRes.ShouldNotBeNull();

@@ -1,25 +1,25 @@
 -- SetupConfig: {}
-create transformer on CK.sZoneUserAdd
+create transformer on CK.sZoneMemberAdd
 as
 begin
-	add parameter @AutoAddUserInParentZone bit = 0;
+	add parameter @AutoAddMemberInParentZone bit = 0;
 
 	inject "
 		declare @ZoneHID hierarchyid;
 		select @ZoneHID = z.HierarchicalId from CK.tZone z where z.ZoneId = @ZoneId;
 
-		declare @Parents table( ZoneId int not null, Depth int not null, HasUser int not null);
+		declare @Parents table( ZoneId int not null, Depth int not null, HasMember int not null);
 		insert into @Parents
 			select	z.ZoneId, 
 					z.HierarchicalId.GetLevel(),
-					case when exists(select * from CK.tActorProfile a where a.GroupId = z.ZoneId and a.ActorId = @UserId) then 1 else 0 end
+					case when exists(select * from CK.tActorProfile a where a.GroupId = z.ZoneId and a.ActorId = @MemberId) then 1 else 0 end
 				from CK.tZone z with(serializable)
 				where z.ZoneId > 0 and z.ZoneId <> @ZoneId and @ZoneHID.IsDescendantOf( z.HierarchicalId ) = 1
 				order by z.HierarchicalId.GetLevel() asc;
 
-		if exists( select * from @Parents where HasUser = 0 )
+		if exists( select * from @Parents where HasMember = 0 )
 		begin
-			if @AutoAddUserInParentZone = 0
+			if @AutoAddMemberInParentZone = 0
 			begin
 				;throw 50000, 'Zone.UserNotInParentZone', 1;
 			end
@@ -28,12 +28,12 @@ begin
 				declare @ParentZoneId int;
 				declare @CParentZone cursor;
 				set @CParentZone = cursor local fast_forward for 
-					select ZoneId from @Parents where HasUser = 0 order by Depth;
+					select ZoneId from @Parents where HasMember = 0 order by Depth;
 				open @CParentZone;
 				fetch from @CParentZone into @ParentZoneId;
 				while @@FETCH_STATUS = 0
 				begin
-					exec CK.sZoneUserAdd @ActorId, @ParentZoneId, @UserId, 1;
+					exec CK.sZoneMemberAdd @ActorId, @ParentZoneId, @MemberId, 1;
 					fetch next from @CParentZone into @ParentZoneId;
 				end
 				deallocate @CParentZone;

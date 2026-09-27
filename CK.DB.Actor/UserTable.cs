@@ -138,20 +138,20 @@ public abstract partial class UserTable : SqlTable
     public abstract Task<ICrisBasicCommandResult> DestroyUserAsync( ISqlCallContext ctx, [ParameterSource] IDestroyUserCommand command );
 
     /// <summary>
-    /// Removes a user from all the Groups it belongs to.
+    /// Removes a user member all the Groups it belongs to.
     /// </summary>
     /// <param name="ctx">The call context.</param>
     /// <param name="actorId">The acting actor identifier.</param>
-    /// <param name="userId">The user identifier that must be removed from all its groups.</param>
-    /// <returns>True if user was successfully removed from all groups, false otherwise.</returns>
+    /// <param name="memberId">The member identifier that must be removed from all its groups.</param>
+    /// <returns>The awaitable.</returns>
     [SqlProcedure( "CK.sMemberRemoveFromAllGroups" )]
-    public abstract Task RemoveFromAllGroupsAsync( ISqlCallContext ctx, int actorId, int userId );
+    public abstract Task RemoveFromAllGroupsAsync( ISqlCallContext ctx, int actorId, int memberId );
 
     /// <summary>
     /// Removes a user from all the Groups it belongs to.
     /// </summary>
     /// <param name="ctx">The call context.</param>
-    /// <param name="command">The incoming <see cref="IClearUserGroupsCommand"/> command.</param>
+    /// <param name="command">The incoming <see cref="IClearMemberGroupsCommand"/> command.</param>
     /// <returns>
     /// A <see cref="ICrisBasicCommandResult"/>.
     /// <para>
@@ -160,7 +160,7 @@ public abstract partial class UserTable : SqlTable
     /// </returns>
     [CommandHandler]
     [SqlProcedure( "CK.sMemberRemoveFromAllGroups" )]
-    public abstract Task<ICrisBasicCommandResult> RemoveFromAllGroupsAsync( ISqlCallContext ctx, [ParameterSource] IClearUserGroupsCommand command );
+    public abstract Task<ICrisBasicCommandResult> RemoveFromAllGroupsAsync( ISqlCallContext ctx, [ParameterSource] IClearMemberGroupsCommand command );
 
     /// <summary>
     /// Finds the user identifier given its user name.

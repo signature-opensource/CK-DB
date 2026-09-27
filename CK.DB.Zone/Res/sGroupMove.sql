@@ -45,7 +45,7 @@ begin
 				end
 				else
 				begin -- 2 - AutoUserRegistration
-					exec CK.sZoneUserAdd @ActorId, @NewZoneId, @ExtraUserIdInZone;
+					exec CK.sZoneMemberAdd @ActorId, @NewZoneId, @ExtraUserIdInZone;
 				end
 				fetch next from @CUserToRemove into @ExtraUserIdInZone;
 			end

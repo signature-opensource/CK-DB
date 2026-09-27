@@ -1,12 +1,12 @@
 -- SetupConfig: {}
 --
--- Adds a User to a Zone.
+-- Adds a User or another kinf of Actor to a Zone (but not a Group).
 --
-alter procedure CK.sZoneUserAdd 
+alter procedure CK.sZoneMemberAdd 
 (
 	@ActorId int,
 	@ZoneId int,
-	@UserId int
+	@MemberId int
 )
 as begin
     if @ActorId <= 0 throw 50000, 'Security.AnonymousNotAllowed', 1;
@@ -15,15 +15,15 @@ as begin
 	if not exists (select * from CK.tZone where ZoneId = @ZoneId) throw 50000, 'Zone.InvalidId', 1;
 
 	-- System is, somehow, already in all groups.
-    if @UserId = 1 return 0;
+    if @MemberId = 1 return 0;
 
 	--[beginsp]
 
 
 	-- The user must not be already in the zone...
-	if @ZoneId <> @UserId and not exists (select * from CK.tActorProfile where GroupId = @ZoneId and ActorId = @UserId)
+	if @ZoneId <> @MemberId and not exists (select * from CK.tActorProfile where GroupId = @ZoneId and ActorId = @MemberId)
 	begin
-		-- ...and if this is the System Zone, only members of it can add Users.
+		-- ...and if this is the System Zone, only members of it can add members.
 		if @ZoneId = 1 
 		begin
 			if not exists( select 1 from CK.tActorProfile p where p.GroupId = 1 and p.ActorId = @ActorId ) 
@@ -34,7 +34,7 @@ as begin
 
 		--<PreZoneUserAdd revert />
 
-		insert into CK.tActorProfile( ActorId, GroupId ) values( @UserId, @ZoneId );
+		insert into CK.tActorProfile( ActorId, GroupId ) values( @MemberId, @ZoneId );
 
 		--<PostZoneUserAdd />
 	end

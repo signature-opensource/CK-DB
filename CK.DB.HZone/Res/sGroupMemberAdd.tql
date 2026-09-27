@@ -1,0 +1,10 @@
+-- SetupConfig: {}
+create transformer on CK.sGroupMemberAdd
+as
+begin
+	in all 2 statement {exec CK.sZoneMemberAdd}
+	begin
+		replace all 2 {@MemberId} with "@MemberId, @AutoAddMemberInZone";
+	end
+end
+

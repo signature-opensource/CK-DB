@@ -36,31 +36,31 @@ public abstract partial class ZoneTable : CK.DB.Zone.ZoneTable
     public abstract Task DestroyZoneAsync( ISqlCallContext ctx, int actorId, int zoneId, bool forceDestroy = false, bool? destroySubZone = null );
 
     /// <summary>
-    /// Registers a user in a Zone: the user can then be added to groups of the zone.
+    /// Registers a User or another kind of Actor (but not a Group) in a Zone: the member can then be added to groups of the zone.
     /// </summary>
     /// <param name="ctx">The call context.</param>
     /// <param name="actorId">The acting actor identifier.</param>
     /// <param name="zoneId">The Zone identifier into which the user must be added.</param>
-    /// <param name="userId">The user identifier to add.</param>
-    /// <param name="autoAddUserInParentZone">True to automatically add the user to its parent zones.</param>
+    /// <param name="memberId">The member identifier to add.</param>
+    /// <param name="autoAddMemberInParentZone">True to automatically add the member to its parent zones.</param>
     /// <returns>The awaitable.</returns>
-    [SqlProcedure( "transform:CK.sZoneUserAdd" )]
-    public abstract Task AddUserAsync( ISqlCallContext ctx, int actorId, int zoneId, int userId, bool autoAddUserInParentZone = false );
+    [SqlProcedure( "transform:CK.sZoneMemberAdd" )]
+    public abstract Task AddMemberAsync( ISqlCallContext ctx, int actorId, int zoneId, int memberId, bool autoAddMemberInParentZone = false );
 
     /// <summary>
-    /// Removes a user from a Zone.
+    /// Removes a member from a Zone.
     /// </summary>
     /// <param name="ctx">The call context.</param>
     /// <param name="actorId">The acting actor identifier.</param>
-    /// <param name="zoneId">The Zone identifier from which the user must be removed.</param>
-    /// <param name="userId">The user identifier to remove.</param>
-    /// <param name="autoRemoveUserFromChildZone">
-    /// True to automatically remove the user from any child zones.
-    /// False will raise an error if the user is registered in child zones.
+    /// <param name="zoneId">The Zone identifier from which the member must be removed.</param>
+    /// <param name="memberId">The member identifier to remove.</param>
+    /// <param name="autoRemoveMemberFromChildZone">
+    /// True to automatically remove the member from any child zones.
+    /// False will raise an error if the member is registered in child zones.
     /// </param>
     /// <returns>The awaitable.</returns>
-    [SqlProcedure( "transform:sZoneUserRemove" )]
-    public abstract Task RemoveUserAsync( ISqlCallContext ctx, int actorId, int zoneId, int userId, bool autoRemoveUserFromChildZone = true );
+    [SqlProcedure( "transform:sZoneMemberRemove" )]
+    public abstract Task RemoveMemberAsync( ISqlCallContext ctx, int actorId, int zoneId, int memberId, bool autoRemoveMemberFromChildZone = true );
 
     /// <summary>
     /// Moves a Zone to another parent zone.

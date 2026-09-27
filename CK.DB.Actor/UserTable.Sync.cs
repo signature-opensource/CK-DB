@@ -24,7 +24,7 @@ public abstract partial class UserTable : SqlTable
     /// <param name="userId">The user identifier to update.</param>
     /// <param name="userName">The user name (must be unique otherwise false is returned).</param>
     /// <returns>True on success, false if the new name already exists.</returns>
-    [SqlProcedure( "sUserUserNameSet" )]
+    [SqlProcedure( "CK.sUserUserNameSet" )]
     public abstract bool UserNameSet( ISqlCallContext ctx, int actorId, int userId, string userName );
 
     /// <summary>
@@ -33,17 +33,17 @@ public abstract partial class UserTable : SqlTable
     /// <param name="ctx">The call context.</param>
     /// <param name="actorId">The acting actor identifier.</param>
     /// <param name="userId">The user identifier to destroy.</param>
-    [SqlProcedure( "sUserDestroy" )]
+    [SqlProcedure( "CK.sUserDestroy" )]
     public abstract void DestroyUser( ISqlCallContext ctx, int actorId, int userId );
 
     /// <summary>
-    /// Removes a user from all the Groups it belongs to.
+    /// Removes a member from all the Groups it belongs to.
     /// </summary>
     /// <param name="ctx">The call context.</param>
     /// <param name="actorId">The acting actor identifier.</param>
-    /// <param name="userId">The user identifier that must be removed from all its groups.</param>
-    [SqlProcedure( "sMemberRemoveFromAllGroups" )]
-    public abstract void RemoveFromAllGroups( ISqlCallContext ctx, int actorId, int userId );
+    /// <param name="memberId">The member identifier that must be removed from all its groups.</param>
+    [SqlProcedure( "CK.sMemberRemoveFromAllGroups" )]
+    public abstract void RemoveFromAllGroups( ISqlCallContext ctx, int actorId, int memberId );
 
     /// <summary>
     /// Finds the user identifier given its user name.

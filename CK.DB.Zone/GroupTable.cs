@@ -39,17 +39,17 @@ public abstract partial class GroupTable : Actor.GroupTable
     public abstract Task<int> CreateGroupAsync( ISqlCallContext ctx, int actorId, int zoneId );
 
     /// <summary>
-    /// Adds a user to a group: this user must have been registered in the zone
-    /// unless <paramref name="autoAddUserInZone"/> is true.
+    /// Adds a member to a group: this member must have been registered in the zone
+    /// unless <paramref name="autoAddMemberInZone"/> is true.
     /// </summary>
     /// <param name="ctx">The call context.</param>
     /// <param name="actorId">The acting actor identifier.</param>
     /// <param name="groupId">The group identifier.</param>
-    /// <param name="userId">The user identifier to add.</param>
-    /// <param name="autoAddUserInZone">
-    /// True to automatically register the user in the group's zone.</param>
+    /// <param name="memberId">The user identifier to add.</param>
+    /// <param name="autoAddMemberInZone">
+    /// True to automatically register the member in the group's zone.</param>
     /// <returns>The awaitable.</returns>
     [SqlProcedure( "transform:sGroupMemberAdd" )]
-    public abstract Task AddMemberAsync( ISqlCallContext ctx, int actorId, int groupId, int userId, bool autoAddUserInZone = false );
+    public abstract Task AddMemberAsync( ISqlCallContext ctx, int actorId, int groupId, int memberId, bool autoAddMemberInZone = false );
 
 }

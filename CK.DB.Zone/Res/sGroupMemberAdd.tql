@@ -1,0 +1,49 @@
+-- SetupConfig: { "AddRequires": [ "CK.sZoneMemberAdd" ] }
+
+create transformer on CK.sGroupMemberAdd
+as
+begin
+	add parameter @AutoAddMemberInZone bit = 0;
+
+	inject "
+		-- if the group is actually a Zone, calls sZoneMemberAdd
+		if exists( select * from CK.tZone where ZoneId = @GroupId )
+		begin
+			exec CK.sZoneMemberAdd @ActorId, @GroupId, @MemberId;
+		end
+		else
+		begin 
+	" 
+	before single "--<PreUserAdd";
+	
+	inject "
+			declare @ZoneId int;		
+			declare @IsMemberInZone bit;		
+			-- Gets the Zone of the group and whether the member is registered in the Zone.
+			-- When the Group.ZoneId is 0, we considered it registered (this supports ""unzoned"" Groups
+			-- without requiring to store all [0,UserId] in tActorProfile).
+			select @ZoneId = g.ZoneId, @IsMemberInZone = case when a.GroupId is null then 0 else 1 end
+					from CK.tGroup g
+					left outer join CK.tActorProfile a on a.GroupId = g.ZoneId and (g.ZoneId = 0 or a.ActorId = @MemberId)
+					where g.GroupId = @GroupId;
+		
+			if @IsMemberInZone = 0 
+			begin
+				if @AutoAddMemberInZone = 1
+				begin
+					exec CK.sZoneMemberAdd @ActorId, @ZoneId, @MemberId;
+				end
+				else
+				begin
+					;throw 50000, 'Group.UserNotInZone', 1;
+				end
+			end	" 
+	into "PreUserAdd";
+
+	inject "
+		end 
+	" 
+	after single "--<PostUserAdd";
+
+end
+

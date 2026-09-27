@@ -32,8 +32,8 @@ public class ZoneSameBehaviorTests
             int idZoneEmpty = z.CreateZone( ctx, 1 );
             int idZoneOK = z.CreateZone( ctx, 1 );
 
-            z.AddUser( ctx, 1, idSubZone, idUser );
-            z.AddUser( ctx, 1, idZoneOK, idUser );
+            z.AddMember( ctx, 1, idSubZone, idUser );
+            z.AddMember( ctx, 1, idZoneOK, idUser );
             // This works since the user is in the zoneOK.
             z.MoveZone( ctx, 1, idSubZone, idZoneOK );
             // User is in the Group and in the ZoneOK.
@@ -67,8 +67,8 @@ public class ZoneSameBehaviorTests
             int idZoneEmpty = z.CreateZone( ctx, 1 );
             int idZoneOK = z.CreateZone( ctx, 1 );
 
-            z.AddUser( ctx, 1, idSubZone, idUser );
-            z.AddUser( ctx, 1, idZoneOK, idUser );
+            z.AddMember( ctx, 1, idSubZone, idUser );
+            z.AddMember( ctx, 1, idZoneOK, idUser );
             // This works since the user is in the zoneOK (Intersect does nothing).
             z.MoveZone( ctx, 1, idSubZone, idZoneOK, Zone.GroupMoveOption.Intersect );
             // User is in the Group and in the ZoneOK.
@@ -102,8 +102,8 @@ public class ZoneSameBehaviorTests
             int idZoneEmpty = z.CreateZone( ctx, 1 );
             int idZoneOK = z.CreateZone( ctx, 1 );
 
-            z.AddUser( ctx, 1, idSubZone, idUser );
-            z.AddUser( ctx, 1, idZoneOK, idUser );
+            z.AddMember( ctx, 1, idSubZone, idUser );
+            z.AddMember( ctx, 1, idZoneOK, idUser );
             // This works since the user is in the zoneOK (Intersect does nothing).
             z.MoveZone( ctx, 1, idSubZone, idZoneOK, Zone.GroupMoveOption.AutoUserRegistration );
             // User is in the Group and in the ZoneOK.

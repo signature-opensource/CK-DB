@@ -60,7 +60,7 @@ public class ZoneTests
             int groupId2 = g.CreateGroup( ctx, zoneId );
 
             int userId = u.CreateUser( ctx, 1, Guid.NewGuid().ToString( "N" ) );
-            t.AddUser( ctx, 1, zoneId, userId );
+            t.AddMember( ctx, 1, zoneId, userId );
             g.AddMember( ctx, 1, groupId1, userId );
             g.AddMember( ctx, 1, groupId2, userId );
 
@@ -99,11 +99,11 @@ public class ZoneTests
 
             Util.Invokable( () => p.GroupTable.AddMember( ctx, 1, groupId, userId ) ).ShouldThrow<SqlDetailedException>();
 
-            Util.Invokable( () => p.ZoneTable.AddUser( ctx, 1, zoneId, userId ) ).ShouldNotThrow( "Adding the user to the zone." );
+            Util.Invokable( () => p.ZoneTable.AddMember( ctx, 1, zoneId, userId ) ).ShouldNotThrow( "Adding the user to the zone." );
             Util.Invokable( () => p.GroupTable.AddMember( ctx, 1, groupId, userId ) ).ShouldNotThrow( "Adding the user to group: now it works." );
 
             Util.Invokable( () => p.GroupTable.AddMember( ctx, 1, groupId, userId ) ).ShouldNotThrow( "If the user already exists in the zone, it is okay." );
-            Util.Invokable( () => p.ZoneTable.AddUser( ctx, 1, zoneId, userId ) ).ShouldNotThrow( "Just like Groups: adding an already existing user to a Zone is okay." );
+            Util.Invokable( () => p.ZoneTable.AddMember( ctx, 1, zoneId, userId ) ).ShouldNotThrow( "Just like Groups: adding an already existing user to a Zone is okay." );
 
             p.ZoneTable.DestroyZone( ctx, 1, zoneId, true );
         }
@@ -139,7 +139,7 @@ public class ZoneTests
             int groupId1 = p.GroupTable.CreateGroup( ctx, 1, zoneId );
             int groupId2 = p.GroupTable.CreateGroup( ctx, 1, zoneId );
 
-            p.ZoneTable.AddUser( ctx, 1, zoneId, userId );
+            p.ZoneTable.AddMember( ctx, 1, zoneId, userId );
             p.GroupTable.AddMember( ctx, 1, groupId1, userId );
             p.GroupTable.AddMember( ctx, 1, groupId2, userId );
 
@@ -216,7 +216,7 @@ public class ZoneTests
             int idZoneOK = z.CreateZone( ctx, 1 );
 
             g.AddMember( ctx, 1, idGroup, idUser );
-            z.AddUser( ctx, 1, idZoneOK, idUser );
+            z.AddMember( ctx, 1, idZoneOK, idUser );
             // This works since the user is in the zoneOK.
             g.MoveGroup( ctx, 1, idGroup, idZoneOK );
             // User is in the Group and in the ZoneOK.
@@ -252,7 +252,7 @@ public class ZoneTests
             int idZoneOK = z.CreateZone( ctx, 1 );
 
             g.AddMember( ctx, 1, idGroup, idUser );
-            z.AddUser( ctx, 1, idZoneOK, idUser );
+            z.AddMember( ctx, 1, idZoneOK, idUser );
             // This works since the user is in the zoneOK (Intersect does nothing).
             g.MoveGroup( ctx, 1, idGroup, idZoneOK, GroupMoveOption.Intersect );
             // User is in the Group and in the ZoneOK.
@@ -288,7 +288,7 @@ public class ZoneTests
             int idZoneOK = z.CreateZone( ctx, 1 );
 
             g.AddMember( ctx, 1, idGroup, idUser );
-            z.AddUser( ctx, 1, idZoneOK, idUser );
+            z.AddMember( ctx, 1, idZoneOK, idUser );
             // This works since the user is in the zoneOK (Intersect does nothing).
             g.MoveGroup( ctx, 1, idGroup, idZoneOK, GroupMoveOption.AutoUserRegistration );
             // User is in the Group and in the ZoneOK.

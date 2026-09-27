@@ -1,20 +1,20 @@
 -- SetupConfig: {}
 --
--- Removes a User from a Zone.
+-- Removes a member from a Zone.
 --
-alter procedure CK.sZoneUserRemove
+alter procedure CK.sZoneMemberRemove
 (
 	@ActorId int,
 	@ZoneId int,
-	@UserId int
+	@MemberId int
 )
 as begin
     if @ActorId <= 0 throw 50000, 'Security.AnonymousNotAllowed', 1;
 
 	--[beginsp]
 
-	-- The user must be in the Zone...
-	if @ZoneId <> @UserId and exists (select * from CK.tActorProfile where GroupId = @ZoneId and ActorId = @UserId)
+	-- The member must be in the Zone...
+	if @ZoneId <> @MemberId and exists (select * from CK.tActorProfile where GroupId = @ZoneId and ActorId = @MemberId)
 	begin
 		-- ...and if this is the System Zone, only members of it can remove Users.
 		if @ZoneId = 1 
@@ -29,24 +29,24 @@ as begin
 
 		--<PreZoneUserRemove revert />
 
-		-- Removes the user from all the groups of the security Zone.
+		-- Removes the member from all the groups of the security Zone.
 		declare @GroupId int;
 		declare @CGroup cursor;
 		set @CGroup = cursor local fast_forward for 
 			select a.GroupId
 				from CK.tActorProfile a
 				inner join CK.tGroup g on g.GroupId = a.GroupId
-				where g.ZoneId = @ZoneId and a.ActorId = @UserId and a.GroupId <> @ZoneId;
+				where g.ZoneId = @ZoneId and a.ActorId = @MemberId and a.GroupId <> @ZoneId;
 		open @CGroup;
 		fetch from @CGroup into @GroupId;
 		while @@FETCH_STATUS = 0
 		begin
-			exec CK.sGroupMemberRemove @ActorId, @GroupId, @UserId;
+			exec CK.sGroupMemberRemove @ActorId, @GroupId, @MemberId;
 			fetch next from @CGroup into @GroupId;
 		end
 		deallocate @CGroup;
 
-		delete from CK.tActorProfile where GroupId = @ZoneId and ActorId = @UserId;
+		delete from CK.tActorProfile where GroupId = @ZoneId and ActorId = @MemberId;
 
 		--<PostZoneUserRemove />
 	end

@@ -1,12 +1,12 @@
 -- SetupConfig: {}
 --
--- Removes a User from a Group.
+-- Removes a member from a Group.
 --
 create procedure CK.sGroupMemberRemove
 (
 	@ActorId int,
 	@GroupId int,
-	@UserId int
+	@MemberId int
 )
 as begin
     if @ActorId <= 0 throw 50000, 'Security.AnonymousNotAllowed', 1;
@@ -14,7 +14,7 @@ as begin
 
 	--[beginsp]
 
-	if @GroupId <> @UserId and exists (select * from CK.tActorProfile where GroupId = @GroupId and ActorId = @UserId)
+	if @GroupId <> @MemberId and exists (select * from CK.tActorProfile where GroupId = @GroupId and ActorId = @MemberId)
 	begin
 		-- If this is the System Group, only members of it can remove Users.
 		if @GroupId = 1 
@@ -27,7 +27,7 @@ as begin
 
 		--<PreUserRemove revert />
 
-		delete from CK.tActorProfile where GroupId = @GroupId and ActorId = @UserId;
+		delete from CK.tActorProfile where GroupId = @GroupId and ActorId = @MemberId;
 		
 		--<PostUserRemove />
 	end

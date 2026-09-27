@@ -27,15 +27,15 @@ public abstract partial class GroupTable
     public abstract int CreateGroup( ISqlCallContext ctx, int actorId, int zoneId );
 
     /// <summary>
-    /// Adds a user to a group: this user must have been registered in the zone
-    /// unless <paramref name="autoAddUserInZone"/> is true.
+    /// Adds a member to a group: this member must have been registered in the zone
+    /// unless <paramref name="autoAddMemberInZone"/> is true.
     /// </summary>
     /// <param name="ctx">The call context.</param>
     /// <param name="actorId">The acting actor identifier.</param>
     /// <param name="groupId">The group identifier.</param>
-    /// <param name="userId">The user identifier to add.</param>
-    /// <param name="autoAddUserInZone">
+    /// <param name="memberId">The member identifier to add.</param>
+    /// <param name="autoAddMemberInZone">
     /// True to automatically register the user in the group's zone.</param>
     [SqlProcedure( "transform:sGroupMemberAdd" )]
-    public abstract void AddMember( ISqlCallContext ctx, int actorId, int groupId, int userId, bool autoAddUserInZone = false );
+    public abstract void AddMember( ISqlCallContext ctx, int actorId, int groupId, int memberId, bool autoAddMemberInZone = false );
 }
