@@ -1,4 +1,5 @@
 using CK.Core;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CK.DB.Res;
 
@@ -12,5 +13,6 @@ public class Package : SqlPackage
     /// Gets the CK.tRes table from this package.
     /// </summary>
     [InjectObject]
+    [AllowNull]
     public ResTable ResTable { get; protected set; }
 }

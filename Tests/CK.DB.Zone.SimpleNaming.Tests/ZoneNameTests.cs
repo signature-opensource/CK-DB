@@ -14,9 +14,9 @@ public class ZoneNameTests
     public void groups_with_the_same_name_can_exist_in_different_zones()
     {
         var map = SharedEngine.Map;
-        var z = map.StObjs.Obtain<ZoneTable>();
-        var g = map.StObjs.Obtain<GroupTable>();
-        var gN = map.StObjs.Obtain<SimpleNaming.Package>();
+        var z = map.StObjs.Obtain<ZoneTable>().ShouldNotBeNull();
+        var g = map.StObjs.Obtain<GroupTable>().ShouldNotBeNull();
+        var gN = map.StObjs.Obtain<SimpleNaming.Package>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             // We test the 0 zone, we need a unique name
@@ -41,9 +41,9 @@ public class ZoneNameTests
     public void when_groups_are_moved_name_clash_are_automatically_handled()
     {
         var map = SharedEngine.Map;
-        var z = map.StObjs.Obtain<ZoneTable>();
-        var g = map.StObjs.Obtain<GroupTable>();
-        var gN = map.StObjs.Obtain<SimpleNaming.Package>();
+        var z = map.StObjs.Obtain<ZoneTable>().ShouldNotBeNull();
+        var g = map.StObjs.Obtain<GroupTable>().ShouldNotBeNull();
+        var gN = map.StObjs.Obtain<SimpleNaming.Package>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             int idZone1 = z.CreateZone( ctx, 1 );

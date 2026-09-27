@@ -13,6 +13,6 @@ public abstract partial class ResHtmlTable : SqlTable
     /// <param name="resId">The resource identifier.</param>
     /// <param name="value">The new html string value.</param>
     [SqlProcedure( "sResHtmlSet" )]
-    public abstract void SetHtml( ISqlCallContext ctx, int resId, string value );
+    public abstract void SetHtml( ISqlCallContext ctx, int resId, string? value );
 
 }

@@ -18,8 +18,8 @@ public sealed class ClashGroupNameTests
     public void create_group_with_custom_pattern( string patternBefore, string patternAfter )
     {
         var map = SharedEngine.Map;
-        var g = map.StObjs.Obtain<GroupTable>();
-        var gN = map.StObjs.Obtain<SimpleNaming.Package>();
+        var g = map.StObjs.Obtain<GroupTable>().ShouldNotBeNull();
+        var gN = map.StObjs.Obtain<SimpleNaming.Package>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             string theGroupName = Guid.NewGuid().ToString();

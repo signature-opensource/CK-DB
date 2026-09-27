@@ -17,9 +17,9 @@ public class UserGoogleTests
     [Test]
     public void create_Google_user_and_check_read_info_object_method()
     {
-        var u = SharedEngine.Map.StObjs.Obtain<UserGoogleTable>();
-        var user = SharedEngine.Map.StObjs.Obtain<UserTable>();
-        var infoFactory = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserGoogleInfo>>();
+        var u = SharedEngine.Map.StObjs.Obtain<UserGoogleTable>().ShouldNotBeNull();
+        var user = SharedEngine.Map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
+        var infoFactory = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserGoogleInfo>>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             var userName = Guid.NewGuid().ToString();
@@ -30,7 +30,7 @@ public class UserGoogleTests
             info.GoogleAccountId = googleAccountId;
             var created = u.CreateOrUpdateGoogleUser( ctx, 1, userId, info );
             created.OperationResult.ShouldBe( UCResult.Created );
-            var info2 = u.FindKnownUserInfo( ctx, googleAccountId );
+            var info2 = u.FindKnownUserInfo( ctx, googleAccountId ).ShouldNotBeNull();
 
             info2.UserId.ShouldBe( userId );
             info2.Info.GoogleAccountId.ShouldBe( googleAccountId );
@@ -44,9 +44,9 @@ public class UserGoogleTests
     [Test]
     public async Task create_Google_user_and_check_read_info_object_method_Async()
     {
-        var u = SharedEngine.Map.StObjs.Obtain<UserGoogleTable>();
-        var user = SharedEngine.Map.StObjs.Obtain<UserTable>();
-        var infoFactory = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserGoogleInfo>>();
+        var u = SharedEngine.Map.StObjs.Obtain<UserGoogleTable>().ShouldNotBeNull();
+        var user = SharedEngine.Map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
+        var infoFactory = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserGoogleInfo>>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             var userName = Guid.NewGuid().ToString();
@@ -57,7 +57,7 @@ public class UserGoogleTests
             info.GoogleAccountId = googleAccountId;
             var created = await u.CreateOrUpdateGoogleUserAsync( ctx, 1, userId, info );
             created.OperationResult.ShouldBe( UCResult.Created );
-            var info2 = await u.FindKnownUserInfoAsync( ctx, googleAccountId );
+            var info2 = (await u.FindKnownUserInfoAsync( ctx, googleAccountId )).ShouldNotBeNull();
 
             info2.UserId.ShouldBe( userId );
             info2.Info.GoogleAccountId.ShouldBe( googleAccountId );
@@ -77,14 +77,14 @@ public class UserGoogleTests
     [Test]
     public void vUserAuthProvider_reflects_the_user_Google_authentication()
     {
-        var u = SharedEngine.Map.StObjs.Obtain<UserGoogleTable>();
-        var user = SharedEngine.Map.StObjs.Obtain<UserTable>();
+        var u = SharedEngine.Map.StObjs.Obtain<UserGoogleTable>().ShouldNotBeNull();
+        var user = SharedEngine.Map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             string userName = "Google auth - " + Guid.NewGuid().ToString();
             var googleAccountId = Guid.NewGuid().ToString( "N" );
             var idU = user.CreateUser( ctx, 1, userName );
-            u.Database.ExecuteReader( $"select * from CK.vUserAuthProvider where UserId={idU} and Scheme='Google'" )
+            u.Database.ExecuteReader( $"select * from CK.vUserAuthProvider where UserId={idU} and Scheme='Google'" ).ShouldNotBeNull()
                 .Rows.ShouldBeEmpty();
             var info = u.CreateUserInfo<IUserGoogleInfo>();
             info.GoogleAccountId = googleAccountId;
@@ -92,7 +92,7 @@ public class UserGoogleTests
             u.Database.ExecuteScalar( $"select count(*) from CK.vUserAuthProvider where UserId={idU} and Scheme='Google'" )
                 .ShouldBe( 1 );
             u.DestroyGoogleUser( ctx, 1, idU );
-            u.Database.ExecuteReader( $"select * from CK.vUserAuthProvider where UserId={idU} and Scheme='Google'" )
+            u.Database.ExecuteReader( $"select * from CK.vUserAuthProvider where UserId={idU} and Scheme='Google'" ).ShouldNotBeNull()
                 .Rows.ShouldBeEmpty();
         }
     }
@@ -100,9 +100,9 @@ public class UserGoogleTests
     [Test]
     public void standard_generic_tests_for_Google_provider()
     {
-        var auth = SharedEngine.Map.StObjs.Obtain<Auth.Package>();
+        var auth = SharedEngine.Map.StObjs.Obtain<Auth.Package>().ShouldNotBeNull();
         // With IUserGoogleInfo POCO.
-        var f = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserGoogleInfo>>();
+        var f = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserGoogleInfo>>().ShouldNotBeNull();
         CK.DB.Auth.Tests.AuthTests.StandardTestForGenericAuthenticationProvider(
             auth,
             "Google",
@@ -132,8 +132,8 @@ public class UserGoogleTests
     [Test]
     public async Task standard_generic_tests_for_Google_provider_Async()
     {
-        var auth = SharedEngine.Map.StObjs.Obtain<Auth.Package>();
-        var f = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserGoogleInfo>>();
+        var auth = SharedEngine.Map.StObjs.Obtain<Auth.Package>().ShouldNotBeNull();
+        var f = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserGoogleInfo>>().ShouldNotBeNull();
         f.ShouldNotBeNull( "IPocoFactory<IUserGoogleInfo> cannot be obtained." );
         await Auth.Tests.AuthTests.StandardTestForGenericAuthenticationProviderAsync(
             auth,

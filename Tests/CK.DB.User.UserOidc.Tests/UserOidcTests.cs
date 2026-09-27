@@ -18,9 +18,9 @@ public class UserOidcTests
     [TestCase( "IdSrv" )]
     public void create_Oidc_user_and_check_read_info_object_method( string schemeSuffix )
     {
-        var u = SharedEngine.Map.StObjs.Obtain<UserOidcTable>();
-        var user = SharedEngine.Map.StObjs.Obtain<UserTable>();
-        var infoFactory = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserOidcInfo>>();
+        var u = SharedEngine.Map.StObjs.Obtain<UserOidcTable>().ShouldNotBeNull();
+        var user = SharedEngine.Map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
+        var infoFactory = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserOidcInfo>>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             var userName = Guid.NewGuid().ToString();
@@ -32,7 +32,7 @@ public class UserOidcTests
             info.Sub = sub;
             var created = u.CreateOrUpdateOidcUser( ctx, 1, userId, info );
             created.OperationResult.ShouldBe( UCResult.Created );
-            var info2 = u.FindKnownUserInfo( ctx, schemeSuffix, sub );
+            var info2 = u.FindKnownUserInfo( ctx, schemeSuffix, sub ).ShouldNotBeNull();
 
             info2.UserId.ShouldBe( userId );
             info2.Info.SchemeSuffix.ShouldBe( schemeSuffix );
@@ -48,9 +48,9 @@ public class UserOidcTests
     [TestCase( "IdSrv" )]
     public async Task create_Oidc_user_and_check_read_info_object_method_Async( string schemeSuffix )
     {
-        var u = SharedEngine.Map.StObjs.Obtain<UserOidcTable>();
-        var user = SharedEngine.Map.StObjs.Obtain<UserTable>();
-        var infoFactory = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserOidcInfo>>();
+        var u = SharedEngine.Map.StObjs.Obtain<UserOidcTable>().ShouldNotBeNull();
+        var user = SharedEngine.Map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
+        var infoFactory = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserOidcInfo>>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             var userName = Guid.NewGuid().ToString();
@@ -62,7 +62,7 @@ public class UserOidcTests
             info.Sub = sub;
             var created = await u.CreateOrUpdateOidcUserAsync( ctx, 1, userId, info );
             created.OperationResult.ShouldBe( UCResult.Created );
-            var info2 = await u.FindKnownUserInfoAsync( ctx, schemeSuffix, sub );
+            var info2 = (await u.FindKnownUserInfoAsync( ctx, schemeSuffix, sub )).ShouldNotBeNull();
 
             info2.UserId.ShouldBe( userId );
             info2.Info.SchemeSuffix.ShouldBe( schemeSuffix );
@@ -85,14 +85,14 @@ public class UserOidcTests
     public void vUserAuthProvider_reflects_the_user_Oidc_authentication( string schemeSuffix )
     {
         string scheme = schemeSuffix.Length > 0 ? "Oidc." + schemeSuffix : "Oidc";
-        var u = SharedEngine.Map.StObjs.Obtain<UserOidcTable>();
-        var user = SharedEngine.Map.StObjs.Obtain<UserTable>();
+        var u = SharedEngine.Map.StObjs.Obtain<UserOidcTable>().ShouldNotBeNull();
+        var user = SharedEngine.Map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             string userName = "Oidc auth - " + Guid.NewGuid().ToString();
             var sub = Guid.NewGuid().ToString( "N" );
             var idU = user.CreateUser( ctx, 1, userName );
-            u.Database.ExecuteReader( $"select * from CK.vUserAuthProvider where UserId={idU} and Scheme='{scheme}'" )
+            u.Database.ExecuteReader( $"select * from CK.vUserAuthProvider where UserId={idU} and Scheme='{scheme}'" ).ShouldNotBeNull()
                 .Rows.ShouldBeEmpty();
             var info = u.CreateUserInfo<IUserOidcInfo>();
             info.SchemeSuffix = schemeSuffix;
@@ -101,7 +101,7 @@ public class UserOidcTests
             u.Database.ExecuteScalar( $"select count(*) from CK.vUserAuthProvider where UserId={idU} and Scheme='{scheme}'" )
                 .ShouldBe( 1 );
             u.DestroyOidcUser( ctx, 1, idU, schemeSuffix );
-            u.Database.ExecuteReader( $"select * from CK.vUserAuthProvider where UserId={idU} and Scheme='{scheme}'" )
+            u.Database.ExecuteReader( $"select * from CK.vUserAuthProvider where UserId={idU} and Scheme='{scheme}'" ).ShouldNotBeNull()
                   .Rows.ShouldBeEmpty();
         }
     }
@@ -112,9 +112,9 @@ public class UserOidcTests
     {
         string scheme = schemeSuffix.Length > 0 ? "Oidc." + schemeSuffix : "Oidc";
 
-        var auth = SharedEngine.Map.StObjs.Obtain<Auth.Package>();
+        var auth = SharedEngine.Map.StObjs.Obtain<Auth.Package>().ShouldNotBeNull();
         // With IUserOidcInfo POCO.
-        var f = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserOidcInfo>>();
+        var f = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserOidcInfo>>().ShouldNotBeNull();
         CK.DB.Auth.Tests.AuthTests.StandardTestForGenericAuthenticationProvider(
             auth,
             scheme,
@@ -169,8 +169,8 @@ public class UserOidcTests
     public async Task standard_generic_tests_for_Oidc_provider_Async( string schemeSuffix )
     {
         string scheme = schemeSuffix.Length > 0 ? "Oidc." + schemeSuffix : "Oidc";
-        var auth = SharedEngine.Map.StObjs.Obtain<Auth.Package>();
-        var f = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserOidcInfo>>();
+        var auth = SharedEngine.Map.StObjs.Obtain<Auth.Package>().ShouldNotBeNull();
+        var f = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserOidcInfo>>().ShouldNotBeNull();
         await Auth.Tests.AuthTests.StandardTestForGenericAuthenticationProviderAsync(
             auth,
             scheme,

@@ -36,6 +36,6 @@ public abstract partial class GroupTable
     /// <param name="userId">The user identifier to add.</param>
     /// <param name="autoAddUserInZone">
     /// True to automatically register the user in the group's zone.</param>
-    [SqlProcedure( "transform:sGroupUserAdd" )]
-    public abstract void AddUser( ISqlCallContext ctx, int actorId, int groupId, int userId, bool autoAddUserInZone = false );
+    [SqlProcedure( "transform:sGroupMemberAdd" )]
+    public abstract void AddMember( ISqlCallContext ctx, int actorId, int groupId, int userId, bool autoAddUserInZone = false );
 }

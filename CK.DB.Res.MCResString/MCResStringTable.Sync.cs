@@ -14,6 +14,6 @@ public abstract partial class MCResStringTable : SqlTable
     /// <param name="cultureId">The culture identifier.</param>
     /// <param name="value">The new string value.</param>
     [SqlProcedure( "sMCResStringSet" )]
-    public abstract void SetString( ISqlCallContext ctx, int resId, int cultureId, string value );
+    public abstract void SetString( ISqlCallContext ctx, int resId, int cultureId, string? value );
 
 }

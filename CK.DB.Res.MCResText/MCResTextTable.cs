@@ -1,5 +1,6 @@
 using CK.Core;
 using CK.SqlServer;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace CK.DB.Res.MCResText;
@@ -17,12 +18,14 @@ public abstract partial class MCResTextTable : SqlTable
     /// Gets the resource table.
     /// </summary>
     [InjectObject]
+    [AllowNull]
     public ResTable ResTable { get; protected set; }
 
     /// <summary>
     /// Gets the Globalization Package.
     /// </summary>
     [InjectObject]
+    [AllowNull]
     public Globalization.Package Globalization { get; protected set; }
 
     /// <summary>

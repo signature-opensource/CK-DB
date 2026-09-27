@@ -21,7 +21,7 @@ public class BazookationTests
     [Test]
     public void Culture_bazookation_remaps_LCID_references_and_renames_column_to_CultureId()
     {
-        var p = SharedEngine.Map.StObjs.Obtain<Package>();
+        var p = SharedEngine.Map.StObjs.Obtain<Package>().ShouldNotBeNull();
         var legacyTable = "tCKBazookaLCID_" + Guid.NewGuid().ToString( "N" ).Substring( 0, 8 );
 
         try
@@ -89,7 +89,7 @@ where pt.name = '{legacyTable}' and rt.name = 'tCulture';" )
     [Test]
     public void ExtendedCulture_bazookation_remaps_XLCID_references_and_renames_column_to_ExtendedCultureId()
     {
-        var p = SharedEngine.Map.StObjs.Obtain<Package>();
+        var p = SharedEngine.Map.StObjs.Obtain<Package>().ShouldNotBeNull();
         var legacyTable = "tCKBazookaXLCID_" + Guid.NewGuid().ToString( "N" ).Substring( 0, 8 );
 
         // CK.tXLCID has inbound FKs from CK.tLCID and CK.tXLCIDMap. The bazooka would also

@@ -138,7 +138,7 @@ public class ActorCrisTests
         var userId = await CreateUserAsync();
 
         using var ctx = new SqlStandardCallContext();
-        await _groupTable.AddUserAsync( ctx, actorId: 1, groupId: 2, userId );
+        await _groupTable.AddMemberAsync( ctx, actorId: 1, groupId: 2, userId );
 
         _groupTable.Database.ExecuteReader( "select * from CK.tActorProfile where ActorId = @0 and ActorId <> GroupId", userId )
             .ShouldNotBeNull()
@@ -240,7 +240,7 @@ public class ActorCrisTests
         var userId = await CreateUserAsync();
 
         using var ctx = new SqlStandardCallContext();
-        await _groupTable.AddUserAsync( ctx, actorId: 1, groupId, userId );
+        await _groupTable.AddMemberAsync( ctx, actorId: 1, groupId, userId );
 
         var execDestroyCmd = await _exec.ExecuteRootCommandAsync( (IAbstractCommand)_pocoDir.Create<IDestroyGroupCommand>( c =>
         {
@@ -289,7 +289,7 @@ public class ActorCrisTests
         var userId = await CreateUserAsync();
 
         using var ctx = new SqlStandardCallContext();
-        await _groupTable.AddUserAsync( ctx, actorId: 1, groupId, userId );
+        await _groupTable.AddMemberAsync( ctx, actorId: 1, groupId, userId );
 
         var execCmd = await _exec.ExecuteRootCommandAsync( (IAbstractCommand)_pocoDir.Create<IRemoveUserFromGroupCommand>( c =>
         {

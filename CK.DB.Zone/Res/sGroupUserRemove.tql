@@ -1,5 +1,5 @@
 -- SetupConfig: { "AddRequires": [ "CK.sZoneUserRemove" ] }
-create transformer on CK.sGroupUserRemove
+create transformer on CK.sGroupMemberRemove
 as 
 begin
 	

@@ -41,7 +41,7 @@ as begin
 		fetch from @CGroup into @GroupId;
 		while @@FETCH_STATUS = 0
 		begin
-			exec CK.sGroupUserRemove @ActorId, @GroupId, @UserId;
+			exec CK.sGroupMemberRemove @ActorId, @GroupId, @UserId;
 			fetch next from @CGroup into @GroupId;
 		end
 		deallocate @CGroup;

@@ -16,7 +16,7 @@ public class AclTypeTests
     public async Task creating_and_destroying_type_Async()
     {
         var map = SharedEngine.Map;
-        var aclType = map.StObjs.Obtain<AclTypeTable>();
+        var aclType = map.StObjs.Obtain<AclTypeTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             var db = aclType.Database;
@@ -24,12 +24,12 @@ public class AclTypeTests
 
             db.ExecuteScalar( "select count(*) from CK.tAclTypeGrantLevel where AclTypeId = @0", id )
                                 .ShouldBe( 2 );
-            db.ExecuteReader( "select * from CK.tAclTypeGrantLevel where AclTypeId = @0 and GrantLevel not in (0, 127)", id )
+            db.ExecuteReader( "select * from CK.tAclTypeGrantLevel where AclTypeId = @0 and GrantLevel not in (0, 127)", id ).ShouldNotBeNull()
                                 .Rows.ShouldBeEmpty();
 
             await aclType.DestroyAclTypeAsync( ctx, 1, id );
 
-            db.ExecuteReader( "select * from CK.tAclTypeGrantLevel where AclTypeId = @0", id )
+            db.ExecuteReader( "select * from CK.tAclTypeGrantLevel where AclTypeId = @0", id ).ShouldNotBeNull()
                                 .Rows.ShouldBeEmpty();
         }
     }
@@ -38,7 +38,7 @@ public class AclTypeTests
     public async Task constrained_levels_must_not_be_deny_and_0_and_127_can_not_be_removed_Async()
     {
         var map = SharedEngine.Map;
-        var aclType = map.StObjs.Obtain<AclTypeTable>();
+        var aclType = map.StObjs.Obtain<AclTypeTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             var db = aclType.Database;
@@ -82,8 +82,8 @@ public class AclTypeTests
     public async Task type_can_not_be_destroyed_when_typed_acl_exist_Async()
     {
         var map = SharedEngine.Map;
-        var acl = map.StObjs.Obtain<AclTable>();
-        var aclType = map.StObjs.Obtain<AclTypeTable>();
+        var acl = map.StObjs.Obtain<AclTable>().ShouldNotBeNull();
+        var aclType = map.StObjs.Obtain<AclTypeTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             var db = aclType.Database;
@@ -101,9 +101,9 @@ public class AclTypeTests
     public void typed_acl_with_constrained_levels_control_their_grant_levels()
     {
         var map = SharedEngine.Map;
-        var user = map.StObjs.Obtain<UserTable>();
-        var acl = map.StObjs.Obtain<AclTable>();
-        var aclType = map.StObjs.Obtain<AclTypeTable>();
+        var user = map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
+        var acl = map.StObjs.Obtain<AclTable>().ShouldNotBeNull();
+        var aclType = map.StObjs.Obtain<AclTypeTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             int idType = aclType.CreateAclType( ctx, 1 );
@@ -147,9 +147,9 @@ public class AclTypeTests
     public void existing_level_prevents_set_constrained()
     {
         var map = SharedEngine.Map;
-        var aclType = map.StObjs.Obtain<AclTypeTable>();
-        var acl = map.StObjs.Obtain<AclTable>();
-        var user = map.StObjs.Obtain<UserTable>();
+        var aclType = map.StObjs.Obtain<AclTypeTable>().ShouldNotBeNull();
+        var acl = map.StObjs.Obtain<AclTable>().ShouldNotBeNull();
+        var user = map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             int idType = aclType.CreateAclType( ctx, 1 );

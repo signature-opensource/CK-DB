@@ -13,6 +13,6 @@ public abstract partial class ResStringTable : SqlTable
     /// <param name="resId">The resource identifier.</param>
     /// <param name="value">The new string value.</param>
     [SqlProcedure( "sResStringSet" )]
-    public abstract void SetString( ISqlCallContext ctx, int resId, string value );
+    public abstract void SetString( ISqlCallContext ctx, int resId, string? value );
 
 }

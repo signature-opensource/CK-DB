@@ -14,8 +14,8 @@ public class UserGoogleEMailTests
     [Test]
     public void profile_properties_are_handled()
     {
-        var u = SharedEngine.Map.StObjs.Obtain<UserGoogleTable>();
-        var user = SharedEngine.Map.StObjs.Obtain<UserTable>();
+        var u = SharedEngine.Map.StObjs.Obtain<UserGoogleTable>().ShouldNotBeNull();
+        var user = SharedEngine.Map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             var googleAccountId = Guid.NewGuid().ToString( "N" );
@@ -35,7 +35,7 @@ public class UserGoogleEMailTests
             u.CreateOrUpdateGoogleUser( ctx, 1, idU, info );
             u.Database.ExecuteScalar( rawSelect ).ShouldBe( "Albert|Einstein|Bebert|url" );
 
-            info = (Profile.IUserGoogleInfo)u.FindKnownUserInfo( ctx, googleAccountId ).Info;
+            info = (Profile.IUserGoogleInfo)u.FindKnownUserInfo( ctx, googleAccountId ).ShouldNotBeNull().Info;
             info.FirstName.ShouldBe( "Albert" );
             info.LastName.ShouldBe( "Einstein" );
             info.UserName.ShouldBe( "Bebert" );

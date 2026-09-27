@@ -1,5 +1,6 @@
 using CK.Core;
 using CK.SqlServer;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace CK.DB.Res.MCResString;
@@ -17,12 +18,14 @@ public abstract partial class MCResStringTable : SqlTable
     /// Gets the resource table.
     /// </summary>
     [InjectObject]
+    [AllowNull]
     public ResTable ResTable { get; protected set; }
 
     /// <summary>
     /// Gets the Globalization Package.
     /// </summary>
     [InjectObject]
+    [AllowNull]
     public Globalization.Package Globalization { get; protected set; }
 
     /// <summary>
@@ -35,6 +38,6 @@ public abstract partial class MCResStringTable : SqlTable
     /// <param name="value">The new string value.</param>
     /// <returns>The awaitable.</returns>
     [SqlProcedure( "sMCResStringSet" )]
-    public abstract Task SetStringAsync( ISqlCallContext ctx, int resId, int cultureId, string value );
+    public abstract Task SetStringAsync( ISqlCallContext ctx, int resId, int cultureId, string? value );
 
 }

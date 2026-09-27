@@ -2,6 +2,7 @@ using CK.Core;
 using CK.DB.Auth.AuthScope;
 using CK.SqlServer;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace CK.DB.User.UserGoogle.AuthScope;
@@ -14,8 +15,8 @@ namespace CK.DB.User.UserGoogle.AuthScope;
 [SqlObjectItem( "transform:sUserGoogleUCL, transform:sUserGoogleDestroy" )]
 public class Package : SqlPackage
 {
-    AuthScopeSetTable _scopeSetTable;
-    UserGoogleTable _googleTable;
+    [AllowNull] AuthScopeSetTable _scopeSetTable;
+    [AllowNull] UserGoogleTable _googleTable;
 
     void StObjConstruct( AuthScopeSetTable scopeSetTable, UserGoogleTable googleTable )
     {
@@ -39,7 +40,7 @@ public class Package : SqlPackage
     /// <param name="ctx">The call context to use.</param>
     /// <param name="userId">The user identifier.</param>
     /// <returns>The scope set or null if the user is not a Google user.</returns>
-    public Task<AuthScopeSet> ReadScopeSetAsync( ISqlCallContext ctx, int userId )
+    public Task<AuthScopeSet?> ReadScopeSetAsync( ISqlCallContext ctx, int userId )
     {
         if( userId <= 0 ) throw new ArgumentException( nameof( userId ) );
         var cmd = _scopeSetTable.CreateReadCommand( $"select ScopeSetId from CK.tUserGoogle where UserId = {userId}" );
@@ -51,7 +52,7 @@ public class Package : SqlPackage
     /// </summary>
     /// <param name="ctx">The call context to use.</param>
     /// <returns>The default scope set.</returns>
-    public Task<AuthScopeSet> ReadDefaultScopeSetAsync( ISqlCallContext ctx )
+    public Task<AuthScopeSet?> ReadDefaultScopeSetAsync( ISqlCallContext ctx )
     {
         var cmd = _scopeSetTable.CreateReadCommand( "select ScopeSetId from CK.tUserGoogle where UserId = 0" );
         return _scopeSetTable.RawReadAuthScopeSetAsync( ctx, cmd );

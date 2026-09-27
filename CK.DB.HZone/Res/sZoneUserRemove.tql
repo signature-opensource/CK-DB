@@ -35,7 +35,7 @@ begin
 	-- This ensures that Zones are skipped while removing the
 	-- user from the zones's groups.
 	-- This enforces @AutoRemoveUserFromChildZone semantics and
-	-- avoids call recursion since sGroupUserRemove calls sZoneUserRemove 
+	-- avoids call recursion since sGroupMemberRemove calls sZoneUserRemove 
 	-- when the group is a zone.
 	in single statement {set @CGroup = cursor}
     begin

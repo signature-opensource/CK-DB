@@ -14,8 +14,8 @@ public class UserGoogleEMailTests
     [Test]
     public void email_and_email_verified_are_managed()
     {
-        var u = SharedEngine.Map.StObjs.Obtain<UserGoogleTable>();
-        var user = SharedEngine.Map.StObjs.Obtain<UserTable>();
+        var u = SharedEngine.Map.StObjs.Obtain<UserGoogleTable>().ShouldNotBeNull();
+        var user = SharedEngine.Map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             string userName = "Google auth email - " + Guid.NewGuid().ToString();
@@ -33,7 +33,7 @@ public class UserGoogleEMailTests
             u.CreateOrUpdateGoogleUser( ctx, 1, idU, info );
             u.Database.ExecuteScalar( rawSelect )
                 .ShouldBe( "X@Y.Z|1" );
-            info = (EMailColumns.IUserGoogleInfo)u.FindKnownUserInfo( ctx, googleAccountId ).Info;
+            info = (EMailColumns.IUserGoogleInfo)u.FindKnownUserInfo( ctx, googleAccountId ).ShouldNotBeNull().Info;
             info.EMailVerified.ShouldBe( true );
             info.EMail.ShouldBe( "X@Y.Z" );
         }

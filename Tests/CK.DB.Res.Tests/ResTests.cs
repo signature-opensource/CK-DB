@@ -13,7 +13,7 @@ public class ResTests
     [Test]
     public async Task creating_and_destroying_raw_resource_Async()
     {
-        var r = SharedEngine.Map.StObjs.Obtain<ResTable>();
+        var r = SharedEngine.Map.StObjs.Obtain<ResTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             int id = await r.CreateAsync( ctx );

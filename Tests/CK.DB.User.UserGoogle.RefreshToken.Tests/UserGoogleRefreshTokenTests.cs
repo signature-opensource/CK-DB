@@ -15,8 +15,8 @@ public class UserGoogleRefreshTokenTests
     [Test]
     public void RefreshToken_and_LastRefreshTokenTime_are_managed()
     {
-        var google = SharedEngine.Map.StObjs.Obtain<UserGoogleTable>();
-        var user = SharedEngine.Map.StObjs.Obtain<UserTable>();
+        var google = SharedEngine.Map.StObjs.Obtain<UserGoogleTable>().ShouldNotBeNull();
+        var user = SharedEngine.Map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             string userName = "Google RefreshToken - " + Guid.NewGuid().ToString();
@@ -36,7 +36,7 @@ public class UserGoogleRefreshTokenTests
             google.Database.ExecuteScalar( rawSelect )
                 .ShouldBe( info.RefreshToken );
 
-            info = (IUserGoogleInfo)google.FindKnownUserInfo( ctx, googleAccountId ).Info;
+            info = (IUserGoogleInfo)google.FindKnownUserInfo( ctx, googleAccountId ).ShouldNotBeNull().Info;
             info.LastRefreshTokenTime.ShouldBeGreaterThan( DateTime.UtcNow.AddMonths( -1 ) );
             info.RefreshToken.ShouldBe( "a refresh token" );
 
@@ -44,7 +44,7 @@ public class UserGoogleRefreshTokenTests
             Thread.Sleep( 500 );
             info.RefreshToken = null;
             google.CreateOrUpdateGoogleUser( ctx, 1, idU, info );
-            info = (IUserGoogleInfo)google.FindKnownUserInfo( ctx, googleAccountId ).Info;
+            info = (IUserGoogleInfo)google.FindKnownUserInfo( ctx, googleAccountId ).ShouldNotBeNull().Info;
             info.LastRefreshTokenTime.ShouldBe( lastUpdate );
             info.RefreshToken.ShouldBe( "a refresh token" );
         }

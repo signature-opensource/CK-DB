@@ -1,4 +1,5 @@
 using CK.Core;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CK.DB.Res.ResHtml;
 
@@ -16,11 +17,13 @@ public class Package : SqlPackage
     /// Gets the resource table.
     /// </summary>
     [InjectObject]
+    [AllowNull]
     public ResTable ResTable { get; protected set; }
 
     /// <summary>
     /// Gets the html text holder table.
     /// </summary>
     [InjectObject]
+    [AllowNull]
     public ResHtmlTable ResHtmlTable { get; protected set; }
 }

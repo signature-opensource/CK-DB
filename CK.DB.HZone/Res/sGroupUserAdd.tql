@@ -1,5 +1,5 @@
 -- SetupConfig: {}
-create transformer on CK.sGroupUserAdd
+create transformer on CK.sGroupMemberAdd
 as
 begin
 	in all 2 statement {exec CK.sZoneUserAdd}

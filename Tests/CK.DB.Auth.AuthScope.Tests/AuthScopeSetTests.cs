@@ -13,7 +13,7 @@ public class AuthScopeSetTests
     [Test]
     public async Task creating_simple_scope_set_Async()
     {
-        var scopes = SharedEngine.Map.StObjs.Obtain<AuthScopeSetTable>();
+        var scopes = SharedEngine.Map.StObjs.Obtain<AuthScopeSetTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             var id = await scopes.CreateScopeSetAsync( ctx, 1, "openid profile" );
@@ -21,7 +21,7 @@ public class AuthScopeSetTests
             scopes.Database.ExecuteScalar( $"select count(*) from CK.tAuthScopeSetContent where ScopeSetId = {id}" )
                 .ShouldBe( 2 );
             await scopes.DestroyScopeSetAsync( ctx, 1, id );
-            scopes.Database.ExecuteReader( $"select * from CK.tAuthScopeSetContent where ScopeSetId = {id}" )
+            scopes.Database.ExecuteReader( $"select * from CK.tAuthScopeSetContent where ScopeSetId = {id}" ).ShouldNotBeNull()
                 .Rows.ShouldBeEmpty();
         }
     }
@@ -29,7 +29,7 @@ public class AuthScopeSetTests
     [Test]
     public async Task setting_scopes_on_zero_ScopeSetId_is_an_error_Async()
     {
-        var scopes = SharedEngine.Map.StObjs.Obtain<AuthScopeSetTable>();
+        var scopes = SharedEngine.Map.StObjs.Obtain<AuthScopeSetTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             try
@@ -46,7 +46,7 @@ public class AuthScopeSetTests
     [Test]
     public async Task adding_and_removing_scopes_via_raw_strings_Async()
     {
-        var scopes = SharedEngine.Map.StObjs.Obtain<AuthScopeSetTable>();
+        var scopes = SharedEngine.Map.StObjs.Obtain<AuthScopeSetTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             var id = await scopes.CreateScopeSetAsync( ctx, 1, "   profile   openid  " );
@@ -84,7 +84,7 @@ public class AuthScopeSetTests
     [Test]
     public async Task AuthScopeSet_manipulation_Async()
     {
-        var scopes = SharedEngine.Map.StObjs.Obtain<AuthScopeSetTable>();
+        var scopes = SharedEngine.Map.StObjs.Obtain<AuthScopeSetTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             var set = new AuthScopeSet( new[] {
@@ -97,7 +97,7 @@ public class AuthScopeSetTests
             scopes.Database.ExecuteScalar( $"select ScopesWithStatus from CK.vAuthScopeSet where ScopeSetId = {id}" )
                 .ShouldBe( "[A]A [W]B [R]C" );
 
-            var readSet = await scopes.ReadAuthScopeSetAsync( ctx, id );
+            var readSet = (await scopes.ReadAuthScopeSetAsync( ctx, id )).ShouldNotBeNull();
             readSet.ScopeSetId.ShouldBe( id );
             readSet.ToString().ShouldBe( "[A]A [W]B [R]C" );
 
@@ -105,19 +105,19 @@ public class AuthScopeSetTests
             set.Add( new AuthScopeItem( "B", ScopeWARStatus.Accepted ) );
             set.Add( new AuthScopeItem( "D", ScopeWARStatus.Waiting ) );
             await scopes.AddOrUpdateScopesAsync( ctx, 1, set );
-            readSet = await scopes.ReadAuthScopeSetAsync( ctx, id );
+            readSet = (await scopes.ReadAuthScopeSetAsync( ctx, id )).ShouldNotBeNull();
             readSet.ToString().ShouldBe( "[A]A [A]B [R]C [W]D" );
 
             set.Remove( "B" );
             set.Remove( "C" );
             set.Add( new AuthScopeItem( "E", ScopeWARStatus.Accepted ) );
             await scopes.AddOrUpdateScopesAsync( ctx, 1, set );
-            readSet = await scopes.ReadAuthScopeSetAsync( ctx, id );
+            readSet = (await scopes.ReadAuthScopeSetAsync( ctx, id )).ShouldNotBeNull();
             readSet.ToString().ShouldBe( "[A]A [A]B [R]C [W]D [A]E" );
 
             set.Remove( "E" );
             await scopes.SetScopesAsync( ctx, 1, set );
-            readSet = await scopes.ReadAuthScopeSetAsync( ctx, id );
+            readSet = (await scopes.ReadAuthScopeSetAsync( ctx, id )).ShouldNotBeNull();
             readSet.ToString().ShouldBe( "[A]A [W]D" );
 
             await scopes.DestroyScopeSetAsync( ctx, 1, id );

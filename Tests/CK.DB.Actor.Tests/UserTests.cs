@@ -14,7 +14,7 @@ public class UserTests
     [Test]
     public void Anonymous_can_not_create_a_user()
     {
-        var u = SharedEngine.Map.StObjs.Obtain<UserTable>();
+        var u = SharedEngine.Map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             Util.Invokable( () => u.CreateUser( ctx, 0, Guid.NewGuid().ToString() ) ).ShouldThrow<SqlDetailedException>();
@@ -24,7 +24,7 @@ public class UserTests
     [Test]
     public void user_FindByName_returns_0_when_not_found()
     {
-        var u = SharedEngine.Map.StObjs.Obtain<UserTable>();
+        var u = SharedEngine.Map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             var exist = Guid.NewGuid().ToString();
@@ -40,7 +40,7 @@ public class UserTests
     [Test]
     public void user_can_not_be_created_with_an_already_existing_UserName()
     {
-        var u = SharedEngine.Map.StObjs.Obtain<UserTable>();
+        var u = SharedEngine.Map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
 
         string testName = "user_can_not_be_created_with_an_already_existing_UserName" + Guid.NewGuid().ToString();
 
@@ -62,7 +62,7 @@ public class UserTests
     [Test]
     public void UserName_is_not_set_if_another_user_exists_with_the_same_UserName()
     {
-        var u = SharedEngine.Map.StObjs.Obtain<UserTable>();
+        var u = SharedEngine.Map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
 
         string existingName = Guid.NewGuid().ToString();
         string userName = Guid.NewGuid().ToString();
@@ -81,7 +81,7 @@ public class UserTests
             u.DestroyUser( ctx, 1, idExist );
             u.DestroyUser( ctx, 1, idUser );
 
-            u.Database.ExecuteReader( "select * from CK.tUser where UserName = @0 or UserName = @1", existingName, userName )
+            u.Database.ExecuteReader( "select * from CK.tUser where UserName = @0 or UserName = @1", existingName, userName ).ShouldNotBeNull()
                 .Rows.ShouldBeEmpty();
         }
     }

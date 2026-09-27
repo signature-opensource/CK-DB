@@ -14,14 +14,14 @@ public class ZoneTests
     [TearDown]
     public void CheckInvariants()
     {
-        SharedEngine.Map.StObjs.Obtain<SqlDefaultDatabase>().GetCKCoreInvariantsViolations()
+        SharedEngine.Map.StObjs.Obtain<SqlDefaultDatabase>().ShouldNotBeNull().GetCKCoreInvariantsViolations()
             .Rows.ShouldBeEmpty();
     }
 
     [Test]
     public void zone_0_and_1_can_not_be_destroyed()
     {
-        var t = SharedEngine.Map.StObjs.Obtain<ZoneTable>();
+        var t = SharedEngine.Map.StObjs.Obtain<ZoneTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             Util.Invokable( () => t.DestroyZone( ctx, 1, 0 ) ).ShouldThrow<SqlDetailedException>();
@@ -32,7 +32,7 @@ public class ZoneTests
     [Test]
     public void zone_can_be_created_and_destroyed_by_System()
     {
-        var t = SharedEngine.Map.StObjs.Obtain<ZoneTable>();
+        var t = SharedEngine.Map.StObjs.Obtain<ZoneTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             int zoneId = t.CreateZone( ctx, 1 );
@@ -40,7 +40,7 @@ public class ZoneTests
             t.Database.ExecuteScalar( "select IsZone from CK.vGroup where GroupId=@0", zoneId )
                 .ShouldBe( true );
             t.DestroyZone( ctx, 1, zoneId );
-            t.Database.ExecuteReader( "select * from CK.tZone where ZoneId=@0", zoneId )
+            t.Database.ExecuteReader( "select * from CK.tZone where ZoneId=@0", zoneId ).ShouldNotBeNull()
                 .Rows.ShouldBeEmpty();
         }
     }
@@ -48,9 +48,9 @@ public class ZoneTests
     [Test]
     public void zone_with_existing_groups_can_be_destroyed_when_ForceDestroy_is_true()
     {
-        var t = SharedEngine.Map.StObjs.Obtain<ZoneTable>();
-        var g = SharedEngine.Map.StObjs.Obtain<GroupTable>();
-        var u = SharedEngine.Map.StObjs.Obtain<UserTable>();
+        var t = SharedEngine.Map.StObjs.Obtain<ZoneTable>().ShouldNotBeNull();
+        var g = SharedEngine.Map.StObjs.Obtain<GroupTable>().ShouldNotBeNull();
+        var u = SharedEngine.Map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             int zoneId = t.CreateZone( ctx, 1 );
@@ -61,14 +61,14 @@ public class ZoneTests
 
             int userId = u.CreateUser( ctx, 1, Guid.NewGuid().ToString( "N" ) );
             t.AddUser( ctx, 1, zoneId, userId );
-            g.AddUser( ctx, 1, groupId1, userId );
-            g.AddUser( ctx, 1, groupId2, userId );
+            g.AddMember( ctx, 1, groupId1, userId );
+            g.AddMember( ctx, 1, groupId2, userId );
 
             t.DestroyZone( ctx, 1, zoneId, true );
 
-            t.Database.ExecuteReader( "select * from CK.tGroup where ZoneId=@0", zoneId )
+            t.Database.ExecuteReader( "select * from CK.tGroup where ZoneId=@0", zoneId ).ShouldNotBeNull()
                 .Rows.ShouldBeEmpty();
-            t.Database.ExecuteReader( "select * from CK.tZone where ZoneId=@0", zoneId )
+            t.Database.ExecuteReader( "select * from CK.tZone where ZoneId=@0", zoneId ).ShouldNotBeNull()
                 .Rows.ShouldBeEmpty();
         }
     }
@@ -76,7 +76,7 @@ public class ZoneTests
     [Test]
     public void Anonymous_cant_not_create_or_destroy_a_zone()
     {
-        var p = SharedEngine.Map.StObjs.Obtain<Zone.Package>();
+        var p = SharedEngine.Map.StObjs.Obtain<Zone.Package>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             Util.Invokable( () => p.ZoneTable.CreateZone( ctx, 0 ) ).ShouldThrow<SqlDetailedException>();
@@ -90,19 +90,19 @@ public class ZoneTests
     [Test]
     public void adding_a_user_to_a_group_when_he_is_not_registered_in_the_zone_is_an_error()
     {
-        var p = SharedEngine.Map.StObjs.Obtain<Zone.Package>();
+        var p = SharedEngine.Map.StObjs.Obtain<Zone.Package>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             int zoneId = p.ZoneTable.CreateZone( ctx, 1 );
             int userId = p.UserTable.CreateUser( ctx, 1, Guid.NewGuid().ToString() );
             int groupId = p.GroupTable.CreateGroup( ctx, 1, zoneId );
 
-            Util.Invokable( () => p.GroupTable.AddUser( ctx, 1, groupId, userId ) ).ShouldThrow<SqlDetailedException>();
+            Util.Invokable( () => p.GroupTable.AddMember( ctx, 1, groupId, userId ) ).ShouldThrow<SqlDetailedException>();
 
             Util.Invokable( () => p.ZoneTable.AddUser( ctx, 1, zoneId, userId ) ).ShouldNotThrow( "Adding the user to the zone." );
-            Util.Invokable( () => p.GroupTable.AddUser( ctx, 1, groupId, userId ) ).ShouldNotThrow( "Adding the user to group: now it works." );
+            Util.Invokable( () => p.GroupTable.AddMember( ctx, 1, groupId, userId ) ).ShouldNotThrow( "Adding the user to group: now it works." );
 
-            Util.Invokable( () => p.GroupTable.AddUser( ctx, 1, groupId, userId ) ).ShouldNotThrow( "If the user already exists in the zone, it is okay." );
+            Util.Invokable( () => p.GroupTable.AddMember( ctx, 1, groupId, userId ) ).ShouldNotThrow( "If the user already exists in the zone, it is okay." );
             Util.Invokable( () => p.ZoneTable.AddUser( ctx, 1, zoneId, userId ) ).ShouldNotThrow( "Just like Groups: adding an already existing user to a Zone is okay." );
 
             p.ZoneTable.DestroyZone( ctx, 1, zoneId, true );
@@ -112,7 +112,7 @@ public class ZoneTests
     [Test]
     public void by_default_destroying_a_zone_that_has_a_group_is_an_error_ie_when_ForceDestroy_is_false()
     {
-        var p = SharedEngine.Map.StObjs.Obtain<Zone.Package>();
+        var p = SharedEngine.Map.StObjs.Obtain<Zone.Package>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             int zoneId = p.ZoneTable.CreateZone( ctx, 1 );
@@ -123,7 +123,7 @@ public class ZoneTests
             p.GroupTable.DestroyGroup( ctx, 1, groupId );
             p.ZoneTable.DestroyZone( ctx, 1, zoneId );
 
-            p.Database.ExecuteReader( "select * from CK.tZone where ZoneId=@0", zoneId )
+            p.Database.ExecuteReader( "select * from CK.tZone where ZoneId=@0", zoneId ).ShouldNotBeNull()
                 .Rows.ShouldBeEmpty();
         }
     }
@@ -131,7 +131,7 @@ public class ZoneTests
     [Test]
     public void removing_a_user_from_a_Zone_removes_him_from_all_groups()
     {
-        var p = SharedEngine.Map.StObjs.Obtain<Zone.Package>();
+        var p = SharedEngine.Map.StObjs.Obtain<Zone.Package>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             int zoneId = p.ZoneTable.CreateZone( ctx, 1 );
@@ -140,8 +140,8 @@ public class ZoneTests
             int groupId2 = p.GroupTable.CreateGroup( ctx, 1, zoneId );
 
             p.ZoneTable.AddUser( ctx, 1, zoneId, userId );
-            p.GroupTable.AddUser( ctx, 1, groupId1, userId );
-            p.GroupTable.AddUser( ctx, 1, groupId2, userId );
+            p.GroupTable.AddMember( ctx, 1, groupId1, userId );
+            p.GroupTable.AddMember( ctx, 1, groupId2, userId );
 
             p.Database.ExecuteScalar( "select GroupCount = count(*)-1 from CK.tActorProfile where ActorId = @0", userId )
                 .ShouldBe( 3 );
@@ -162,7 +162,7 @@ public class ZoneTests
     public void can_not_create_a_group_in_System_group()
     {
         var map = SharedEngine.Map;
-        var g = map.StObjs.Obtain<GroupTable>();
+        var g = map.StObjs.Obtain<GroupTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             Util.Invokable( () => g.CreateGroup( ctx, 1, 1 ) ).ShouldThrow<SqlDetailedException>();
@@ -173,8 +173,8 @@ public class ZoneTests
     public void groups_can_be_moved_from_its_zone_to_another_one()
     {
         var map = SharedEngine.Map;
-        var g = map.StObjs.Obtain<GroupTable>();
-        var z = map.StObjs.Obtain<ZoneTable>();
+        var g = map.StObjs.Obtain<GroupTable>().ShouldNotBeNull();
+        var z = map.StObjs.Obtain<ZoneTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             int idGroup = g.CreateGroup( ctx, 1 );
@@ -205,9 +205,9 @@ public class ZoneTests
     public void by_default_when_a_group_is_moved_all_of_its_users_must_be_already_registered_in_the_target_zone()
     {
         var map = SharedEngine.Map;
-        var g = map.StObjs.Obtain<GroupTable>();
-        var z = map.StObjs.Obtain<ZoneTable>();
-        var u = map.StObjs.Obtain<UserTable>();
+        var g = map.StObjs.Obtain<GroupTable>().ShouldNotBeNull();
+        var z = map.StObjs.Obtain<ZoneTable>().ShouldNotBeNull();
+        var u = map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             int idUser = u.CreateUser( ctx, 1, Guid.NewGuid().ToString() );
@@ -215,7 +215,7 @@ public class ZoneTests
             int idZoneEmpty = z.CreateZone( ctx, 1 );
             int idZoneOK = z.CreateZone( ctx, 1 );
 
-            g.AddUser( ctx, 1, idGroup, idUser );
+            g.AddMember( ctx, 1, idGroup, idUser );
             z.AddUser( ctx, 1, idZoneOK, idUser );
             // This works since the user is in the zoneOK.
             g.MoveGroup( ctx, 1, idGroup, idZoneOK );
@@ -232,7 +232,7 @@ public class ZoneTests
             u.Database.ExecuteScalar( $"select ActorId from CK.tActorProfile where GroupId = {idGroup} and ActorId = {idUser}" )
                 .ShouldBe( idUser );
             // ...and still not in the ZoneEmpty.
-            u.Database.ExecuteReader( $"select ActorId from CK.tActorProfile where GroupId = {idZoneEmpty} and ActorId = {idUser}" )
+            u.Database.ExecuteReader( $"select ActorId from CK.tActorProfile where GroupId = {idZoneEmpty} and ActorId = {idUser}" ).ShouldNotBeNull()
                 .Rows.ShouldBeEmpty();
         }
     }
@@ -241,9 +241,9 @@ public class ZoneTests
     public void with_option_Intersect_when_a_group_is_moved_its_users_not_already_registered_in_the_target_zone_are_removed()
     {
         var map = SharedEngine.Map;
-        var g = map.StObjs.Obtain<GroupTable>();
-        var z = map.StObjs.Obtain<ZoneTable>();
-        var u = map.StObjs.Obtain<UserTable>();
+        var g = map.StObjs.Obtain<GroupTable>().ShouldNotBeNull();
+        var z = map.StObjs.Obtain<ZoneTable>().ShouldNotBeNull();
+        var u = map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             int idUser = u.CreateUser( ctx, 1, Guid.NewGuid().ToString() );
@@ -251,7 +251,7 @@ public class ZoneTests
             int idZoneEmpty = z.CreateZone( ctx, 1 );
             int idZoneOK = z.CreateZone( ctx, 1 );
 
-            g.AddUser( ctx, 1, idGroup, idUser );
+            g.AddMember( ctx, 1, idGroup, idUser );
             z.AddUser( ctx, 1, idZoneOK, idUser );
             // This works since the user is in the zoneOK (Intersect does nothing).
             g.MoveGroup( ctx, 1, idGroup, idZoneOK, GroupMoveOption.Intersect );
@@ -265,10 +265,10 @@ public class ZoneTests
             // to preserve the 'Group.UserNotInZone' invariant.
             g.MoveGroup( ctx, 1, idGroup, idZoneEmpty, GroupMoveOption.Intersect );
             // User is no more in the Group: it has been removed.
-            u.Database.ExecuteReader( $"select ActorId from CK.tActorProfile where GroupId = {idGroup} and ActorId = {idUser}" )
+            u.Database.ExecuteReader( $"select ActorId from CK.tActorProfile where GroupId = {idGroup} and ActorId = {idUser}" ).ShouldNotBeNull()
                 .Rows.ShouldBeEmpty();
             // ...and still not in the ZoneEmpty.
-            u.Database.ExecuteReader( $"select ActorId from CK.tActorProfile where GroupId = {idZoneEmpty} and ActorId = {idUser}" )
+            u.Database.ExecuteReader( $"select ActorId from CK.tActorProfile where GroupId = {idZoneEmpty} and ActorId = {idUser}" ).ShouldNotBeNull()
                 .Rows.ShouldBeEmpty();
         }
     }
@@ -277,9 +277,9 @@ public class ZoneTests
     public void with_option_AutoUserRegistration_when_a_group_is_moved_its_users_not_already_registered_in_the_target_zone_are_automatically_registered()
     {
         var map = SharedEngine.Map;
-        var g = map.StObjs.Obtain<GroupTable>();
-        var z = map.StObjs.Obtain<ZoneTable>();
-        var u = map.StObjs.Obtain<UserTable>();
+        var g = map.StObjs.Obtain<GroupTable>().ShouldNotBeNull();
+        var z = map.StObjs.Obtain<ZoneTable>().ShouldNotBeNull();
+        var u = map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             int idUser = u.CreateUser( ctx, 1, Guid.NewGuid().ToString() );
@@ -287,7 +287,7 @@ public class ZoneTests
             int idZoneEmpty = z.CreateZone( ctx, 1 );
             int idZoneOK = z.CreateZone( ctx, 1 );
 
-            g.AddUser( ctx, 1, idGroup, idUser );
+            g.AddMember( ctx, 1, idGroup, idUser );
             z.AddUser( ctx, 1, idZoneOK, idUser );
             // This works since the user is in the zoneOK (Intersect does nothing).
             g.MoveGroup( ctx, 1, idGroup, idZoneOK, GroupMoveOption.AutoUserRegistration );

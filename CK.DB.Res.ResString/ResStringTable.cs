@@ -1,5 +1,6 @@
 using CK.Core;
 using CK.SqlServer;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace CK.DB.Res.ResString;
@@ -16,6 +17,7 @@ public abstract partial class ResStringTable : SqlTable
     /// Gets the resource table.
     /// </summary>
     [InjectObject]
+    [AllowNull]
     public ResTable ResTable { get; protected set; }
 
     /// <summary>

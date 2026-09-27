@@ -1,6 +1,6 @@
 -- SetupConfig: { "AddRequires": [ "CK.sZoneUserAdd" ] }
 
-create transformer on CK.sGroupUserAdd
+create transformer on CK.sGroupMemberAdd
 as
 begin
 	add parameter @AutoAddUserInZone bit = 0;

@@ -9,7 +9,7 @@ namespace CK.DB.Zone;
 /// </summary>
 [SqlTable( "tGroup", Package = typeof( Package ) )]
 [Versions( "5.0.0, 5.0.1" )]
-[SqlObjectItem( "transform:sGroupUserRemove, transform:vGroup" )]
+[SqlObjectItem( "transform:sGroupMemberRemove, transform:vGroup" )]
 public abstract partial class GroupTable : Actor.GroupTable
 {
     void StObjConstruct( ZoneTable zoneTable )
@@ -49,7 +49,7 @@ public abstract partial class GroupTable : Actor.GroupTable
     /// <param name="autoAddUserInZone">
     /// True to automatically register the user in the group's zone.</param>
     /// <returns>The awaitable.</returns>
-    [SqlProcedure( "transform:sGroupUserAdd" )]
-    public abstract Task AddUserAsync( ISqlCallContext ctx, int actorId, int groupId, int userId, bool autoAddUserInZone = false );
+    [SqlProcedure( "transform:sGroupMemberAdd" )]
+    public abstract Task AddMemberAsync( ISqlCallContext ctx, int actorId, int groupId, int userId, bool autoAddUserInZone = false );
 
 }

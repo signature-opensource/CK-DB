@@ -17,15 +17,15 @@ public class AclSimpleTests
     public void god_user_can_create_and_destroy_acls()
     {
         var map = SharedEngine.Map;
-        var acl = map.StObjs.Obtain<AclTable>();
-        var user = map.StObjs.Obtain<UserTable>();
-        var group = map.StObjs.Obtain<GroupTable>();
+        var acl = map.StObjs.Obtain<AclTable>().ShouldNotBeNull();
+        var user = map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
+        var group = map.StObjs.Obtain<GroupTable>().ShouldNotBeNull();
 
         using( var ctx = new SqlStandardCallContext() )
         {
             var db = acl.Database;
             int idGod = user.CreateUser( ctx, 1, Guid.NewGuid().ToString() );
-            group.AddUser( ctx, 1, 1, idGod );
+            group.AddMember( ctx, 1, 1, idGod );
             int idAcl = acl.CreateAcl( ctx, idGod );
 
             Assert.That( idAcl >= 8, "Acl 0 to 7 are system-defined acls." );
@@ -37,7 +37,7 @@ public class AclSimpleTests
             acl.GetGrantLevel( ctx, 0, idAcl ).ShouldBe( 0, "Anonymous are Blind by default." );
 
             acl.DestroyAcl( ctx, idGod, idAcl );
-            db.ExecuteReader( "select AclId from CK.tAcl where AclId = @0", idAcl )
+            db.ExecuteReader( "select AclId from CK.tAcl where AclId = @0", idAcl ).ShouldNotBeNull()
               .Rows.ShouldBeEmpty();
             user.DestroyUser( ctx, 1, idGod );
         }
@@ -46,7 +46,7 @@ public class AclSimpleTests
     [Test]
     public void system_default_acls_from_0_to_8_cannot_be_destroyed()
     {
-        var acl = SharedEngine.Map.StObjs.Obtain<AclTable>();
+        var acl = SharedEngine.Map.StObjs.Obtain<AclTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             for( int idAcl = 0; idAcl <= 8; ++idAcl )
@@ -70,8 +70,8 @@ public class AclSimpleTests
     public void challenging_system_default_acls_except_the_1_by_a_random_user( int idAcl, byte grantLevel, string keyReasonForAnonymous )
     {
         var map = SharedEngine.Map;
-        var acl = map.StObjs.Obtain<AclTable>();
-        var user = map.StObjs.Obtain<UserTable>();
+        var acl = map.StObjs.Obtain<AclTable>().ShouldNotBeNull();
+        var user = map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             int idUser = user.CreateUser( ctx, 1, Guid.NewGuid().ToString() );
@@ -86,8 +86,8 @@ public class AclSimpleTests
     public void the_System_Acl_1_is_the_only_one_that_can_be_configured()
     {
         var map = SharedEngine.Map;
-        var acl = map.StObjs.Obtain<AclTable>();
-        var user = map.StObjs.Obtain<UserTable>();
+        var acl = map.StObjs.Obtain<AclTable>().ShouldNotBeNull();
+        var user = map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             int idUser = user.CreateUser( ctx, 1, Guid.NewGuid().ToString() );
@@ -127,9 +127,9 @@ public class AclSimpleTests
     public void playing_with_a_user_in_two_groups()
     {
         var map = SharedEngine.Map;
-        var acl = map.StObjs.Obtain<AclTable>();
-        var user = map.StObjs.Obtain<UserTable>();
-        var group = map.StObjs.Obtain<GroupTable>();
+        var acl = map.StObjs.Obtain<AclTable>().ShouldNotBeNull();
+        var user = map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
+        var group = map.StObjs.Obtain<GroupTable>().ShouldNotBeNull();
 
         using( var ctx = new SqlStandardCallContext() )
         {
@@ -138,8 +138,8 @@ public class AclSimpleTests
             int idGroupRight = group.CreateGroup( ctx, 1 );
             int idGroupEditor = group.CreateGroup( ctx, 1 );
 
-            group.AddUser( ctx, 1, idGroupRight, idUser );
-            group.AddUser( ctx, 1, idGroupEditor, idUser );
+            group.AddMember( ctx, 1, idGroupRight, idUser );
+            group.AddMember( ctx, 1, idGroupEditor, idUser );
 
             Assert.That( acl.GetGrantLevel( ctx, idGroupRight, idAcl ), Is.EqualTo( 0 ), "Acl is not configured: Blind for anyone..." );
             Assert.That( acl.GetGrantLevel( ctx, idGroupEditor, idAcl ), Is.EqualTo( 0 ), "Acl is not configured: Blind for anyone..." );
@@ -172,7 +172,7 @@ public class AclSimpleTests
             Assert.That( acl.GetGrantLevel( ctx, idUser, idAcl ), Is.EqualTo( 112 ), "Right is SafeAdministrator, but not more." );
 
             acl.DestroyAcl( ctx, 1, idAcl );
-            acl.Database.ExecuteReader( "select AclId from CK.tAcl where AclId = @0", idAcl )
+            acl.Database.ExecuteReader( "select AclId from CK.tAcl where AclId = @0", idAcl ).ShouldNotBeNull()
                 .Rows.ShouldBeEmpty();
         }
     }
@@ -182,9 +182,9 @@ public class AclSimpleTests
     public void destroying_actors_suppress_any_related_configurations()
     {
         var map = SharedEngine.Map;
-        var acl = map.StObjs.Obtain<AclTable>();
-        var user = map.StObjs.Obtain<UserTable>();
-        var group = map.StObjs.Obtain<GroupTable>();
+        var acl = map.StObjs.Obtain<AclTable>().ShouldNotBeNull();
+        var user = map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
+        var group = map.StObjs.Obtain<GroupTable>().ShouldNotBeNull();
 
         using( var ctx = new SqlStandardCallContext() )
         {
@@ -193,7 +193,7 @@ public class AclSimpleTests
             int idUser = user.CreateUser( ctx, 1, Guid.NewGuid().ToString() );
             int idGroup = group.CreateGroup( ctx, 1 );
 
-            group.AddUser( ctx, 1, idGroup, idUser );
+            group.AddMember( ctx, 1, idGroup, idUser );
             acl.AclGrantSet( ctx, 1, idAcl, idUser, null, 92 );
             acl.AclGrantSet( ctx, 1, idAcl, idGroup, null, 64 );
 
@@ -206,7 +206,7 @@ public class AclSimpleTests
             db.ExecuteScalar( "select count(*) from CK.tAclConfig where AclId = @0 and ActorId=@1", idAcl, idGroup )
               .ShouldBe( 1 );
             group.DestroyGroup( ctx, 1, idGroup, true );
-            db.ExecuteReader( "select * from CK.tAclConfig where AclId = @0 and ActorId=@1", idAcl, idGroup )
+            db.ExecuteReader( "select * from CK.tAclConfig where AclId = @0 and ActorId=@1", idAcl, idGroup ).ShouldNotBeNull()
               .Rows.ShouldBeEmpty();
 
             Assert.That( acl.GetGrantLevel( ctx, idUser, idAcl ), Is.EqualTo( 92 ) );
@@ -214,11 +214,11 @@ public class AclSimpleTests
             db.ExecuteScalar( "select count(*) from CK.tAclConfig where AclId = @0 and ActorId=@1", idAcl, idUser )
               .ShouldBe( 1 );
             user.DestroyUser( ctx, 1, idUser );
-            db.ExecuteReader( "select * from CK.tAclConfig where AclId = @0 and ActorId=@1", idAcl, idUser )
+            db.ExecuteReader( "select * from CK.tAclConfig where AclId = @0 and ActorId=@1", idAcl, idUser ).ShouldNotBeNull()
               .Rows.ShouldBeEmpty();
 
             acl.DestroyAcl( ctx, 1, idAcl );
-            db.ExecuteReader( "select AclId from CK.tAcl where AclId = @0", idAcl )
+            db.ExecuteReader( "select AclId from CK.tAcl where AclId = @0", idAcl ).ShouldNotBeNull()
               .Rows.ShouldBeEmpty();
 
         }

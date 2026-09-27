@@ -15,7 +15,7 @@ public class HZoneSimpleTests
     [TearDown]
     public void CheckCKCoreInvariant()
     {
-        SharedEngine.Map.StObjs.Obtain<SqlDefaultDatabase>().GetCKCoreInvariantsViolations()
+        SharedEngine.Map.StObjs.Obtain<SqlDefaultDatabase>().ShouldNotBeNull().GetCKCoreInvariantsViolations()
             .Rows.ShouldBeEmpty();
     }
 
@@ -23,9 +23,9 @@ public class HZoneSimpleTests
     public void adding_a_user_in_a_child_zone_support_AutoAddUserInParentZone()
     {
         var map = SharedEngine.Map;
-        var zone = map.StObjs.Obtain<ZoneTable>();
-        var group = map.StObjs.Obtain<Zone.GroupTable>();
-        var user = map.StObjs.Obtain<UserTable>();
+        var zone = map.StObjs.Obtain<ZoneTable>().ShouldNotBeNull();
+        var group = map.StObjs.Obtain<Zone.GroupTable>().ShouldNotBeNull();
+        var user = map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
 
         using( var ctx = new SqlStandardCallContext() )
         {
@@ -41,8 +41,8 @@ public class HZoneSimpleTests
             Util.Invokable(() => zone.AddUser(ctx, 1, allZones[3], idUser1, autoAddUserInParentZone: false)).ShouldThrow<SqlDetailedException>();
             zone.AddUser( ctx, 1, allZones[3], idUser1, autoAddUserInParentZone: true );
 
-            Util.Invokable(() => group.AddUser(ctx, 1, idGroup, idUser2, autoAddUserInZone: false)).ShouldThrow<SqlDetailedException>();
-            group.AddUser( ctx, 1, idGroup, idUser2, autoAddUserInZone: true );
+            Util.Invokable(() => group.AddMember(ctx, 1, idGroup, idUser2, autoAddUserInZone: false)).ShouldThrow<SqlDetailedException>();
+            group.AddMember( ctx, 1, idGroup, idUser2, autoAddUserInZone: true );
 
             user.Database.ExecuteScalar( "select count(*) from CK.tActorProfile where ActorId <> GroupId and ActorId = @0", idUser1 )
                 .ShouldBe( 4 );
@@ -57,9 +57,9 @@ public class HZoneSimpleTests
     public void removing_a_user_from_a_zone_removes_it_from_all_child_zones()
     {
         var map = SharedEngine.Map;
-        var zone = map.StObjs.Obtain<ZoneTable>();
-        var group = map.StObjs.Obtain<Zone.GroupTable>();
-        var user = map.StObjs.Obtain<UserTable>();
+        var zone = map.StObjs.Obtain<ZoneTable>().ShouldNotBeNull();
+        var group = map.StObjs.Obtain<Zone.GroupTable>().ShouldNotBeNull();
+        var user = map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
 
         using( var ctx = new SqlStandardCallContext() )
         {
@@ -73,7 +73,7 @@ public class HZoneSimpleTests
             int idGroup = group.CreateGroup( ctx, 1, allZones[3] );
 
             zone.AddUser( ctx, 1, allZones[3], idUser1, autoAddUserInParentZone: true );
-            group.AddUser( ctx, 1, idGroup, idUser2, autoAddUserInZone: true );
+            group.AddMember( ctx, 1, idGroup, idUser2, autoAddUserInZone: true );
 
             user.Database.ExecuteScalar( "select count(*) from CK.tActorProfile where ActorId <> GroupId and ActorId = @0", idUser1 )
                 .ShouldBe( 4 );
@@ -83,10 +83,10 @@ public class HZoneSimpleTests
             zone.RemoveUser( ctx, 1, allZones[2], idUser2 );
             user.Database.ExecuteScalar( "select count(*) from CK.tActorProfile where ActorId <> GroupId and ActorId = @0", idUser2 )
                 .ShouldBe( 2 );
-            group.RemoveUser( ctx, 1, allZones[1], idUser2 );
+            group.RemoveMember( ctx, 1, allZones[1], idUser2 );
             user.Database.ExecuteScalar( "select count(*) from CK.tActorProfile where ActorId <> GroupId and ActorId = @0", idUser2 )
                 .ShouldBe( 1 );
-            group.RemoveUser( ctx, 1, allZones[0], idUser2 );
+            group.RemoveMember( ctx, 1, allZones[0], idUser2 );
             user.Database.ExecuteScalar( "select count(*) from CK.tActorProfile where ActorId <> GroupId and ActorId = @0", idUser2 )
                 .ShouldBe( 0 );
 
@@ -102,9 +102,9 @@ public class HZoneSimpleTests
     public void creating_and_destroying_zone_with_sub_zones_and_groups_when_ForceDestroy_is_true()
     {
         var map = SharedEngine.Map;
-        var zone = map.StObjs.Obtain<ZoneTable>();
-        var group = map.StObjs.Obtain<Zone.GroupTable>();
-        var user = map.StObjs.Obtain<UserTable>();
+        var zone = map.StObjs.Obtain<ZoneTable>().ShouldNotBeNull();
+        var group = map.StObjs.Obtain<Zone.GroupTable>().ShouldNotBeNull();
+        var user = map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
 
         using( var ctx = new SqlStandardCallContext() )
         {
@@ -134,7 +134,7 @@ public class HZoneSimpleTests
     public void moving_a_zone_in_the_tree_can_specify_the_next_sibling_id()
     {
         var map = SharedEngine.Map;
-        var zone = map.StObjs.Obtain<ZoneTable>();
+        var zone = map.StObjs.Obtain<ZoneTable>().ShouldNotBeNull();
 
         using( var ctx = new SqlStandardCallContext() )
         {
@@ -169,8 +169,8 @@ public class HZoneSimpleTests
     public void GroupMove_can_safely_be_called_instead_of_ZoneMove()
     {
         var map = SharedEngine.Map;
-        var zone = map.StObjs.Obtain<ZoneTable>();
-        var group = map.StObjs.Obtain<Zone.GroupTable>();
+        var zone = map.StObjs.Obtain<ZoneTable>().ShouldNotBeNull();
+        var group = map.StObjs.Obtain<Zone.GroupTable>().ShouldNotBeNull();
 
         using( var ctx = new SqlStandardCallContext() )
         {
@@ -203,7 +203,7 @@ public class HZoneSimpleTests
     public void moving_a_zone_in_a_child_zone_is_an_error()
     {
         var map = SharedEngine.Map;
-        var zone = map.StObjs.Obtain<ZoneTable>();
+        var zone = map.StObjs.Obtain<ZoneTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             int idZone1 = zone.CreateZone( ctx, 1 );

@@ -34,5 +34,6 @@ public class Package : SqlPackage
     /// Gets the tMCResHtml table from this package.
     /// </summary>
     [InjectObject]
+    [AllowNull]
     public MCResHtmlTable MCResHtmlTable { get; protected set; }
 }

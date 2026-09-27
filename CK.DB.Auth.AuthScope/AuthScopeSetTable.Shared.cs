@@ -16,7 +16,7 @@ public abstract partial class AuthScopeSetTable
     {
         string n = r.GetString( 0 );
         ScopeWARStatus s;
-        switch( r.GetSqlChars( 1 ).Buffer[0] )
+        switch( r.GetSqlChars( 1 ).Buffer![0] )
         {
             case 'A': s = ScopeWARStatus.Accepted; break;
             case 'R': s = ScopeWARStatus.Rejected; break;

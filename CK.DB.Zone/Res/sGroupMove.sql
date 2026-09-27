@@ -41,7 +41,7 @@ begin
 			begin
 				if @Option = 1 -- Intersect
 				begin
-					exec CK.sGroupUserRemove @ActorId, @GroupId, @ExtraUserIdInZone;
+					exec CK.sGroupMemberRemove @ActorId, @GroupId, @ExtraUserIdInZone;
 				end
 				else
 				begin -- 2 - AutoUserRegistration

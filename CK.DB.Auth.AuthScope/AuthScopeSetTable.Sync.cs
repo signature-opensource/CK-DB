@@ -13,7 +13,7 @@ public abstract partial class AuthScopeSetTable
     /// <param name="ctx">The call context.</param>
     /// <param name="scopeSetId">The scope set identifier to read.</param>
     /// <returns>The set of scopes.</returns>
-    public AuthScopeSet ReadAuthScopeSet( ISqlCallContext ctx, int scopeSetId )
+    public AuthScopeSet? ReadAuthScopeSet( ISqlCallContext ctx, int scopeSetId )
     {
         return RawReadAuthScopeSet( ctx, CreateReadCommand( $"select {scopeSetId}" ) );
     }
@@ -24,9 +24,9 @@ public abstract partial class AuthScopeSetTable
     /// <param name="ctx">The call context.</param>
     /// <param name="cmd">The reader command.</param>
     /// <returns>The set of scopes.</returns>
-    public AuthScopeSet RawReadAuthScopeSet( ISqlCallContext ctx, SqlCommand cmd )
+    public AuthScopeSet? RawReadAuthScopeSet( ISqlCallContext ctx, SqlCommand cmd )
     {
-        AuthScopeSet Read( SqlCommand c )
+        AuthScopeSet? Read( SqlCommand c )
         {
             using( var r = cmd.ExecuteReader() )
             {
@@ -63,7 +63,7 @@ public abstract partial class AuthScopeSetTable
     /// <param name="scopesHaveStatus">True to handle [W], [A] or [R] prefix from scopes.</param>
     /// <param name="defaultStatus">Initial status of of initial scopes.</param>
     /// <returns>The scope set identifier.</returns>
-    public virtual int CreateScopeSet( ISqlCallContext ctx, int actorId, string scopes = null, bool scopesHaveStatus = false, ScopeWARStatus defaultStatus = ScopeWARStatus.Waiting )
+    public virtual int CreateScopeSet( ISqlCallContext ctx, int actorId, string? scopes = null, bool scopesHaveStatus = false, ScopeWARStatus defaultStatus = ScopeWARStatus.Waiting )
     {
         return DoCreateScopeSet( ctx, actorId, scopes, scopesHaveStatus, defaultStatus.ToString()[0] );
     }
@@ -78,12 +78,11 @@ public abstract partial class AuthScopeSetTable
     /// <param name="initDefaultWARStatus">Default status of initial scopes.</param>
     /// <returns>The scope set identifier.</returns>
     [SqlProcedure( "sAuthScopeSetCreate" )]
-    protected abstract int DoCreateScopeSet(
-        ISqlCallContext ctx,
-        int actorId,
-        string initScopes,
-        bool initScopesHaveStatus,
-        char initDefaultWARStatus );
+    protected abstract int DoCreateScopeSet( ISqlCallContext ctx,
+                                             int actorId,
+                                             string? initScopes,
+                                             bool initScopesHaveStatus,
+                                             char initDefaultWARStatus );
 
     /// <summary>
     /// Destroys a set of scopes.
@@ -206,10 +205,10 @@ public abstract partial class AuthScopeSetTable
     /// <param name="ctx">The call context.</param>
     /// <param name="actorId">The acting actor identifier.</param>
     /// <param name="scopeSetId">The target scope set identifier.</param>
-    /// <param name="scopes">Whitespace separated list of scopes to remove.</param>
+    /// <param name="scopes">Whitespace separated list of scopes to remove. Null to remove all the scopes.</param>
     /// <param name="scopesHaveStatus">True to handle [W], [A] or [R] prefixes from <paramref name="scopes"/>.</param>
     /// <param name="defaultWARStatus">The status ('W', 'A' or 'R') to use when no explicit prefix are handled.</param>
     /// <param name="warStatusFilter">Optional filter status: only scopes with this status will be removed.</param>
     [SqlProcedure( "sAuthScopeSetRemoveScopes" )]
-    protected abstract void DoRemoveScopes( ISqlCallContext ctx, int actorId, int scopeSetId, string scopes, bool scopesHaveStatus, char defaultWARStatus, char? warStatusFilter );
+    protected abstract void DoRemoveScopes( ISqlCallContext ctx, int actorId, int scopeSetId, string? scopes, bool scopesHaveStatus, char defaultWARStatus, char? warStatusFilter );
 }

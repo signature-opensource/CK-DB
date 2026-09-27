@@ -1,4 +1,5 @@
 using CK.Core;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CK.DB.Res.MCResText;
 
@@ -8,8 +9,8 @@ namespace CK.DB.Res.MCResText;
 [SqlPackage( Schema = "CK", ResourcePath = "Res" )]
 public class Package : SqlPackage
 {
-    ResTable _resTable;
-    Globalization.Package _globalization;
+    [AllowNull] ResTable _resTable;
+    [AllowNull] Globalization.Package _globalization;
 
     void StObjConstruct( ResTable resTable, Globalization.Package globalization )
     {
@@ -31,5 +32,6 @@ public class Package : SqlPackage
     /// Gets the tMCResText table from this package.
     /// </summary>
     [InjectObject]
+    [AllowNull]
     public MCResTextTable MCResTextTable { get; protected set; }
 }

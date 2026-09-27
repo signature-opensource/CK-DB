@@ -17,9 +17,9 @@ public class UserSimpleCodeTests
     [Test]
     public void create_SimpleCode_user_and_check_read_info_object_method()
     {
-        var u = SharedEngine.Map.StObjs.Obtain<UserSimpleCodeTable>();
-        var user = SharedEngine.Map.StObjs.Obtain<UserTable>();
-        var infoFactory = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserSimpleCodeInfo>>();
+        var u = SharedEngine.Map.StObjs.Obtain<UserSimpleCodeTable>().ShouldNotBeNull();
+        var user = SharedEngine.Map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
+        var infoFactory = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserSimpleCodeInfo>>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             var userName = Guid.NewGuid().ToString();
@@ -30,7 +30,7 @@ public class UserSimpleCodeTests
             info.SimpleCode = googleAccountId;
             var created = u.CreateOrUpdateSimpleCodeUser( ctx, 1, userId, info );
             created.OperationResult.ShouldBe( UCResult.Created );
-            var info2 = u.FindKnownUserInfo( ctx, googleAccountId );
+            var info2 = u.FindKnownUserInfo( ctx, googleAccountId ).ShouldNotBeNull();
 
             info2.UserId.ShouldBe( userId );
             info2.Info.SimpleCode.ShouldBe( googleAccountId );
@@ -44,9 +44,9 @@ public class UserSimpleCodeTests
     [Test]
     public async Task create_SimpleCode_user_and_check_read_info_object_method_Async()
     {
-        var u = SharedEngine.Map.StObjs.Obtain<UserSimpleCodeTable>();
-        var user = SharedEngine.Map.StObjs.Obtain<UserTable>();
-        var infoFactory = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserSimpleCodeInfo>>();
+        var u = SharedEngine.Map.StObjs.Obtain<UserSimpleCodeTable>().ShouldNotBeNull();
+        var user = SharedEngine.Map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
+        var infoFactory = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserSimpleCodeInfo>>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             var userName = Guid.NewGuid().ToString();
@@ -57,7 +57,7 @@ public class UserSimpleCodeTests
             info.SimpleCode = googleAccountId;
             var created = await u.CreateOrUpdateSimpleCodeUserAsync( ctx, 1, userId, info );
             created.OperationResult.ShouldBe( UCResult.Created );
-            var info2 = await u.FindKnownUserInfoAsync( ctx, googleAccountId );
+            var info2 = (await u.FindKnownUserInfoAsync( ctx, googleAccountId )).ShouldNotBeNull();
 
             info2.UserId.ShouldBe( userId );
             info2.Info.SimpleCode.ShouldBe( googleAccountId );
@@ -77,14 +77,14 @@ public class UserSimpleCodeTests
     [Test]
     public void vUserAuthProvider_reflects_the_user_SimpleCode_authentication()
     {
-        var u = SharedEngine.Map.StObjs.Obtain<UserSimpleCodeTable>();
-        var user = SharedEngine.Map.StObjs.Obtain<UserTable>();
+        var u = SharedEngine.Map.StObjs.Obtain<UserSimpleCodeTable>().ShouldNotBeNull();
+        var user = SharedEngine.Map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             string userName = "SimpleCode auth - " + Guid.NewGuid().ToString();
             var googleAccountId = Guid.NewGuid().ToString( "N" );
             var idU = user.CreateUser( ctx, 1, userName );
-            u.Database.ExecuteReader( $"select * from CK.vUserAuthProvider where UserId={idU} and Scheme='SimpleCode'" )
+            u.Database.ExecuteReader( $"select * from CK.vUserAuthProvider where UserId={idU} and Scheme='SimpleCode'" ).ShouldNotBeNull()
                 .Rows.ShouldBeEmpty();
             var info = u.CreateUserInfo<IUserSimpleCodeInfo>();
             info.SimpleCode = googleAccountId;
@@ -92,7 +92,7 @@ public class UserSimpleCodeTests
             u.Database.ExecuteScalar( $"select count(*) from CK.vUserAuthProvider where UserId={idU} and Scheme='SimpleCode'" )
                 .ShouldBe( 1 );
             u.DestroySimpleCodeUser( ctx, 1, idU );
-            u.Database.ExecuteReader( $"select * from CK.vUserAuthProvider where UserId={idU} and Scheme='SimpleCode'" )
+            u.Database.ExecuteReader( $"select * from CK.vUserAuthProvider where UserId={idU} and Scheme='SimpleCode'" ).ShouldNotBeNull()
                 .Rows.ShouldBeEmpty();
         }
     }
@@ -100,9 +100,9 @@ public class UserSimpleCodeTests
     [Test]
     public void standard_generic_tests_for_SimpleCode_provider()
     {
-        var auth = SharedEngine.Map.StObjs.Obtain<Auth.Package>();
+        var auth = SharedEngine.Map.StObjs.Obtain<Auth.Package>().ShouldNotBeNull();
         // With IUserSimpleCodeInfo POCO.
-        var f = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserSimpleCodeInfo>>();
+        var f = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserSimpleCodeInfo>>().ShouldNotBeNull();
         CK.DB.Auth.Tests.AuthTests.StandardTestForGenericAuthenticationProvider(
             auth,
             "SimpleCode",
@@ -132,8 +132,8 @@ public class UserSimpleCodeTests
     [Test]
     public async Task standard_generic_tests_for_SimpleCode_provider_Async()
     {
-        var auth = SharedEngine.Map.StObjs.Obtain<Auth.Package>();
-        var f = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserSimpleCodeInfo>>();
+        var auth = SharedEngine.Map.StObjs.Obtain<Auth.Package>().ShouldNotBeNull();
+        var f = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserSimpleCodeInfo>>().ShouldNotBeNull();
         await Auth.Tests.AuthTests.StandardTestForGenericAuthenticationProviderAsync(
             auth,
             "SimpleCode",

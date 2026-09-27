@@ -33,7 +33,7 @@ public abstract partial class AclTable : SqlTable
     /// <param name="keyReason">The reason. Use null or empty string when no specific, applicative reason exists.</param>
     /// <param name="grantLevel">The grant level to set. Greater than 127 is a deny (value is 255-GrantLevel).</param>
     [SqlProcedure( "sAclGrantSet" )]
-    public abstract void AclGrantSet( ISqlCallContext ctx, int actorId, int aclId, int actorIdToGrant, string keyReason, byte grantLevel );
+    public abstract void AclGrantSet( ISqlCallContext ctx, int actorId, int aclId, int actorIdToGrant, string? keyReason, byte grantLevel );
 
     /// <summary>
     /// Reads the final GrantLevel for an Actor on an Acl.

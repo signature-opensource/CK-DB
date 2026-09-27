@@ -1,4 +1,5 @@
 using CK.Core;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CK.DB.Res.ResString;
 
@@ -16,11 +17,13 @@ public class Package : SqlPackage
     /// Gets the resource table.
     /// </summary>
     [InjectObject]
+    [AllowNull]
     public ResTable ResTable { get; protected set; }
 
     /// <summary>
     /// Gets the string holder table.
     /// </summary>
     [InjectObject]
+    [AllowNull]
     public ResStringTable ResStringTable { get; protected set; }
 }

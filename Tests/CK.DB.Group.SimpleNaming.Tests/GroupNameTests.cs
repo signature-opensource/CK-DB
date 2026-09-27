@@ -17,8 +17,8 @@ public class GroupNameTests
     public void a_group_can_be_renamed()
     {
         var map = SharedEngine.Map;
-        var g = map.StObjs.Obtain<GroupTable>();
-        var gN = map.StObjs.Obtain<SimpleNaming.Package>();
+        var g = map.StObjs.Obtain<GroupTable>().ShouldNotBeNull();
+        var gN = map.StObjs.Obtain<SimpleNaming.Package>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             string uniquifierName = Guid.NewGuid().ToString();
@@ -32,7 +32,7 @@ public class GroupNameTests
             g.Database.ExecuteScalar( "select GroupName from CK.tGroup where GroupId = @0", groupId )
                 .ShouldBe( name );
             g.DestroyGroup( ctx, 1, groupId );
-            g.Database.ExecuteReader( "select * from CK.tGroup where GroupId = @0", groupId )
+            g.Database.ExecuteReader( "select * from CK.tGroup where GroupId = @0", groupId ).ShouldNotBeNull()
                 .Rows.ShouldBeEmpty();
         }
     }
@@ -41,8 +41,8 @@ public class GroupNameTests
     public void renaming_a_group_with_an_already_conflicting_name_finds_the_hole()
     {
         var map = SharedEngine.Map;
-        var g = map.StObjs.Obtain<GroupTable>();
-        var gN = map.StObjs.Obtain<SimpleNaming.Package>();
+        var g = map.StObjs.Obtain<GroupTable>().ShouldNotBeNull();
+        var gN = map.StObjs.Obtain<SimpleNaming.Package>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             string uniquifierName = Guid.NewGuid().ToString();
@@ -73,8 +73,8 @@ public class GroupNameTests
     public void group_names_are_unique_and_clash_are_atomatically_handled()
     {
         var map = SharedEngine.Map;
-        var g = map.StObjs.Obtain<GroupTable>();
-        var gN = map.StObjs.Obtain<SimpleNaming.Package>();
+        var g = map.StObjs.Obtain<GroupTable>().ShouldNotBeNull();
+        var gN = map.StObjs.Obtain<SimpleNaming.Package>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             string[] names = Enumerable.Range( 0, 8 ).Select( i => Guid.NewGuid().ToString() + " - " + i ).ToArray();
@@ -111,8 +111,8 @@ public class GroupNameTests
     public void new_group_name_can_be_checked()
     {
         var map = SharedEngine.Map;
-        var g = map.StObjs.Obtain<GroupTable>();
-        var gN = map.StObjs.Obtain<SimpleNaming.Package>();
+        var g = map.StObjs.Obtain<GroupTable>().ShouldNotBeNull();
+        var gN = map.StObjs.Obtain<SimpleNaming.Package>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             string theGroupName = Guid.NewGuid().ToString();
@@ -137,8 +137,8 @@ public class GroupNameTests
     public void group_name_is_nvarchar_128()
     {
         var map = SharedEngine.Map;
-        var g = map.StObjs.Obtain<GroupTable>();
-        var gN = map.StObjs.Obtain<SimpleNaming.Package>();
+        var g = map.StObjs.Obtain<GroupTable>().ShouldNotBeNull();
+        var gN = map.StObjs.Obtain<SimpleNaming.Package>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             string theGroupName = new string( '-', 127 ) + 'X';
@@ -162,8 +162,8 @@ public class GroupNameTests
     public void when_there_is_no_more_room_for_rename_checking_group_name_returns_null()
     {
         var map = SharedEngine.Map;
-        var g = map.StObjs.Obtain<GroupTable>();
-        var gN = map.StObjs.Obtain<SimpleNaming.Package>();
+        var g = map.StObjs.Obtain<GroupTable>().ShouldNotBeNull();
+        var gN = map.StObjs.Obtain<SimpleNaming.Package>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             string theGroupName = Guid.NewGuid().ToString();

@@ -24,7 +24,7 @@ public class MCResHtmlTests
     [Test]
     public void fallbaks_between_french_and_english_cultures()
     {
-        var p = SharedEngine.Map.StObjs.Obtain<Package>();
+        var p = SharedEngine.Map.StObjs.Obtain<Package>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             int noValuesId, enId, frId, bothId;
@@ -47,7 +47,7 @@ public class MCResHtmlTests
     [Test]
     public void fallbaks_between_french_and_english_and_german_cultures()
     {
-        var p = SharedEngine.Map.StObjs.Obtain<Package>();
+        var p = SharedEngine.Map.StObjs.Obtain<Package>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
 
@@ -116,7 +116,7 @@ public class MCResHtmlTests
             DeAtCultureId, "de-AT", "de-AT,de", "German (Austria)", "Deutsch (Österreich)", "German (Austria)", DeCultureId );
     }
 
-    static void CheckString( Package p, int resId, int cultureId, object expectedValue, object expectedMatchedCultureId )
+    static void CheckString( Package p, int resId, int cultureId, object? expectedValue, object? expectedMatchedCultureId )
     {
         p.Database.ExecuteScalar( "select Value from CK.vMCResHtml where ResId=@0 and CultureId = @1", resId, cultureId )
             .ShouldBe( expectedValue );
@@ -127,7 +127,7 @@ public class MCResHtmlTests
     [Test]
     public void setting_and_clearing_values_traverses_culture_hierarchy()
     {
-        var p = SharedEngine.Map.StObjs.Obtain<Package>();
+        var p = SharedEngine.Map.StObjs.Obtain<Package>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             RegisterRegionalCultures( p, ctx );
@@ -191,7 +191,7 @@ public class MCResHtmlTests
     [Test]
     public void english_is_the_ultimate_fallback_for_cultures_not_linked_to_english()
     {
-        var p = SharedEngine.Map.StObjs.Obtain<Package>();
+        var p = SharedEngine.Map.StObjs.Obtain<Package>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             // Register an orphan root culture (no parent): English is still appended automatically
@@ -226,7 +226,7 @@ public class MCResHtmlTests
     [Test]
     public void destroying_the_resource_destroys_the_string_values()
     {
-        var p = SharedEngine.Map.StObjs.Obtain<Package>();
+        var p = SharedEngine.Map.StObjs.Obtain<Package>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
             int noValuesId, enId, frId, bothId;
@@ -236,7 +236,7 @@ public class MCResHtmlTests
             p.ResTable.Destroy( ctx, enId );
             p.ResTable.Destroy( ctx, frId );
             p.ResTable.Destroy( ctx, bothId );
-            p.Database.ExecuteReader( "select Value from CK.vMCResHtml where ResId=@0", bothId )
+            p.Database.ExecuteReader( "select Value from CK.vMCResHtml where ResId=@0", bothId ).ShouldNotBeNull()
                 .Rows.ShouldBeEmpty();
 
             Should.NotThrow( () => p.MCResHtmlTable.SetHtml( ctx, bothId, EnCultureId, null ) );
