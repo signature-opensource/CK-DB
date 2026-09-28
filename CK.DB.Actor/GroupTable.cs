@@ -35,7 +35,7 @@ public abstract partial class GroupTable : SqlTable
     /// <returns>
     /// A <see cref="ICreateGroupCommandResult"/>.
     /// <para>
-    /// Note: The command result is a <see cref="ICrisResultError"/> when the stored procedure throws an exception.
+    /// Note: The eventual command result is a <see cref="ICrisResultError"/> when the stored procedure throws an exception.
     /// </para>
     /// </returns>
     [CommandHandler]
@@ -65,7 +65,7 @@ public abstract partial class GroupTable : SqlTable
     /// <returns>
     /// A <see cref="ICrisBasicCommandResult"/>.
     /// <para>
-    /// Note: The command result is a <see cref="ICrisResultError"/> when the stored procedure throws an exception.
+    /// Note: The eventual command result is a <see cref="ICrisResultError"/> when the stored procedure throws an exception.
     /// </para>
     /// </returns>
     [CommandHandler]
@@ -92,7 +92,7 @@ public abstract partial class GroupTable : SqlTable
     /// <returns>
     /// A <see cref="ICrisBasicCommandResult"/>.
     /// <para>
-    /// Note: The command result is a <see cref="ICrisResultError"/> when the stored procedure throws an exception.
+    /// Note: The eventual command result is a <see cref="ICrisResultError"/> when the stored procedure throws an exception.
     /// </para>
     /// </returns>
     [CommandHandler]
@@ -119,7 +119,7 @@ public abstract partial class GroupTable : SqlTable
     /// <returns>
     /// A <see cref="ICrisBasicCommandResult"/>.
     /// <para>
-    /// Note: The command result is a <see cref="ICrisResultError"/> when the stored procedure throws an exception.
+    /// Note: The eventual command result is a <see cref="ICrisResultError"/> when the stored procedure throws an exception.
     /// </para>
     /// </returns>
     [CommandHandler]
@@ -145,7 +145,7 @@ public abstract partial class GroupTable : SqlTable
     /// <returns>
     /// A <see cref="ICrisBasicCommandResult"/>.
     /// <para>
-    /// Note: The command result is a <see cref="ICrisResultError"/> when the stored procedure throws an exception.
+    /// Note: The eventual command result is a <see cref="ICrisResultError"/> when the stored procedure throws an exception.
     /// </para>
     /// </returns>
     [CommandHandler]
