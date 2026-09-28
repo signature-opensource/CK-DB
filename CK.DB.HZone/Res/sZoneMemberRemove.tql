@@ -7,6 +7,8 @@ begin
 	inject "
 	if @AutoRemoveMemberFromChildZone = 1
 	begin
+        --<PreRemoveMemberFromChildZone revert/>
+
 		-- Retrieves the parent hierarchical identifier.
 		declare @ParentHID hierarchyid;
 		select @ParentHID = z.HierarchicalId from CK.tZone z where z.ZoneId = @ZoneId;
@@ -29,8 +31,10 @@ begin
 			fetch next from @CZone into @ChildZoneId;
 		end
 		deallocate @CZone;
+
+        --<PostRemoveMemberFromChildZone />
 	end" 
-	into "PreZoneUserRemove";
+	into "PreZoneMemberRemove";
 
 	-- This ensures that Zones are skipped while removing the
 	-- member from the zones's groups.
@@ -41,7 +45,8 @@ begin
     begin
 	    in first part {select}
 	    begin
-		    inject "not exists(select * from CK.tZone where ZoneId = a.GroupId) and " before single {g.ZoneId = @ZoneId};
+		    inject "not exists(select * from CK.tZone where ZoneId = a.GroupId) and "
+               before single {g.ZoneId = @ZoneId};
 	    end
     end
 

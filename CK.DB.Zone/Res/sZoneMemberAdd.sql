@@ -32,11 +32,11 @@ as begin
 			end
 		end
 
-		--<PreZoneUserAdd revert />
+		--<PreZoneMemberAdd revert />
 
 		insert into CK.tActorProfile( ActorId, GroupId ) values( @MemberId, @ZoneId );
 
-		--<PostZoneUserAdd />
+		--<PostZoneMemberAdd />
 	end
 
 	--[endsp]

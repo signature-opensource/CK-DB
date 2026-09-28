@@ -5,6 +5,8 @@ begin
 	add parameter @AutoAddMemberInParentZone bit = 0;
 
 	inject "
+        --<PreAddMemberInParentZone revert />
+
 		declare @ZoneHID hierarchyid;
 		select @ZoneHID = z.HierarchicalId from CK.tZone z where z.ZoneId = @ZoneId;
 
@@ -39,8 +41,10 @@ begin
 				deallocate @CParentZone;
 			end
 		end
+
+        --<PostAddMemberInParentZone />
 	" 
-	into "PreZoneUserAdd";
+	into "PreZoneMemberAdd";
 
 end
 

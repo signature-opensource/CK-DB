@@ -16,7 +16,7 @@ as begin
 
 	if @GroupId <> @MemberId and exists (select * from CK.tActorProfile where GroupId = @GroupId and ActorId = @MemberId)
 	begin
-		-- If this is the System Group, only members of it can remove Users.
+		-- If this is the System Group, only members of it can remove members.
 		if @GroupId = 1 
 		begin
 			if not exists( select 1 from CK.tActorProfile p where p.GroupId = 1 and p.ActorId = @ActorId ) 
@@ -25,11 +25,11 @@ as begin
 			end
 		end
 
-		--<PreUserRemove revert />
+		--<PreMemberRemove revert />
 
 		delete from CK.tActorProfile where GroupId = @GroupId and ActorId = @MemberId;
 		
-		--<PostUserRemove />
+		--<PostMemberRemove />
 	end
 
 	--[endsp]

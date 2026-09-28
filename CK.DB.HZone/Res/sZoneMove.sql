@@ -1,4 +1,4 @@
-﻿-- SetupConfig: { "Requires": [ "CK.sGroupMove" ] }
+-- SetupConfig: { "Requires": [ "CK.sGroupMove" ] }
 create procedure CK.sZoneMove
 (
 	@ActorId int,        
@@ -39,6 +39,7 @@ as begin
 			where HierarchicalId.GetAncestor(1) = @ParentHId and HierarchicalId < @NextSiblingHId;
 	end
 	select @NewHId = @ParentHId.GetDescendant(@LastHId, @NextSiblingHId);
+
 	--<PreZoneMove revert />
 
 	update CK.tZone set HierarchicalId = HierarchicalId.GetReparentedValue(@ZoneHId, @NewHId)

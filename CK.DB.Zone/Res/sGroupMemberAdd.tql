@@ -14,7 +14,7 @@ begin
 		else
 		begin 
 	" 
-	before single "--<PreUserAdd";
+	before single "--<PreMemberAdd";
 	
 	inject "
 			declare @ZoneId int;		
@@ -38,12 +38,12 @@ begin
 					;throw 50000, 'Group.UserNotInZone', 1;
 				end
 			end	" 
-	into "PreUserAdd";
+	into "PreMemberAdd";
 
 	inject "
 		end 
 	" 
-	after single "--<PostUserAdd";
+	after single "--<PostMemberAdd";
 
 end
 

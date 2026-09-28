@@ -16,7 +16,7 @@ as begin
 	-- The member must be in the Zone...
 	if @ZoneId <> @MemberId and exists (select * from CK.tActorProfile where GroupId = @ZoneId and ActorId = @MemberId)
 	begin
-		-- ...and if this is the System Zone, only members of it can remove Users.
+		-- ...and if this is the System Zone, only members of it can remove members.
 		if @ZoneId = 1 
 		begin
 			if not exists( select 1 from CK.tActorProfile p where p.GroupId = 1 and p.ActorId = @ActorId ) 
@@ -27,7 +27,7 @@ as begin
 		-- ..and if the ZoneId is actually a Group, this is an error.
 		if not exists (select * from CK.tZone with(serializable) where ZoneId = @ZoneId) throw 50000, 'Zone.InvalidId', 1;
 
-		--<PreZoneUserRemove revert />
+		--<PreZoneMemberRemove revert />
 
 		-- Removes the member from all the groups of the security Zone.
 		declare @GroupId int;
@@ -48,7 +48,7 @@ as begin
 
 		delete from CK.tActorProfile where GroupId = @ZoneId and ActorId = @MemberId;
 
-		--<PostZoneUserRemove />
+		--<PostZoneMemberRemove />
 	end
 
 	--[endsp]

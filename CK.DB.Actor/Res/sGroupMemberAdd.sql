@@ -26,7 +26,7 @@ as begin
 
 	if @GroupId <> @MemberId and not exists (select * from CK.tActorProfile where GroupId = @GroupId and ActorId = @MemberId)
 	begin
-		-- If this is the System Group, only members of it can add new Users.
+		-- If this is the System Group, only members of it can add new members.
 		if @GroupId = 1
 		begin
 			if not exists( select 1 from CK.tActorProfile p where p.GroupId = 1 and p.ActorId = @ActorId )
@@ -35,11 +35,11 @@ as begin
 			end
 		end
 
-		--<PreUserAdd revert />
+		--<PreMemberAdd revert />
 
 		insert into CK.tActorProfile( ActorId, GroupId ) values( @MemberId, @GroupId );
 
-		--<PostUserAdd />
+		--<PostMemberAdd />
 
 	end
 	--[endsp]
