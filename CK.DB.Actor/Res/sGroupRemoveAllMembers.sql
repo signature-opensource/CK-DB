@@ -13,20 +13,19 @@ as begin
 
 	--[beginsp]
 
-	declare @UserId int;
-	declare @CUser cursor;
-	set @CUser = cursor local fast_forward for 
+	declare @MemberId int;
+	declare @CMember cursor;
+	set @CMember = cursor local fast_forward for 
 		select ActorId from CK.tActorProfile p 
-						inner join CK.tUser u on u.UserId = p.ActorId
-						where p.GroupId = @GroupId and p.ActorId <> @GroupId;
-	open @CUser;
-	fetch from @CUser into @UserId;
+			where p.GroupId = @GroupId and p.ActorId <> @GroupId;
+	open @CMember;
+	fetch from @CMember into @MemberId;
 	while @@FETCH_STATUS = 0
 	begin
-		exec CK.sGroupMemberRemove @ActorId, @GroupId, @UserId;
-		fetch next from @CUser into @UserId;
+		exec CK.sGroupMemberRemove @ActorId, @GroupId, @MemberId;
+		fetch next from @CMember into @MemberId;
 	end
-	deallocate @CUser;
+	deallocate @CMember;
 
 	--[endsp]
 end
