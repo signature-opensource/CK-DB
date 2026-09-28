@@ -35,9 +35,9 @@ public class ResHtmlTests
         var t = SharedEngine.Map.StObjs.Obtain<ResHtmlTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
-            Util.Invokable( () => t.SetHtml( ctx, -1, "No way" ) ).ShouldThrow<SqlDetailedException>();
-            Util.Invokable( () => t.SetHtml( ctx, 0, "No way" ) ).ShouldThrow<SqlDetailedException>();
-            Util.Invokable( () => t.SetHtml( ctx, 1, "No way" ) ).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => t.SetHtml( ctx, -1, "No way" ) );
+            Should.Throw<SqlDetailedException>( () => t.SetHtml( ctx, 0, "No way" ) );
+            Should.Throw<SqlDetailedException>( () => t.SetHtml( ctx, 1, "No way" ) );
         }
     }
 }

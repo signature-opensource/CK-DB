@@ -51,8 +51,7 @@ public class AclSimpleTests
         {
             for( int idAcl = 0; idAcl <= 8; ++idAcl )
             {
-                Util.Invokable( () => acl.DestroyAcl( ctx, 1, idAcl ) )
-                    .ShouldThrow<Exception>()
+                Should.Throw<Exception>( () => acl.DestroyAcl( ctx, 1, idAcl ) )
                     .InnerException.ShouldBeOfType<SqlException>().Message.ShouldBe( "Security.ReservedAclId" );
             }
         }
@@ -104,22 +103,22 @@ public class AclSimpleTests
             acl.AclGrantSet( ctx, 1, aclId: 1, actorIdToGrant: 0, "For Test", 0 );
             acl.AclGrantSet( ctx, 1, aclId: 1, actorIdToGrant: idUser, "For Test", 0 );
 
-            Util.Invokable( () => acl.AclGrantSet( ctx, 1, aclId: 0, idUser, "For Test", 42 ) )
-                .ShouldThrow<Exception>().InnerException.ShouldBeOfType<SqlException>().Message.ShouldBe( "Security.ImmutableAclId" );
-            Util.Invokable( () => acl.AclGrantSet( ctx, 1, aclId: 2, idUser, "For Test", 42 ) )
-                .ShouldThrow<Exception>().InnerException.ShouldBeOfType<SqlException>().Message.ShouldBe( "Security.ImmutableAclId" );
-            Util.Invokable( () => acl.AclGrantSet( ctx, 1, aclId: 3, idUser, "For Test", 42 ) )
-                .ShouldThrow<Exception>().InnerException.ShouldBeOfType<SqlException>().Message.ShouldBe( "Security.ImmutableAclId" );
-            Util.Invokable( () => acl.AclGrantSet( ctx, 1, aclId: 4, idUser, "For Test", 42 ) )
-                .ShouldThrow<Exception>().InnerException.ShouldBeOfType<SqlException>().Message.ShouldBe( "Security.ImmutableAclId" );
-            Util.Invokable( () => acl.AclGrantSet( ctx, 1, aclId: 5, idUser, "For Test", 42 ) )
-                .ShouldThrow<Exception>().InnerException.ShouldBeOfType<SqlException>().Message.ShouldBe( "Security.ImmutableAclId" );
-            Util.Invokable( () => acl.AclGrantSet( ctx, 1, aclId: 6, idUser, "For Test", 42 ) )
-                .ShouldThrow<Exception>().InnerException.ShouldBeOfType<SqlException>().Message.ShouldBe( "Security.ImmutableAclId" );
-            Util.Invokable( () => acl.AclGrantSet( ctx, 1, aclId: 7, idUser, "For Test", 42 ) )
-                .ShouldThrow<Exception>().InnerException.ShouldBeOfType<SqlException>().Message.ShouldBe( "Security.ImmutableAclId" );
-            Util.Invokable( () => acl.AclGrantSet( ctx, 1, aclId: 8, idUser, "For Test", 42 ) )
-                .ShouldThrow<Exception>().InnerException.ShouldBeOfType<SqlException>().Message.ShouldBe( "Security.ImmutableAclId" );
+            Should.Throw<Exception>( () => acl.AclGrantSet( ctx, 1, aclId: 0, idUser, "For Test", 42 ) )
+                .InnerException.ShouldBeOfType<SqlException>().Message.ShouldBe( "Security.ImmutableAclId" );
+            Should.Throw<Exception>( () => acl.AclGrantSet( ctx, 1, aclId: 2, idUser, "For Test", 42 ) )
+                .InnerException.ShouldBeOfType<SqlException>().Message.ShouldBe( "Security.ImmutableAclId" );
+            Should.Throw<Exception>( () => acl.AclGrantSet( ctx, 1, aclId: 3, idUser, "For Test", 42 ) )
+                .InnerException.ShouldBeOfType<SqlException>().Message.ShouldBe( "Security.ImmutableAclId" );
+            Should.Throw<Exception>( () => acl.AclGrantSet( ctx, 1, aclId: 4, idUser, "For Test", 42 ) )
+                .InnerException.ShouldBeOfType<SqlException>().Message.ShouldBe( "Security.ImmutableAclId" );
+            Should.Throw<Exception>( () => acl.AclGrantSet( ctx, 1, aclId: 5, idUser, "For Test", 42 ) )
+                .InnerException.ShouldBeOfType<SqlException>().Message.ShouldBe( "Security.ImmutableAclId" );
+            Should.Throw<Exception>( () => acl.AclGrantSet( ctx, 1, aclId: 6, idUser, "For Test", 42 ) )
+                .InnerException.ShouldBeOfType<SqlException>().Message.ShouldBe( "Security.ImmutableAclId" );
+            Should.Throw<Exception>( () => acl.AclGrantSet( ctx, 1, aclId: 7, idUser, "For Test", 42 ) )
+                .InnerException.ShouldBeOfType<SqlException>().Message.ShouldBe( "Security.ImmutableAclId" );
+            Should.Throw<Exception>( () => acl.AclGrantSet( ctx, 1, aclId: 8, idUser, "For Test", 42 ) )
+                .InnerException.ShouldBeOfType<SqlException>().Message.ShouldBe( "Security.ImmutableAclId" );
         }
     }
 

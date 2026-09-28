@@ -58,13 +58,13 @@ public class AclTypeTests
               .ShouldBe( 4 );
 
             // ...except if it is 0 or 127.
-            await Util.Invokable(() => aclType.SetGrantLevelAsync(ctx, 1, id, 0, false)).ShouldThrowAsync<SqlDetailedException>();
-            await Util.Invokable(() => aclType.SetGrantLevelAsync(ctx, 1, id, 127, false)).ShouldThrowAsync<SqlDetailedException>();
+            await Should.ThrowAsync<SqlDetailedException>( () => aclType.SetGrantLevelAsync(ctx, 1, id, 0, false) );
+            await Should.ThrowAsync<SqlDetailedException>( () => aclType.SetGrantLevelAsync(ctx, 1, id, 127, false) );
 
             // Configured GrantLevel must not be deny level:
-            await Util.Invokable(() => aclType.SetGrantLevelAsync(ctx, 1, id, 128, true)).ShouldThrowAsync<SqlDetailedException>();
-            await Util.Invokable(() => aclType.SetGrantLevelAsync(ctx, 1, id, 255, true)).ShouldThrowAsync<SqlDetailedException>();
-            await Util.Invokable(() => aclType.SetGrantLevelAsync(ctx, 1, id, 255, false)).ShouldThrowAsync<SqlDetailedException>();
+            await Should.ThrowAsync<SqlDetailedException>( () => aclType.SetGrantLevelAsync(ctx, 1, id, 128, true) );
+            await Should.ThrowAsync<SqlDetailedException>( () => aclType.SetGrantLevelAsync(ctx, 1, id, 255, true) );
+            await Should.ThrowAsync<SqlDetailedException>( () => aclType.SetGrantLevelAsync(ctx, 1, id, 255, false) );
 
             await aclType.SetGrantLevelAsync( ctx, 1, id, 87, false );
             db.ExecuteScalar( "select count(*) from CK.tAclTypeGrantLevel where AclTypeId = @0", id )
@@ -113,28 +113,28 @@ public class AclTypeTests
             // Sets the type as a Constrained one.
             aclType.SetConstrainedGrantLevel( ctx, 1, idType, true );
             // Allowing GrantLevel: 50
-            Util.Invokable( () => acl.AclGrantSet( ctx, 1, idAcl, idUser, "A reason", 50 ) ).ShouldThrow<SqlDetailedException>();
-            Util.Invokable( () => acl.AclGrantSet( ctx, 1, idAcl, idUser, "A reason", 255 - 50 ) ).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => acl.AclGrantSet( ctx, 1, idAcl, idUser, "A reason", 50 ) );
+            Should.Throw<SqlDetailedException>( () => acl.AclGrantSet( ctx, 1, idAcl, idUser, "A reason", 255 - 50 ) );
             aclType.SetGrantLevel( ctx, 1, idType, 50, true );
             acl.AclGrantSet( ctx, 1, idAcl, idUser, "A reason", 50 );
             acl.AclGrantSet( ctx, 1, idAcl, idUser, "A reason", 255 - 50 );
 
             // Allowing GrantLevel: 75
-            Util.Invokable( () => acl.AclGrantSet( ctx, 1, idAcl, idUser, null!, 75 ) ).ShouldThrow<SqlDetailedException>();
-            Util.Invokable( () => acl.AclGrantSet( ctx, 1, idAcl, idUser, null!, 255 - 75 ) ).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => acl.AclGrantSet( ctx, 1, idAcl, idUser, null!, 75 ) );
+            Should.Throw<SqlDetailedException>( () => acl.AclGrantSet( ctx, 1, idAcl, idUser, null!, 255 - 75 ) );
             aclType.SetGrantLevel( ctx, 1, idType, 75, true );
             acl.AclGrantSet( ctx, 1, idAcl, idUser, null!, 255 - 75 );
             acl.AclGrantSet( ctx, 1, idAcl, idUser, null!, 75 );
 
             // Since 75 and 50 are currently used, one can not remove it.
-            Util.Invokable(() => aclType.SetGrantLevel(ctx, 1, idType, 75, false)).ShouldThrow<SqlDetailedException>();
-            Util.Invokable(() => aclType.SetGrantLevel(ctx, 1, idType, 50, false)).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => aclType.SetGrantLevel(ctx, 1, idType, 75, false) );
+            Should.Throw<SqlDetailedException>( () => aclType.SetGrantLevel(ctx, 1, idType, 50, false) );
 
             // Removing the 50 configuration: we can now remove the level 50.
             acl.AclGrantSet( ctx, 1, idAcl, idUser, "A reason", 0 );
             aclType.SetGrantLevel( ctx, 1, idType, 50, false );
             // We can no more use the level 50.
-            Util.Invokable(() => acl.AclGrantSet(ctx, 1, idAcl, idUser, "Won't do it!", 50)).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => acl.AclGrantSet(ctx, 1, idAcl, idUser, "Won't do it!", 50) );
 
             // Cleaning the Acl and the type.
             user.DestroyUser( ctx, 1, idUser );
@@ -158,7 +158,7 @@ public class AclTypeTests
 
             acl.AclGrantSet( ctx, 1, idAcl, idUser, "A reason", 50 );
             // Sets the type as a Constrained one.
-            Util.Invokable(() => aclType.SetConstrainedGrantLevel(ctx, 1, idType, true)).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => aclType.SetConstrainedGrantLevel(ctx, 1, idType, true) );
 
             acl.AclGrantSet( ctx, 1, idAcl, idUser, "A reason", 0 );
             aclType.SetConstrainedGrantLevel( ctx, 1, idType, true );

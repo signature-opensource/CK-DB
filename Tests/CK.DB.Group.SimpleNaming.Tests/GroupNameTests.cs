@@ -180,7 +180,7 @@ public class GroupNameTests
             string clash = gN.CheckUniqueNameForNewGroup( ctx, theGroupName );
             clash.ShouldBeNull();
             int idTooMuch = g.CreateGroup( ctx, 1 );
-            Util.Invokable(() => gN.GroupRename(ctx, 1, idTooMuch, theGroupName)).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => gN.GroupRename(ctx, 1, idTooMuch, theGroupName) );
 
         }
     }

@@ -17,7 +17,7 @@ public class UserTests
         var u = SharedEngine.Map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
-            Util.Invokable( () => u.CreateUser( ctx, 0, Guid.NewGuid().ToString() ) ).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => u.CreateUser( ctx, 0, Guid.NewGuid().ToString() ) );
         }
     }
 

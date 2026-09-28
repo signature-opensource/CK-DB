@@ -35,9 +35,9 @@ public class ResStringTests
         var t = SharedEngine.Map.StObjs.Obtain<ResStringTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
-            Util.Invokable( () => t.SetString( ctx, -1, "No way" ) ).ShouldThrow<SqlDetailedException>();
-            Util.Invokable( () => t.SetString( ctx, 0, "No way" ) ).ShouldThrow<SqlDetailedException>();
-            Util.Invokable( () => t.SetString( ctx, 1, "Le Système" ) ).ShouldNotThrow();
+            Should.Throw<SqlDetailedException>( () => t.SetString( ctx, -1, "No way" ) );
+            Should.Throw<SqlDetailedException>( () => t.SetString( ctx, 0, "No way" ) );
+            Should.NotThrow( () => t.SetString( ctx, 1, "Le Système" ) );
             t.SetString( ctx, 1, "System" );
         }
     }

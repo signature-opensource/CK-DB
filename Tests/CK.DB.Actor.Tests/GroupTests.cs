@@ -37,7 +37,7 @@ public class GroupTests
         var g = SharedEngine.Map.StObjs.Obtain<GroupTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
-            Util.Invokable( () => g.CreateGroup( ctx, 0 ) ).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => g.CreateGroup( ctx, 0 ) );
         }
     }
 
@@ -48,7 +48,7 @@ public class GroupTests
         using( var ctx = new SqlStandardCallContext() )
         {
             int groupId = g.CreateGroup( ctx, 1 );
-            Util.Invokable(() => g.DestroyGroup(ctx, 0, groupId)).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => g.DestroyGroup(ctx, 0, groupId) );
             g.DestroyGroup( ctx, 1, groupId );
         }
     }
@@ -67,7 +67,7 @@ public class GroupTests
 
             g.AddMember( ctx, 1, groupId, userId );
 
-            Util.Invokable(() => g.DestroyGroup(ctx, 1, groupId)).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => g.DestroyGroup(ctx, 1, groupId) );
 
             u.DestroyUser( ctx, 1, userId );
             g.DestroyGroup( ctx, 1, groupId );
@@ -167,15 +167,15 @@ public class GroupTests
         // Using ActorId = userId2.
         using( var ctx = new SqlStandardCallContext() )
         {
-            Util.Invokable(() => g.RemoveMember(ctx, userId2, 1, userId)).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => g.RemoveMember(ctx, userId2, 1, userId) );
             g.Database.ExecuteScalar( "select count(*) from CK.tActorProfile where ActorId = @0 and GroupId <> @0", userId )
                 .ShouldBe( 1 );
 
-            Util.Invokable(() => g.AddMember(ctx, userId2, 1, anotherUserId)).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => g.AddMember(ctx, userId2, 1, anotherUserId) );
             g.Database.ExecuteScalar( "select count(*) from CK.tActorProfile where ActorId = @0 and GroupId <> @0", anotherUserId )
                 .ShouldBe( 0 );
 
-            Util.Invokable(() => g.RemoveAllMembers(ctx, userId2, 1)).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => g.RemoveAllMembers(ctx, userId2, 1) );
         }
 
         using( var ctx = new SqlStandardCallContext() )

@@ -24,8 +24,8 @@ public class ZoneTests
         var t = SharedEngine.Map.StObjs.Obtain<ZoneTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
-            Util.Invokable( () => t.DestroyZone( ctx, 1, 0 ) ).ShouldThrow<SqlDetailedException>();
-            Util.Invokable( () => t.DestroyZone( ctx, 1, 1 ) ).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => t.DestroyZone( ctx, 1, 0 ) );
+            Should.Throw<SqlDetailedException>( () => t.DestroyZone( ctx, 1, 1 ) );
         }
     }
 
@@ -79,10 +79,10 @@ public class ZoneTests
         var p = SharedEngine.Map.StObjs.Obtain<Zone.Package>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
-            Util.Invokable( () => p.ZoneTable.CreateZone( ctx, 0 ) ).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => p.ZoneTable.CreateZone( ctx, 0 ) );
 
             int zoneId = p.ZoneTable.CreateZone( ctx, 1 );
-            Util.Invokable( () => p.ZoneTable.DestroyZone( ctx, 0, zoneId ) ).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => p.ZoneTable.DestroyZone( ctx, 0, zoneId ) );
             p.ZoneTable.DestroyZone( ctx, 1, zoneId );
         }
     }
@@ -97,13 +97,13 @@ public class ZoneTests
             int userId = p.UserTable.CreateUser( ctx, 1, Guid.NewGuid().ToString() );
             int groupId = p.GroupTable.CreateGroup( ctx, 1, zoneId );
 
-            Util.Invokable( () => p.GroupTable.AddMember( ctx, 1, groupId, userId ) ).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => p.GroupTable.AddMember( ctx, 1, groupId, userId ) );
 
-            Util.Invokable( () => p.ZoneTable.AddMember( ctx, 1, zoneId, userId ) ).ShouldNotThrow( "Adding the user to the zone." );
-            Util.Invokable( () => p.GroupTable.AddMember( ctx, 1, groupId, userId ) ).ShouldNotThrow( "Adding the user to group: now it works." );
+            Should.NotThrow( () => p.ZoneTable.AddMember( ctx, 1, zoneId, userId ), "Adding the user to the zone." );
+            Should.NotThrow( () => p.GroupTable.AddMember( ctx, 1, groupId, userId ), "Adding the user to group: now it works." );
 
-            Util.Invokable( () => p.GroupTable.AddMember( ctx, 1, groupId, userId ) ).ShouldNotThrow( "If the user already exists in the zone, it is okay." );
-            Util.Invokable( () => p.ZoneTable.AddMember( ctx, 1, zoneId, userId ) ).ShouldNotThrow( "Just like Groups: adding an already existing user to a Zone is okay." );
+            Should.NotThrow( () => p.GroupTable.AddMember( ctx, 1, groupId, userId ), "If the user already exists in the zone, it is okay." );
+            Should.NotThrow( () => p.ZoneTable.AddMember( ctx, 1, zoneId, userId ), "Just like Groups: adding an already existing user to a Zone is okay." );
 
             p.ZoneTable.DestroyZone( ctx, 1, zoneId, true );
         }
@@ -118,7 +118,7 @@ public class ZoneTests
             int zoneId = p.ZoneTable.CreateZone( ctx, 1 );
             int groupId = p.GroupTable.CreateGroup( ctx, 1, zoneId );
 
-            Util.Invokable( () => p.ZoneTable.DestroyZone( ctx, 1, zoneId ) ).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => p.ZoneTable.DestroyZone( ctx, 1, zoneId ) );
 
             p.GroupTable.DestroyGroup( ctx, 1, groupId );
             p.ZoneTable.DestroyZone( ctx, 1, zoneId );
@@ -165,7 +165,7 @@ public class ZoneTests
         var g = map.StObjs.Obtain<GroupTable>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
-            Util.Invokable( () => g.CreateGroup( ctx, 1, 1 ) ).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => g.CreateGroup( ctx, 1, 1 ) );
         }
     }
 
@@ -227,7 +227,7 @@ public class ZoneTests
 
             // This does not: ZoneEmpty does not contain the user.
             // This uses the default option: GroupMoveOption.None.
-            Util.Invokable( () => g.MoveGroup( ctx, 1, idGroup, idZoneEmpty ) ).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => g.MoveGroup( ctx, 1, idGroup, idZoneEmpty ) );
             // User is still in the Group.
             u.Database.ExecuteScalar( $"select ActorId from CK.tActorProfile where GroupId = {idGroup} and ActorId = {idUser}" )
                 .ShouldBe( idUser );

@@ -44,7 +44,7 @@ public class ZoneSameBehaviorTests
 
             // This does not: ZoneEmpty does not contain the user.
             // This uses the default option: GroupMoveOption.None.
-            Util.Invokable(() => z.MoveZone(ctx, 1, idSubZone, idZoneEmpty)).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => z.MoveZone(ctx, 1, idSubZone, idZoneEmpty) );
             // User is still in the Group.
             u.Database.ExecuteScalar( $"select ActorId from CK.tActorProfile where GroupId = {idSubZone} and ActorId = {idUser}" )
                 .ShouldBe( idUser );

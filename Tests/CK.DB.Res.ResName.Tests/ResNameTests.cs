@@ -27,8 +27,8 @@ public class ResNameTests
         var p = SharedEngine.Map.StObjs.Obtain<Package>().ShouldNotBeNull();
         using( var ctx = new SqlStandardCallContext() )
         {
-            Util.Invokable( () => p.ResTable.Destroy( ctx, 0 ) ).ShouldThrow<SqlDetailedException>();
-            Util.Invokable(() => p.ResTable.Destroy(ctx, 1)).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => p.ResTable.Destroy( ctx, 0 ) );
+            Should.Throw<SqlDetailedException>( () => p.ResTable.Destroy(ctx, 1) );
         }
     }
 
@@ -43,10 +43,10 @@ public class ResNameTests
             string resName2 = Guid.NewGuid().ToString();
             p.ResNameTable.CreateResName( ctx, resId, resName );
             // Creates where a name already exists.
-            Util.Invokable(() => p.ResNameTable.CreateResName(ctx, resId, resName2)).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => p.ResNameTable.CreateResName(ctx, resId, resName2) );
             // Creates with an already existing name.
             int resId2 = p.ResTable.Create( ctx );
-            Util.Invokable(() => p.ResNameTable.CreateResName(ctx, resId2, resName)).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => p.ResNameTable.CreateResName(ctx, resId2, resName) );
             p.ResTable.Destroy( ctx, resId );
             p.ResTable.Destroy( ctx, resId2 );
         }

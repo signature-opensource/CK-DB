@@ -38,10 +38,10 @@ public class HZoneSimpleTests
             allZones.Add( zone.CreateZone( ctx, 1, allZones[2] ) );
             int idGroup = group.CreateGroup( ctx, 1, allZones[3] );
 
-            Util.Invokable(() => zone.AddMember(ctx, 1, allZones[3], idUser1, autoAddMemberInParentZone: false)).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => zone.AddMember( ctx, 1, allZones[3], idUser1, autoAddMemberInParentZone: false ) );
             zone.AddMember( ctx, 1, allZones[3], idUser1, autoAddMemberInParentZone: true );
 
-            Util.Invokable(() => group.AddMember(ctx, 1, idGroup, idUser2, autoAddMemberInZone: false)).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => group.AddMember( ctx, 1, idGroup, idUser2, autoAddMemberInZone: false ) );
             group.AddMember( ctx, 1, idGroup, idUser2, autoAddMemberInZone: true );
 
             user.Database.ExecuteScalar( "select count(*) from CK.tActorProfile where ActorId <> GroupId and ActorId = @0", idUser1 )
@@ -125,7 +125,7 @@ public class HZoneSimpleTests
             {
                 allGroups.Add( group.CreateGroup( ctx, 1, idZone ) );
             }
-            Util.Invokable(() => zone.DestroyZone(ctx, 1, allZones[0], forceDestroy: false)).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => zone.DestroyZone(ctx, 1, allZones[0], forceDestroy: false) );
             zone.DestroyZone( ctx, 1, allZones[0], forceDestroy: true );
         }
     }
@@ -209,7 +209,7 @@ public class HZoneSimpleTests
             int idZone1 = zone.CreateZone( ctx, 1 );
             int idZone2 = zone.CreateZone( ctx, 1, idZone1 );
 
-            Util.Invokable(() => zone.MoveZone(ctx, 1, idZone1, idZone2)).ShouldThrow<SqlDetailedException>();
+            Should.Throw<SqlDetailedException>( () => zone.MoveZone(ctx, 1, idZone1, idZone2) );
         }
     }
 }
