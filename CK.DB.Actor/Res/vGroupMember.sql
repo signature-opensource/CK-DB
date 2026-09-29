@@ -1,4 +1,3 @@
--- SetupConfig: {}
 -- SetupConfig: { "Requires": [ "CK.vGroup", "CK.vUser" ]}
 create view CK.vGroupMember
 as 
