@@ -24,30 +24,30 @@ begin
 							except 
 					   select p.ActorId from CK.tActorProfile p where p.GroupId = @NewZoneId and p.ActorId <> p.GroupId )
 			begin
-				;throw 50000, 'Group.UserNotInZone', 1;
+				;throw 50000, 'Group.MemberNotInZone', 1;
 			end
 		end
 		else if @Option = 1 or @Option = 2 
 		begin
-			declare @ExtraUserIdInZone int;
+			declare @ExtraMemberIdInZone int;
 			declare @CUserToRemove cursor;
 			set @CUserToRemove = cursor local fast_forward for 
 					   select p.ActorId from CK.tActorProfile p where p.GroupId = @GroupId and p.ActorId <> p.GroupId
 							except 
 					   select p.ActorId from CK.tActorProfile p where p.GroupId = @NewZoneId and p.ActorId <> p.GroupId;
 			open @CUserToRemove;
-			fetch from @CUserToRemove into @ExtraUserIdInZone;
+			fetch from @CUserToRemove into @ExtraMemberIdInZone;
 			while @@FETCH_STATUS = 0
 			begin
 				if @Option = 1 -- Intersect
 				begin
-					exec CK.sGroupMemberRemove @ActorId, @GroupId, @ExtraUserIdInZone;
+					exec CK.sGroupMemberRemove @ActorId, @GroupId, @ExtraMemberIdInZone;
 				end
 				else
 				begin -- 2 - AutoUserRegistration
-					exec CK.sZoneMemberAdd @ActorId, @NewZoneId, @ExtraUserIdInZone;
+					exec CK.sZoneMemberAdd @ActorId, @NewZoneId, @ExtraMemberIdInZone;
 				end
-				fetch next from @CUserToRemove into @ExtraUserIdInZone;
+				fetch next from @CUserToRemove into @ExtraMemberIdInZone;
 			end
 			deallocate @CUserToRemove;
 		end

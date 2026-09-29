@@ -8,6 +8,7 @@ namespace CK.DB.Actor;
 /// </summary>
 [SqlPackage( Schema = "CK", ResourcePath = "Res" )]
 [Versions( "5.0.0" )]
+[SqlObjectItem( "vGroupMember" )]
 public abstract class Package : SqlPackage
 {
     /// <summary>

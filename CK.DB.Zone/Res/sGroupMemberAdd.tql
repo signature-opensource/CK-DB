@@ -35,7 +35,7 @@ begin
 				end
 				else
 				begin
-					;throw 50000, 'Group.UserNotInZone', 1;
+					;throw 50000, 'Group.MemberNotInZone', 1;
 				end
 			end	" 
 	into "PreMemberAdd";

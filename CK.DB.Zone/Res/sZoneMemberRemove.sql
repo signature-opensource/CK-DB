@@ -24,8 +24,8 @@ as begin
 				;throw 50000, 'Security.ActorMustBeSytem', 1;
 			end
 		end
-		-- ..and if the ZoneId is actually a Group, this is an error.
-		if not exists (select * from CK.tZone with(serializable) where ZoneId = @ZoneId) throw 50000, 'Zone.InvalidId', 1;
+		-- ..and if the ZoneId is not a Zone, this is an error.
+		if not exists (select 1 from CK.tZone with(serializable) where ZoneId = @ZoneId) throw 50000, 'Zone.InvalidId', 1;
 
 		--<PreZoneMemberRemove revert />
 

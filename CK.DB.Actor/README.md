@@ -3,7 +3,7 @@
 This is the ultimate dependency of numerous other packages. It implements a minimalist model that
 handles Users and Groups that some packages extend:
 - [CK.DB.Zone](../CK.DB.Zone): Adds the support of Zones that are Groups and contains a set of Groups. Zones implement a 
- one-level only group hierarchies/
+ one-level only group hierarchies.
 - [CK.DB.HZone](../CK.DB.HZone): Extends the CK.DB.Zone to be hierarchical. Thanks to this package, Zones (that are Groups) can be 
 subordinated to a parent Zone.
 
