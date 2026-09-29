@@ -8,7 +8,6 @@ namespace CK.DB.Zone;
 /// </summary>
 [SqlPackage( ResourcePath = "Res", ResourceType = typeof( Package ) )]
 [Versions( "5.0.0" )]
-[SqlObjectItem( "transform:vGroupMember" )]
 public abstract class Package : Actor.Package
 {
     /// <summary>

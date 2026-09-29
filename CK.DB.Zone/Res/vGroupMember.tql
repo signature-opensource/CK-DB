@@ -1,7 +1,0 @@
--- SetupConfig: { "TransformerRequires": [ "CK.GroupTable-Zone(CK.vGroup)" ] }
-create transformer on CK.vGroupMember
-as 
-begin
-	add column g.ZoneId;
-    add column g.IsZone;
-end
