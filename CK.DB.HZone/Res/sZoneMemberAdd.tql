@@ -23,7 +23,7 @@ begin
 		begin
 			if @AutoAddMemberInParentZone = 0
 			begin
-				;throw 50000, 'Zone.UserNotInParentZone', 1;
+				;throw 50000, 'Zone.MemberNotInParentZone', 1;
 			end
 			else
 			begin
