@@ -37,7 +37,7 @@ public sealed class SqlLoginProvider : ILoginProvider
     public object CreatePayload( string scheme ) => _db.FindRequiredProvider( scheme, mustHavePayload: true ).CreatePayload();
 
     /// <inheritdoc />
-    public async ValueTask<UserLoginResult> LoginAsync( IActivityMonitor monitor, string scheme, object payload, bool actualLogin = true )
+    public async ValueTask<ActorLoginResult> LoginAsync( IActivityMonitor monitor, string scheme, object payload, bool actualLogin = true )
     {
         Throw.CheckNotNullArgument( payload );
         using var ctx = new SqlStandardCallContext( monitor );

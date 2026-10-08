@@ -34,7 +34,7 @@ public sealed class SqlAutoBindingAccountService : IAutoBindingAccountService
     public bool RequiresCriticalLevel { get; set; } = true;
 
     /// <inheritdoc />
-    public async ValueTask<UserLoginResult?> BindAccountAsync( IActivityMonitor monitor, LoginContext context )
+    public async ValueTask<ActorLoginResult?> BindAccountAsync( IActivityMonitor monitor, LoginContext context )
     {
         Throw.CheckNotNullArgument( monitor );
         Throw.CheckNotNullArgument( context );
@@ -43,7 +43,7 @@ public sealed class SqlAutoBindingAccountService : IAutoBindingAccountService
         {
             return context.SetError( "User.AccountBinding.Impersonated", "Account binding is not possible while impersonating." );
         }
-        var level = auth.UnsafeUser.Level;
+        var level = auth.UnsafeActor.Level;
         if( RequiresCriticalLevel && level != AuthLevel.Critical )
         {
             return context.SetError( "User.AccountBinding.CriticalLevelRequired", "User must be logged in Critical level." );
@@ -59,7 +59,7 @@ public sealed class SqlAutoBindingAccountService : IAutoBindingAccountService
         var p = _db.FindRequiredProvider( context.Scheme, mustHavePayload: false );
         using var ctx = new SqlStandardCallContext( monitor );
         // This is an actual login (UCLMode.WithActualLogin): the scheme is bound and the user is logged in with it.
-        UCLResult result = await p.CreateOrUpdateUserAsync( ctx, 1, auth.UnsafeUser.UserId, context.Payload, UCLMode.CreateOrUpdate | UCLMode.WithActualLogin )
+        UCLResult result = await p.CreateOrUpdateUserAsync( ctx, 1, auth.UnsafeActor.ActorId, context.Payload, UCLMode.CreateOrUpdate | UCLMode.WithActualLogin )
                                   .ConfigureAwait( false );
         return await _db.ToUserLoginResultAsync( ctx, result.LoginResult ).ConfigureAwait( false );
     }

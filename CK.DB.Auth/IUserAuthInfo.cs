@@ -21,5 +21,5 @@ public interface IUserAuthInfo
     /// <summary>
     /// Gets the schemes information for this user.
     /// </summary>
-    IReadOnlyList<UserSchemeInfo> Schemes { get; }
+    IReadOnlyList<SchemeInfo> Schemes { get; }
 }

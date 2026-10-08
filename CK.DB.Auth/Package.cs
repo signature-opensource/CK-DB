@@ -113,18 +113,18 @@ public abstract partial class Package : SqlPackage, IAuthenticationDatabaseServi
                 if( !await r.ReadAsync( t ).ConfigureAwait( false ) ) return null;
                 var userId = r.GetInt32( 0 );
                 var userName = r.GetString( 1 );
-                List<UserSchemeInfo>? schemes = null;
+                List<SchemeInfo>? schemes = null;
                 if( await r.NextResultAsync( t ).ConfigureAwait( false )
                     && await r.ReadAsync( t ).ConfigureAwait( false ) )
                 {
-                    schemes = new List<UserSchemeInfo>();
+                    schemes = new List<SchemeInfo>();
                     do
                     {
-                        schemes.Add( new UserSchemeInfo( r.GetString( 0 ), r.GetDateTime( 1 ) ) );
+                        schemes.Add( new SchemeInfo( r.GetString( 0 ), r.GetDateTime( 1 ) ) );
                     }
                     while( await r.ReadAsync( t ).ConfigureAwait( false ) );
                 }
-                return new AuthInfo( userId, userName, (IReadOnlyList<UserSchemeInfo>?)schemes ?? Array.Empty<UserSchemeInfo>() );
+                return new AuthInfo( userId, userName, (IReadOnlyList<SchemeInfo>?)schemes ?? Array.Empty<SchemeInfo>() );
             }
         }
         using( var cmd = CmdReadUserAuthInfo( actorId, userId ) )

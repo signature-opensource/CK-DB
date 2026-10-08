@@ -22,7 +22,7 @@ public abstract partial class Package
     [SqlProcedure( "sAuthUserOnLogin" )]
     public abstract LoginResult OnUserLogin( ISqlCallContext ctx, string scheme, DateTime lastLoginTime, int userId, bool actualLogin, DateTime loginTimeNow );
 
-    record AuthInfo( int UserId, string UserName, IReadOnlyList<UserSchemeInfo> Schemes ) : IUserAuthInfo;
+    record AuthInfo( int UserId, string UserName, IReadOnlyList<SchemeInfo> Schemes ) : IUserAuthInfo;
 
     /// <summary>
     /// Reads a <see cref="IUserAuthInfo"/> for a user.
@@ -41,17 +41,17 @@ public abstract partial class Package
                 if( !r.Read() ) return null;
                 var userId = r.GetInt32( 0 );
                 var userName = r.GetString( 1 );
-                List<UserSchemeInfo>? schemes = null;
+                List<SchemeInfo>? schemes = null;
                 if( r.NextResult() && r.Read() )
                 {
-                    schemes = new List<UserSchemeInfo>();
+                    schemes = new List<SchemeInfo>();
                     do
                     {
-                        schemes.Add( new UserSchemeInfo( r.GetString( 0 ), r.GetDateTime( 1 ) ) );
+                        schemes.Add( new SchemeInfo( r.GetString( 0 ), r.GetDateTime( 1 ) ) );
                     }
                     while( r.Read() );
                 }
-                return new AuthInfo( userId, userName, (IReadOnlyList<UserSchemeInfo>?)schemes ?? Array.Empty<UserSchemeInfo>() );
+                return new AuthInfo( userId, userName, (IReadOnlyList<SchemeInfo>?)schemes ?? Array.Empty<SchemeInfo>() );
             }
         }
         using( var cmd = CmdReadUserAuthInfo( actorId, userId ) )

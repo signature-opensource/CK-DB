@@ -22,7 +22,7 @@ public class AuthenticationInfoTests
     public void the_CK_AuthenticationInfo_services_are_registered()
     {
         var services = SharedEngine.AutomaticServices;
-        services.GetRequiredService<IUserInfoProvider>().ShouldBeOfType<SqlUserInfoProvider>();
+        services.GetRequiredService<IActorInfoProvider>().ShouldBeOfType<SqlActorInfoProvider>();
         services.GetServices<ILoginProvider>().ShouldContain( p => p is SqlLoginProvider );
         services.GetRequiredService<IAutoBindingAccountService>().ShouldBeOfType<SqlAutoBindingAccountService>();
     }
@@ -37,15 +37,15 @@ public class AuthenticationInfoTests
         {
             userId = await user.CreateUserAsync( ctx, 1, userName );
         }
-        var provider = SharedEngine.AutomaticServices.GetRequiredService<IUserInfoProvider>();
-        var u = (await provider.GetUserInfoAsync( TestHelper.Monitor, userId )).ShouldNotBeNull();
-        u.UserId.ShouldBe( userId );
-        u.UserName.ShouldBe( userName );
+        var provider = SharedEngine.AutomaticServices.GetRequiredService<IActorInfoProvider>();
+        var u = (await provider.GetActorInfoAsync( TestHelper.Monitor, userId )).ShouldNotBeNull();
+        u.ActorId.ShouldBe( userId );
+        u.ActorName.ShouldBe( userName );
         u.Level.ShouldBe( AuthLevel.Critical );
         u.Schemes.ShouldBeEmpty();
 
-        (await provider.GetUserInfoAsync( TestHelper.Monitor, int.MaxValue )).ShouldBeNull();
-        await Util.Awaitable( () => provider.GetUserInfoAsync( TestHelper.Monitor, 0 ).AsTask() ).ShouldThrowAsync<ArgumentException>();
+        (await provider.GetActorInfoAsync( TestHelper.Monitor, int.MaxValue )).ShouldBeNull();
+        await Util.Awaitable( () => provider.GetActorInfoAsync( TestHelper.Monitor, 0 ).AsTask() ).ShouldThrowAsync<ArgumentException>();
     }
 
     [Test]

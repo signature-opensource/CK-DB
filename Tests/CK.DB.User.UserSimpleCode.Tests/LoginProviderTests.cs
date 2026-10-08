@@ -57,9 +57,9 @@ public class LoginProviderTests
         (await p.LoginAsync( TestHelper.Monitor, "SimpleCode", Payload( p, code ), actualLogin: false )).IsSuccess.ShouldBeTrue();
         var success = await p.LoginAsync( TestHelper.Monitor, "SimpleCode", Payload( p, code ) );
         success.IsSuccess.ShouldBeTrue();
-        success.User!.UserId.ShouldBe( userId );
-        success.User.Level.ShouldBe( AuthLevel.Critical );
-        success.User.HasScheme( "SimpleCode" ).ShouldBeTrue();
+        success.Actor!.ActorId.ShouldBe( userId );
+        success.Actor.Level.ShouldBe( AuthLevel.Critical );
+        success.Actor.HasScheme( "SimpleCode" ).ShouldBeTrue();
 
         var failed = await p.LoginAsync( TestHelper.Monitor, "SimpleCode", Payload( p, "NO!" + code ) );
         failed.IsSuccess.ShouldBeFalse();
@@ -71,9 +71,9 @@ public class LoginProviderTests
     {
         var p = SharedEngine.AutomaticServices.GetRequiredService<SqlLoginProvider>();
         var binder = SharedEngine.AutomaticServices.GetRequiredService<SqlAutoBindingAccountService>();
-        var users = SharedEngine.AutomaticServices.GetRequiredService<IUserInfoProvider>();
+        var users = SharedEngine.AutomaticServices.GetRequiredService<IActorInfoProvider>();
         var userId = await CreateUserAsync();
-        var user = (await users.GetUserInfoAsync( TestHelper.Monitor, userId ))!;
+        var user = (await users.GetActorInfoAsync( TestHelper.Monitor, userId ))!;
         var code = "Bind-" + Guid.NewGuid().ToString( "N" );
         var now = DateTime.UtcNow;
 
@@ -94,9 +94,9 @@ public class LoginProviderTests
         var bound = (await binder.BindAccountAsync( TestHelper.Monitor, c3 )).ShouldNotBeNull();
         c3.HasError.ShouldBeFalse();
         bound.IsSuccess.ShouldBeTrue();
-        bound.User!.UserId.ShouldBe( userId );
-        bound.User.HasScheme( "SimpleCode" ).ShouldBeTrue();
+        bound.Actor!.ActorId.ShouldBe( userId );
+        bound.Actor.HasScheme( "SimpleCode" ).ShouldBeTrue();
 
-        (await p.LoginAsync( TestHelper.Monitor, "SimpleCode", Payload( p, code ) )).User!.UserId.ShouldBe( userId );
+        (await p.LoginAsync( TestHelper.Monitor, "SimpleCode", Payload( p, code ) )).Actor!.ActorId.ShouldBe( userId );
     }
 }
