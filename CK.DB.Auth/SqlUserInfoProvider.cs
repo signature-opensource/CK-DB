@@ -1,18 +1,17 @@
 using CK.Core;
-using CK.DB.Auth;
 using CK.SqlServer;
 using System.Threading.Tasks;
 
-namespace CK.DB.AuthenticationInfo;
+namespace CK.DB.Auth;
 
 /// <summary>
-/// Implements the CK.AuthenticationInfo <see cref="CK.Core.IUserInfoProvider"/> on the CK.DB.Auth users.
+/// Implements the CK.AuthenticationInfo <see cref="IUserInfoProvider"/> on the CK.DB.Auth users.
 /// The user is at the highest level it can reach (the session clamps it) and an unknown user is null.
 /// <para>
 /// This is a singleton: each call uses its own <see cref="SqlStandardCallContext"/>.
 /// </para>
 /// </summary>
-public sealed class SqlUserInfoProvider : CK.Core.IUserInfoProvider
+public sealed class SqlUserInfoProvider : IUserInfoProvider
 {
     readonly IAuthenticationDatabaseService _db;
 
@@ -27,7 +26,7 @@ public sealed class SqlUserInfoProvider : CK.Core.IUserInfoProvider
     }
 
     /// <inheritdoc />
-    public async ValueTask<CK.Core.UserInfo?> GetUserInfoAsync( IActivityMonitor monitor, int userId )
+    public async ValueTask<UserInfo?> GetUserInfoAsync( IActivityMonitor monitor, int userId )
     {
         Throw.CheckArgument( "The anonymous cannot be read.", userId != 0 );
         using var ctx = new SqlStandardCallContext( monitor );

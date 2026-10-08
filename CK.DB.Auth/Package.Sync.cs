@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using CK.SqlServer;
 using Microsoft.Data.SqlClient;
 using CK.Core;
-using CK.Auth;
 
 namespace CK.DB.Auth;
 

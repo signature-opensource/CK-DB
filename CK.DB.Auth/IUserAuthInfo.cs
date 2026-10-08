@@ -1,4 +1,4 @@
-using CK.Auth;
+using CK.Core;
 using System.Collections.Generic;
 
 namespace CK.DB.Auth;

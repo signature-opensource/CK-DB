@@ -1,12 +1,11 @@
 using CK.Core;
-using CK.DB.Auth;
 using CK.SqlServer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CK.DB.AuthenticationInfo;
+namespace CK.DB.Auth;
 
 /// <summary>
 /// Implements <see cref="ILoginProvider"/> on all the CK.DB.Auth providers: the basic provider (with a

@@ -6,7 +6,6 @@ using Microsoft.Data.SqlClient;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using CK.Auth;
 using System.Diagnostics.CodeAnalysis;
 
 namespace CK.DB.Auth;

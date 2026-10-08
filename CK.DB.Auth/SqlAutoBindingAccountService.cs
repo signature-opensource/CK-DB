@@ -1,10 +1,9 @@
 using CK.Core;
-using CK.DB.Auth;
 using CK.SqlServer;
 using System;
 using System.Threading.Tasks;
 
-namespace CK.DB.AuthenticationInfo;
+namespace CK.DB.Auth;
 
 /// <summary>
 /// Implements <see cref="IAutoBindingAccountService"/> on the CK.DB.Auth generic providers: the scheme of a login
