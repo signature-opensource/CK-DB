@@ -14,7 +14,7 @@ namespace CK.DB.User.UserOidc;
 /// Oidc authentication provider.
 /// </summary>
 [SqlTable( "tUserOidc", Package = typeof( Package ), Schema = "CK" )]
-[Versions( "2.0.0, 2.0.1" )]
+[Versions( "2.0.0, 2.0.1, 2.0.2" )]
 [SqlObjectItem( "transform:sUserDestroy" )]
 public abstract partial class UserOidcTable : SqlTable, IGenericAuthenticationProvider<IUserOidcInfo>
 {

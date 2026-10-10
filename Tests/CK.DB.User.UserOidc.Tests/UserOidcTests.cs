@@ -75,6 +75,61 @@ public class UserOidcTests
     }
 
     [Test]
+    public async Task the_claims_are_stored_as_received_and_replaced_by_an_actual_login_Async()
+    {
+        var u = SharedEngine.Map.StObjs.Obtain<UserOidcTable>().ShouldNotBeNull();
+        var user = SharedEngine.Map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
+        var infoFactory = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserOidcInfo>>().ShouldNotBeNull();
+        using var ctx = new SqlStandardCallContext();
+        int userId = await user.CreateUserAsync( ctx, 1, Guid.NewGuid().ToString() );
+        var sub = Guid.NewGuid().ToString( "N" );
+        IUserOidcInfo Info( string claims )
+        {
+            var i = infoFactory.Create();
+            i.SchemeSuffix = "Claims";
+            i.Sub = sub;
+            i.Claims = claims;
+            return i;
+        }
+        async Task<string> ReadAsync() => (await u.FindKnownUserInfoAsync( ctx, "Claims", sub )).ShouldNotBeNull().Info.Claims;
+
+        // Created with claims: any character is kept (UTF-8 column, nvarchar parameter).
+        const string first = """{"name":"Zoë Çağlar 王","email_verified":true,"address":{"country":"FR"},"age":42}""";
+        (await u.CreateOrUpdateOidcUserAsync( ctx, 1, userId, Info( first ) )).OperationResult.ShouldBe( UCResult.Created );
+        (await ReadAsync()).ShouldBe( first );
+        var read = (await u.FindKnownUserInfoAsync( ctx, "Claims", sub )).ShouldNotBeNull().Info;
+        read.TryGetClaim( "name", out var name ).ShouldBeTrue();
+        name.GetString().ShouldBe( "Zoë Çağlar 王" );
+        read.TryGetClaim( "email_verified", out var verified ).ShouldBeTrue();
+        verified.GetBoolean().ShouldBeTrue( "A boolean stays a boolean." );
+        read.TryGetClaim( "address", out var address ).ShouldBeTrue();
+        address.GetProperty( "country" ).GetString().ShouldBe( "FR" );
+        read.TryGetClaim( "missing", out _ ).ShouldBeFalse();
+
+        // A check-only login doesn't change them, an actual login replaces them.
+        const string second = """{"name":"Zoë"}""";
+        (await u.LoginUserAsync( ctx, Info( second ), actualLogin: false )).IsSuccess.ShouldBeTrue();
+        (await ReadAsync()).ShouldBe( first, "No side effect at a check." );
+        (await u.LoginUserAsync( ctx, Info( second ), actualLogin: true )).IsSuccess.ShouldBeTrue();
+        (await ReadAsync()).ShouldBe( second );
+
+        // Not provided (the old stack): the stored claims are kept.
+        (await u.LoginUserAsync( ctx, Info( "" ), actualLogin: true )).IsSuccess.ShouldBeTrue();
+        (await ReadAsync()).ShouldBe( second );
+
+        // Not a JSON object: refused.
+        await Util.Awaitable( () => u.CreateOrUpdateOidcUserAsync( ctx, 1, userId, Info( "not json" ) ) ).ShouldThrowAsync<Exception>();
+        await Util.Awaitable( () => u.CreateOrUpdateOidcUserAsync( ctx, 1, userId, Info( "[1,2]" ) ) ).ShouldThrowAsync<Exception>();
+        (await ReadAsync()).ShouldBe( second );
+
+        // Created without claims: "{}" (no claims known).
+        await u.DestroyOidcUserAsync( ctx, 1, userId, "Claims" );
+        (await u.CreateOrUpdateOidcUserAsync( ctx, 1, userId, Info( "" ) )).OperationResult.ShouldBe( UCResult.Created );
+        (await ReadAsync()).ShouldBe( "{}" );
+        await user.DestroyUserAsync( ctx, 1, userId );
+    }
+
+    [Test]
     public void Oidc_AuthProvider_is_registered()
     {
         Auth.Tests.AuthTests.CheckProviderRegistration( "Oidc" );

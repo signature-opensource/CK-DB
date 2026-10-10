@@ -21,12 +21,17 @@
 --
 -- When extending this procedure, during update null parameters must be left unchanged.
 --
+-- @Claims: the claims as received (a JSON object). Null or '' means "not provided": '{}' at the creation, the stored
+--          claims are kept otherwise. A provided value replaces the stored claims at a creation, an update or an actual
+--          login (never at a check-only login). It is nvarchar: no character is lost before the UTF-8 column.
+--
 create procedure CK.sUserOidcUCL
 (
 	@ActorId int,
 	@UserId int /*input*/output,
 	@SchemeSuffix varchar(64),
     @Sub nvarchar(64),
+    @Claims nvarchar(max) = null,
 	@Mode int, -- not null enum { "CreateOnly" = 1, "UpdateOnly" = 2, "CreateOrUpdate" = 3, "WithCheckLogin" = 4, "WithActualLogin" = 8, "IgnoreOptimisticKey" = 16 }
 	@UCResult int output, -- not null enum { None = 0, Created = 1, Updated = 2 }
     @LoginFailureCode int output, -- Optional. Set by CK.sAuthUserOnLogin if login is rejected.
@@ -79,11 +84,12 @@ begin
             set @LastLoginTime = '0001-01-01';
 			--<PreCreate revert /> 
 			-- Unique constraint on SchemeSuffix/Sub will detect any existing UserId vs. SchemeSuffix/Sub clashes.
-			insert into CK.tUserOidc( UserId, SchemeSuffix, Sub, LastLoginTime ) 
-				select	@UserId, 
-						@SchemeSuffix, 
-						@Sub, 
-						@LastLoginTime;
+			insert into CK.tUserOidc( UserId, SchemeSuffix, Sub, LastLoginTime, Claims )
+				select	@UserId,
+						@SchemeSuffix,
+						@Sub,
+						@LastLoginTime,
+						case when @Claims is null or len(@Claims) = 0 then '{}' else @Claims end;
 
 			set @UCResult = 1; -- Created
 
@@ -103,12 +109,15 @@ begin
 
 			--<PreUpdate revert /> 
 
-            -- We have nothing to update since in case of login, LastLoginTime must be set
-            -- after having called CK.sAuthUserOnLogin.
-            -- This fake update is used as a placeholder for any actual updates that may be
-            -- injected by other packages.
-			update CK.tUserOidc set 
-					LastLoginTime = LastLoginTime
+            -- In case of login, LastLoginTime must be set after having called CK.sAuthUserOnLogin.
+            -- The provided claims replace the stored ones, except at a check-only login (no side effect).
+            -- This update is also the placeholder for any actual updates that may be injected by other packages.
+			update CK.tUserOidc set
+					LastLoginTime = LastLoginTime,
+					Claims = case when @Claims is null or len(@Claims) = 0 or (@CheckLogin = 1 and @ActualLogin = 0)
+								  then Claims
+								  else @Claims
+							 end
 				where UserId = @ActualUserId and SchemeSuffix = @SchemeSuffix and Sub = @Sub;
 			--<PostUpdate />
 
