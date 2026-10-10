@@ -8,14 +8,23 @@ using System.Threading.Tasks;
 namespace CK.DB.Auth;
 
 /// <summary>
-/// Implements <see cref="ILoginProvider"/> on all the CK.DB.Auth providers: the basic provider (with a
-/// <see cref="BasicLoginPayload"/>) and the generic ones (with their own payload).
+/// Implements <see cref="ILoginProvider"/> on the generic CK.DB.Auth providers (with their own payload).
+/// <para>
+/// The "Basic" scheme is not handled here: it is the <see cref="ILoginProvider"/> of the package that implements the
+/// basic provider (CK.DB.User.UserPassword), whose payload is the login command ("Package First": nothing about the
+/// Basic scheme in the generic packages).
+/// </para>
 /// <para>
 /// This is a singleton: each call uses its own <see cref="SqlStandardCallContext"/>.
 /// </para>
 /// </summary>
 public sealed class SqlLoginProvider : ILoginProvider
 {
+    /// <summary>
+    /// The name of the basic provider, that this login provider doesn't handle: "Basic".
+    /// </summary>
+    public const string BasicProviderName = "Basic";
+
     readonly IAuthenticationDatabaseService _db;
     readonly IReadOnlyCollection<string> _providerNames;
 
@@ -27,8 +36,12 @@ public sealed class SqlLoginProvider : ILoginProvider
     {
         Throw.CheckNotNullArgument( db );
         _db = db;
-        _providerNames = db.AllProviders.Select( p => p.ProviderName ).ToArray();
+        _providerNames = db.AllProviders.Select( p => p.ProviderName )
+                                        .Where( n => !IsBasic( n ) )
+                                        .ToArray();
     }
+
+    static bool IsBasic( string schemeOrProviderName ) => string.Equals( LoginScheme.GetProviderName( schemeOrProviderName ), BasicProviderName, StringComparison.OrdinalIgnoreCase );
 
     /// <inheritdoc />
     public IReadOnlyCollection<string> ProviderNames => _providerNames;
@@ -40,28 +53,13 @@ public sealed class SqlLoginProvider : ILoginProvider
     public async ValueTask<ActorLoginResult> LoginAsync( IActivityMonitor monitor, string scheme, object payload, bool actualLogin = true )
     {
         Throw.CheckNotNullArgument( payload );
+        if( IsBasic( scheme ) )
+        {
+            Throw.ArgumentException( nameof( scheme ), $"The '{BasicProviderName}' scheme is not handled by the {nameof( SqlLoginProvider )}: it is handled by the login provider of the basic provider package (CK.DB.User.UserPassword)." );
+        }
         using var ctx = new SqlStandardCallContext( monitor );
-        LoginResult r;
-        if( string.Equals( LoginScheme.GetProviderName( scheme ), BasicLoginPayload.Scheme, StringComparison.OrdinalIgnoreCase ) )
-        {
-            if( payload is not BasicLoginPayload basicPayload )
-            {
-                Throw.ArgumentException( nameof( payload ), $"The '{BasicLoginPayload.Scheme}' scheme requires a BasicLoginPayload." );
-                return null!;
-            }
-            var basic = _db.BasicProvider;
-            if( basic == null )
-            {
-                Throw.ArgumentException( nameof( scheme ), "No basic authentication provider is available." );
-                return null!;
-            }
-            r = await basic.LoginUserAsync( ctx, basicPayload.UserName, basicPayload.Password, actualLogin ).ConfigureAwait( false );
-        }
-        else
-        {
-            var p = _db.FindRequiredProvider( scheme, mustHavePayload: false );
-            r = await p.LoginUserAsync( ctx, payload, actualLogin ).ConfigureAwait( false );
-        }
+        var p = _db.FindRequiredProvider( scheme, mustHavePayload: false );
+        var r = await p.LoginUserAsync( ctx, payload, actualLogin ).ConfigureAwait( false );
         return await _db.ToUserLoginResultAsync( ctx, r ).ConfigureAwait( false );
     }
 }

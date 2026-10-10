@@ -130,6 +130,32 @@ public class UserOidcTests
     }
 
     [Test]
+    public async Task the_last_login_method_is_detected_by_CK_DB_Auth_Async()
+    {
+        var u = SharedEngine.Map.StObjs.Obtain<UserOidcTable>().ShouldNotBeNull();
+        var user = SharedEngine.Map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
+        var auth = SharedEngine.Map.StObjs.Obtain<Auth.Package>().ShouldNotBeNull();
+        var infoFactory = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserOidcInfo>>().ShouldNotBeNull();
+        using var ctx = new SqlStandardCallContext();
+        int userId = await user.CreateUserAsync( ctx, 1, Guid.NewGuid().ToString() );
+        IUserOidcInfo Info( string suffix )
+        {
+            var i = infoFactory.Create();
+            i.SchemeSuffix = suffix;
+            i.Sub = Guid.NewGuid().ToString( "N" );
+            return i;
+        }
+        (await auth.HasOtherSchemeAsync( ctx, userId, "Oidc.A" )).ShouldBeFalse( "No login method at all." );
+        await u.CreateOrUpdateOidcUserAsync( ctx, 1, userId, Info( "A" ) );
+        (await auth.HasOtherSchemeAsync( ctx, userId, "Oidc.A" )).ShouldBeFalse( "Oidc.A is the last login method: its removal must be refused." );
+        (await auth.HasOtherSchemeAsync( ctx, userId, "Basic" )).ShouldBeTrue();
+        await u.CreateOrUpdateOidcUserAsync( ctx, 1, userId, Info( "B" ) );
+        (await auth.HasOtherSchemeAsync( ctx, userId, "Oidc.A" )).ShouldBeTrue();
+        auth.HasOtherScheme( ctx, userId, "Oidc.B" ).ShouldBeTrue();
+        await user.DestroyUserAsync( ctx, 1, userId );
+    }
+
+    [Test]
     public void Oidc_AuthProvider_is_registered()
     {
         Auth.Tests.AuthTests.CheckProviderRegistration( "Oidc" );

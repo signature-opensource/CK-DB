@@ -10,7 +10,9 @@ namespace CK.DB.Auth;
 /// for which the user is not registered is bound to the currently logged in user (and the user is logged in).
 /// <para>
 /// By default the current user must be at <see cref="AuthLevel.Critical"/> level (see <see cref="RequiresCriticalLevel"/>).
-/// Binding is refused while impersonating and for the basic scheme (a password is not bound by a login).
+/// Binding is refused while impersonating and for a provider whose payload comes from the client (it cannot create it:
+/// <see cref="IGenericAuthenticationProvider.CanCreatePayload"/> is false, like the basic and the weak providers): a password
+/// is not bound by a login.
 /// </para>
 /// </summary>
 public sealed class SqlAutoBindingAccountService : IAutoBindingAccountService
@@ -52,11 +54,14 @@ public sealed class SqlAutoBindingAccountService : IAutoBindingAccountService
         {
             return context.SetError( "User.AccountBinding.AtLeastNormalLevelRequired", "User must be logged at least in Normal level." );
         }
-        if( string.Equals( LoginScheme.GetProviderName( context.Scheme ), BasicLoginPayload.Scheme, StringComparison.OrdinalIgnoreCase ) )
-        {
-            return context.SetError( "User.AccountBinding.NotSupported", "The basic scheme cannot be bound by a login." );
-        }
         var p = _db.FindRequiredProvider( context.Scheme, mustHavePayload: false );
+        // Only an identity asserted by a remote provider can be bound: its payload is created here and filled from the
+        // remote assertion (CanCreatePayload). A payload that comes from the client (a password, a weak actor name) is
+        // never bound by a login: it would set a credential of the current user as a side effect of a failed login.
+        if( !p.CanCreatePayload )
+        {
+            return context.SetError( "User.AccountBinding.NotSupported", $"The '{p.ProviderName}' scheme cannot be bound by a login." );
+        }
         using var ctx = new SqlStandardCallContext( monitor );
         // This is an actual login (UCLMode.WithActualLogin): the scheme is bound and the user is logged in with it.
         UCLResult result = await p.CreateOrUpdateUserAsync( ctx, 1, auth.UnsafeActor.ActorId, context.Payload, UCLMode.CreateOrUpdate | UCLMode.WithActualLogin )

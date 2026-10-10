@@ -49,13 +49,12 @@ public class AuthenticationInfoTests
     }
 
     [Test]
-    public async Task SqlLoginProvider_basic_requires_a_BasicLoginPayload_and_a_basic_provider_Async()
+    public async Task SqlLoginProvider_does_not_handle_the_Basic_scheme_Async()
     {
         var p = SharedEngine.AutomaticServices.GetRequiredService<SqlLoginProvider>();
-        // No basic provider here (it is CK.DB.User.UserPassword).
-        await Util.Awaitable( () => p.LoginAsync( TestHelper.Monitor, "Basic", new BasicLoginPayload( "A", "B" ) ).AsTask() )
-                  .ShouldThrowAsync<ArgumentException>();
-        await Util.Awaitable( () => p.LoginAsync( TestHelper.Monitor, "Basic", "not a payload" ).AsTask() )
+        // The Basic scheme is the login provider of CK.DB.User.UserPassword (its payload is the login command).
+        p.ProviderNames.ShouldNotContain( "Basic" );
+        await Util.Awaitable( () => p.LoginAsync( TestHelper.Monitor, "Basic", "any payload" ).AsTask() )
                   .ShouldThrowAsync<ArgumentException>();
     }
 }

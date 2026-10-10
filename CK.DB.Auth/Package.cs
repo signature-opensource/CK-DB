@@ -97,6 +97,23 @@ public abstract partial class Package : SqlPackage, IAuthenticationDatabaseServi
     public abstract Task<LoginResult> OnUserLoginAsync( ISqlCallContext ctx, string scheme, DateTime lastLoginTime, int userId, bool actualLogin, DateTime loginTimeNow );
 
     /// <summary>
+    /// Gets whether a user can log in with another scheme than <paramref name="scheme"/>: the "last login method" rule.
+    /// A user's own removal of a login method (a password, a binding, a passkey...) must be refused when this is false:
+    /// the user would be locked out. An administrator's removal is not subject to it.
+    /// <para>
+    /// The schemes are the ones of <c>CK.vUserAuthProvider</c>, that every provider feeds. A provider with several
+    /// credentials for one scheme (passkeys) first checks its other credentials. This is a safety net, not a guarantee:
+    /// a scheme row doesn't prove that the method still works.
+    /// </para>
+    /// </summary>
+    /// <param name="ctx">The call context to use.</param>
+    /// <param name="userId">The user identifier.</param>
+    /// <param name="scheme">The scheme that would be removed.</param>
+    /// <returns>True if the user has another scheme.</returns>
+    [SqlScalarFunction( "fAuthUserHasOtherScheme" )]
+    public abstract Task<bool> HasOtherSchemeAsync( ISqlCallContext ctx, int userId, string scheme );
+
+    /// <summary>
     /// Reads a <see cref="IUserAuthInfo"/> for a user.
     /// Null for unexisting user or for the anonymous (<paramref name="userId"/> = 0).
     /// </summary>

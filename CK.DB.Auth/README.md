@@ -13,8 +13,15 @@ CK.Auth.Abstractions model is served by CK.DB.AspNet.Auth.
 | Service | Contract | What it does |
 |---------|----------|--------------|
 | [`SqlActorInfoProvider`](SqlActorInfoProvider.cs) | `IActorInfoProvider` | Reads a user (its current state) for the identity restoration. Unknown user: null. |
-| [`SqlLoginProvider`](SqlLoginProvider.cs) | `ILoginProvider` | Logs in with every provider: the basic one with a `BasicLoginPayload`, the generic ones with their own payload. |
-| [`SqlAutoBindingAccountService`](SqlAutoBindingAccountService.cs) | `IAutoBindingAccountService` | Binds the scheme of a login to the logged in user (Critical level required by default). |
+| [`SqlLoginProvider`](SqlLoginProvider.cs) | `ILoginProvider` | Logs in with the generic providers (with their own payload). Not the "Basic" scheme: it is the login provider of CK.DB.User.UserPassword, whose payload is the login command. |
+| [`SqlAutoBindingAccountService`](SqlAutoBindingAccountService.cs) | `IAutoBindingAccountService` | Binds the scheme of a login to the logged in user (Critical level required by default). Only a provider whose payload comes from a remote assertion (`CanCreatePayload`) can be bound: a password or a weak actor name never is. |
+
+**The "last login method" rule:** `Package.HasOtherSchemeAsync( ctx, userId, scheme )` (the SQL function
+`CK.fAuthUserHasOtherScheme`) tells whether a user has another scheme than the one that would be removed, from
+`CK.vUserAuthProvider` that every provider feeds. A user's own removal of a login method (a password, a binding, a
+passkey...) must be refused when it is false: the user would be locked out. An administrator's removal is not subject to
+it. A provider with several credentials for one scheme (passkeys) first checks its other credentials. A safety net, not
+a guarantee: a scheme row doesn't prove that the method still works.
 
 They are singletons: each call creates its own `SqlStandardCallContext` on the given monitor and disposes it. They
 depend on no DI scope and no transport, so they work the same for an HTTP endpoint, an AppIdentity endpoint or in the

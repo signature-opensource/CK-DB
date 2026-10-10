@@ -22,6 +22,16 @@ public abstract partial class Package
     [SqlProcedure( "sAuthUserOnLogin" )]
     public abstract LoginResult OnUserLogin( ISqlCallContext ctx, string scheme, DateTime lastLoginTime, int userId, bool actualLogin, DateTime loginTimeNow );
 
+    /// <summary>
+    /// Gets whether a user can log in with another scheme than <paramref name="scheme"/> (see <see cref="HasOtherSchemeAsync"/>).
+    /// </summary>
+    /// <param name="ctx">The call context to use.</param>
+    /// <param name="userId">The user identifier.</param>
+    /// <param name="scheme">The scheme that would be removed.</param>
+    /// <returns>True if the user has another scheme.</returns>
+    [SqlScalarFunction( "fAuthUserHasOtherScheme" )]
+    public abstract bool HasOtherScheme( ISqlCallContext ctx, int userId, string scheme );
+
     record AuthInfo( int UserId, string UserName, IReadOnlyList<SchemeInfo> Schemes ) : IUserAuthInfo;
 
     /// <summary>

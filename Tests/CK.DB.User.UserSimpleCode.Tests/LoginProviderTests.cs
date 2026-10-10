@@ -83,11 +83,11 @@ public class LoginProviderTests
         (await binder.BindAccountAsync( TestHelper.Monitor, c1 )).ShouldBeNull();
         c1.ErrorId.ShouldBe( "User.AccountBinding.CriticalLevelRequired" );
 
-        // The basic scheme cannot be bound.
+        // Only a provider whose payload comes from a remote assertion can be bound (the Basic scheme cannot: its refusal is
+        // tested by CK.DB.User.UserPassword).
+        IAuthenticationDatabaseService db = SharedEngine.Map.StObjs.Obtain<Auth.Package>().ShouldNotBeNull();
+        db.FindRequiredProvider( "SimpleCode", mustHavePayload: false ).CanCreatePayload.ShouldBeTrue();
         var critical = AuthenticationInfo.Create( user, now.AddHours( 1 ), now.AddMinutes( 5 ), null, now );
-        var c2 = new LoginContext( "Basic", new BasicLoginPayload( "x", "y" ), critical );
-        (await binder.BindAccountAsync( TestHelper.Monitor, c2 )).ShouldBeNull();
-        c2.ErrorId.ShouldBe( "User.AccountBinding.NotSupported" );
 
         // Critical: the scheme is bound and the user is logged in.
         var c3 = new LoginContext( "SimpleCode", Payload( p, code ), critical );
