@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 namespace CK.DB.Auth;
 
 /// <summary>
-/// Conversions from the CK.DB.Auth results to the CK.AuthenticationInfo model.
+/// Conversions from the CK.DB.Auth results to the CK.AuthenticationInfo model. Public for the provider packages that
+/// implement their own <see cref="ILoginProvider"/> (the "Basic" one of CK.DB.User.UserPassword for instance).
 /// </summary>
-static class UserAuthInfoExtensions
+public static class UserAuthInfoExtensions
 {
     /// <summary>
     /// Converts a database actor to a <see cref="ActorInfo"/> at the highest level it can reach
@@ -24,7 +25,11 @@ static class UserAuthInfoExtensions
     /// <summary>
     /// Converts a database login result. On success, the actor is read again (with its schemes).
     /// </summary>
-    internal static async ValueTask<ActorLoginResult> ToUserLoginResultAsync( this IAuthenticationDatabaseService db,
+    /// <param name="db">The authentication database service.</param>
+    /// <param name="ctx">The call context to use.</param>
+    /// <param name="r">The database login result.</param>
+    /// <returns>The login result of the CK.AuthenticationInfo model.</returns>
+    public static async ValueTask<ActorLoginResult> ToUserLoginResultAsync( this IAuthenticationDatabaseService db,
                                                                                        ISqlCallContext ctx,
                                                                                        LoginResult r )
     {
