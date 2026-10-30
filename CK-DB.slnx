@@ -23,13 +23,7 @@
     <Project Path="Tests/CK.DB.Res.ResString.Tests/CK.DB.Res.ResString.Tests.csproj" />
     <Project Path="Tests/CK.DB.Res.ResText.Tests/CK.DB.Res.ResText.Tests.csproj" />
     <Project Path="Tests/CK.DB.Res.Tests/CK.DB.Res.Tests.csproj" />
-    <Project Path="Tests/CK.DB.User.UserGoogle.AuthScope.Tests/CK.DB.User.UserGoogle.AuthScope.Tests.csproj" />
-    <Project Path="Tests/CK.DB.User.UserGoogle.EMailColumns.Tests/CK.DB.User.UserGoogle.EMailColumns.Tests.csproj" />
-    <Project Path="Tests/CK.DB.User.UserGoogle.Profile.Tests/CK.DB.User.UserGoogle.Profile.Tests.csproj" />
-    <Project Path="Tests/CK.DB.User.UserGoogle.RefreshToken.Tests/CK.DB.User.UserGoogle.RefreshToken.Tests.csproj" />
-    <Project Path="Tests/CK.DB.User.UserGoogle.Tests/CK.DB.User.UserGoogle.Tests.csproj" />
     <Project Path="Tests/CK.DB.User.UserOidc.Tests/CK.DB.User.UserOidc.Tests.csproj" />
-    <Project Path="Tests/CK.DB.User.UserSimpleCode.Tests/CK.DB.User.UserSimpleCode.Tests.csproj" />
     <Project Path="Tests/CK.DB.Zone.SimpleNaming.Tests/CK.DB.Zone.SimpleNaming.Tests.csproj" />
     <Project Path="Tests/CK.DB.Zone.Tests/CK.DB.Zone.Tests.csproj" />
   </Folder>

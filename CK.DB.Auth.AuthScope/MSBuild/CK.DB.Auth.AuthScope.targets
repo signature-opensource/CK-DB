@@ -1,0 +1,6 @@
+<Project>
+  <Target Name="CK_DB_Auth_AuthScope_IsDeprecated" BeforeTargets="ResolveAssemblyReferences">
+    <Error Code="CKDEPRECATED"
+           Text="Package 'CK.DB.Auth.AuthScope' is deprecated, without replacement: the authorization scopes of the former OAuth providers are not used by the OpenID Connect logins (CK.DB.User.UserOidc). See the migration guide https://github.com/signature-opensource/CK-Stack/blob/main/Docs/Migrations/v2026.282-to-explo-cris-auth.md." />
+  </Target>
+</Project>

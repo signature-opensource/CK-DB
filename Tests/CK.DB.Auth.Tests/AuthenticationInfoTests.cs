@@ -13,7 +13,7 @@ namespace CK.DB.Auth.Tests;
 
 /// <summary>
 /// Tests the CK.AuthenticationInfo services of CK.DB.Auth that need no provider (the generic login and the account
-/// binding are tested with the SimpleCode provider, the basic login with the UserPassword provider).
+/// binding are tested with the OpenID Connect provider, the basic login with the UserPassword provider).
 /// </summary>
 [TestFixture]
 public class AuthenticationInfoTests

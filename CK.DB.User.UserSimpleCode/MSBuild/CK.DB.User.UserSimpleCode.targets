@@ -1,0 +1,6 @@
+<Project>
+  <Target Name="CK_DB_User_UserSimpleCode_IsDeprecated" BeforeTargets="ResolveAssemblyReferences">
+    <Error Code="CKDEPRECATED"
+           Text="Package 'CK.DB.User.UserSimpleCode' is deprecated, without replacement: the login schemes are the password, the passkeys and OpenID Connect (CK.DB.User.UserPassword, CK.DB.User.UserPasskey, CK.DB.User.UserOidc). See the migration guide https://github.com/signature-opensource/CK-Stack/blob/main/Docs/Migrations/v2026.282-to-explo-cris-auth.md." />
+  </Target>
+</Project>

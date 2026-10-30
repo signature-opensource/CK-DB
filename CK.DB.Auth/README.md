@@ -2,11 +2,9 @@
 
 The authentication database layer: the users' authentication providers (`CK.tAuthProvider`, `CK.vUserAuthProvider`,
 `CK.sAuthUserOnLogin`), the `IAuthenticationDatabaseService` and the provider contracts (`IBasicAuthenticationProvider`,
-`IGenericAuthenticationProvider`) that the provider packages implement (UserPassword, UserGoogle, UserOidc,
-UserSimpleCode...).
+`IGenericAuthenticationProvider`) that the provider packages implement (CK.DB.User.UserPassword, CK.DB.User.UserOidc).
 
-It uses the CK.AuthenticationInfo model (`IUserAuthInfo.Schemes` are `CK.Core.SchemeInfo`). The legacy
-CK.Auth.Abstractions model is served by CK.DB.AspNet.Auth.
+It uses the CK.AuthenticationInfo model (`IUserAuthInfo.Schemes` are `CK.Core.SchemeInfo`).
 
 ## CK.AuthenticationInfo services
 

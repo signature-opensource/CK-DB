@@ -7,16 +7,16 @@
 -- The LastUsed can be '0001-01-01 00:00:00' (that is equal to DateTime.MinValue or CK.Core.Util.DateTime.UtcMinValue) 
 -- in this view if a user has been registered in the provider but has not actually logged in yet.
 --
--- An exemple of a transformer (the one from Google provider):
+-- An exemple of a transformer (the one from the OpenID Connect provider, a multi scheme one):
 --
---		-- SetupConfig: { "AddRequires": "Model.CK.UserGoogleTable" } 
+--		-- SetupConfig: { "AddRequires": "Model.CK.UserOidcTable" } 
 --		-- 
 --		create transformer on CK.vUserAuthProvider
 --		as
 --		begin
 --			inject "
 --			union all
---			select UserId, 'Google', LastLoginTime from CK.tUserGoogle where UserId > 0
+--			select UserId, Scheme, LastLoginTime from CK.tUserOidc where UserId > 0
 --			" after first part {select};
 --		end
 --

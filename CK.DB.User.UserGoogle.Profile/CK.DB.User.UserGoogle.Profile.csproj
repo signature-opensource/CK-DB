@@ -1,16 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <Description>This package adds EMail and EMailVerified to CK.tUserGoogle table.</Description>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <!-- Tombstone: no assembly, no dependencies. -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <!-- NU5128: the package has no lib/ folder, on purpose. -->
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <Description>Deprecated (see its README).</Description>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CK.DB.User.UserGoogle\CK.DB.User.UserGoogle.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="**\*.sql;**\*.tql;**\*.y4" Exclude="bin\**;obj\**;CodeCakeBuilder\**;packages\**;@(EmbeddedResource)" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
+    <Content Include="MSBuild/CK.DB.User.UserGoogle.Profile.targets">
+      <Pack>true</Pack>
+      <PackagePath>buildTransitive\CK.DB.User.UserGoogle.Profile.targets</PackagePath>
+    </Content>
   </ItemGroup>
 </Project>
