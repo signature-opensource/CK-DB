@@ -55,6 +55,7 @@
   <Project Path="CK.DB.User.UserGoogle.RefreshToken/CK.DB.User.UserGoogle.RefreshToken.csproj" />
   <Project Path="CK.DB.User.UserGoogle/CK.DB.User.UserGoogle.csproj" />
   <Project Path="CK.DB.User.UserOidc/CK.DB.User.UserOidc.csproj" />
+  <Project Path="CK.IO.User.UserOidc/CK.IO.User.UserOidc.csproj" />
   <Project Path="CK.DB.User.UserSimpleCode/CK.DB.User.UserSimpleCode.csproj" />
   <Project Path="CK.DB.Zone.SimpleNaming/CK.DB.Zone.SimpleNaming.csproj" />
   <Project Path="CK.DB.Zone/CK.DB.Zone.csproj" />

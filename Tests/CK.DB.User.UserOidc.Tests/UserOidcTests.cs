@@ -156,6 +156,40 @@ public class UserOidcTests
     }
 
     [Test]
+    public async Task the_identities_are_listed_and_unlinked_but_never_the_last_login_method_Async()
+    {
+        var u = SharedEngine.Map.StObjs.Obtain<UserOidcTable>().ShouldNotBeNull();
+        var user = SharedEngine.Map.StObjs.Obtain<UserTable>().ShouldNotBeNull();
+        var pocos = SharedEngine.Map.StObjs.Obtain<PocoDirectory>().ShouldNotBeNull();
+        var infoFactory = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserOidcInfo>>().ShouldNotBeNull();
+        using var ctx = new SqlStandardCallContext();
+        int userId = await user.CreateUserAsync( ctx, 1, Guid.NewGuid().ToString() );
+        IUserOidcInfo Info( string suffix, string claims )
+        {
+            var i = infoFactory.Create();
+            i.SchemeSuffix = suffix;
+            i.Sub = Guid.NewGuid().ToString( "N" );
+            i.Claims = claims;
+            return i;
+        }
+        await u.CreateOrUpdateOidcUserAsync( ctx, 1, userId, Info( "A", """{"email":"albert@a.example"}""" ) );
+        await u.CreateOrUpdateOidcUserAsync( ctx, 1, userId, Info( "B", "" ) );
+
+        var identities = await u.ReadUserIdentitiesAsync( ctx, pocos, userId );
+        identities.Count.ShouldBe( 2 );
+        identities[0].SchemeSuffix.ShouldBe( "A" );
+        identities[0].Claims.ShouldBe( """{"email":"albert@a.example"}""" );
+        identities[1].SchemeSuffix.ShouldBe( "B" );
+        identities[1].Claims.ShouldBe( "{}", "No claims known." );
+
+        (await u.UnlinkIdentityAsync( ctx, userId, "Unknown" )).ShouldBe( OidcUnlinkResult.NotFound );
+        (await u.UnlinkIdentityAsync( ctx, userId, "A" )).ShouldBe( OidcUnlinkResult.Unlinked );
+        (await u.UnlinkIdentityAsync( ctx, userId, "B" )).ShouldBe( OidcUnlinkResult.LastLoginMethod );
+        (await u.ReadUserIdentitiesAsync( ctx, pocos, userId )).ShouldHaveSingleItem().SchemeSuffix.ShouldBe( "B" );
+        await user.DestroyUserAsync( ctx, 1, userId );
+    }
+
+    [Test]
     public void Oidc_AuthProvider_is_registered()
     {
         Auth.Tests.AuthTests.CheckProviderRegistration( "Oidc" );

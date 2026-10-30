@@ -8,7 +8,7 @@ namespace CK.DB.User.UserOidc;
 [SqlPackage( Schema = "CK", ResourcePath = "Res" )]
 [Versions( "1.0.0" )]
 [SqlObjectItem( "transform:vUserAuthProvider" )]
-public class Package : SqlPackage
+public partial class Package : SqlPackage
 {
     void StObjConstruct( Actor.Package actorPackage, Auth.Package authPackage )
     {
