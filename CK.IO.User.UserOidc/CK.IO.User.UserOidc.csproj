@@ -4,6 +4,6 @@
     <Description>The self-service commands of the OpenID Connect identities of CK.DB.User.UserOidc: list and unlink the identities of the current user.</Description>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.IO.Auth" Version="3.0.0-0.cris-auth.0.ci.35" />
+    <PackageReference Include="CK.IO.Auth" Version="3.0.0-0.cris-auth" />
   </ItemGroup>
 </Project>
