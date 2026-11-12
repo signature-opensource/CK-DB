@@ -7,7 +7,7 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.IO.Actor" Version="3.0.0-0.cris-auth.1.ci.63" />
+    <PackageReference Include="CK.IO.Actor" Version="3.0.0-0.cris-auth.1.ci.65" />
     <PackageReference Include="CK.SqlServer.Setup.Model" Version="36.0.0-0.cris-auth.1.ci.62" />
   </ItemGroup>
   <ItemGroup>
