@@ -8,7 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CK.IO.Actor" Version="3.0.0-0.uc.0.ci.83" />
-    <PackageReference Include="CK.SqlServer.Setup.Model" Version="37.0.0-0.uc.0.ci.13" />
+    <PackageReference Include="CK.SqlServer.Setup.Model" Version="37.0.0-0.uc.0.ci.14" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="**\*.sql;**\*.tql;**\*.y4" Exclude="bin\**;obj\**;CodeCakeBuilder\**;packages\**;@(EmbeddedResource)" />
