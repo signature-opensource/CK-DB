@@ -4,20 +4,21 @@ using System.Text.Json;
 namespace CK.DB.User.UserOidc;
 
 /// <summary>
-/// Holds information stored for a Oidc user.
+/// Holds information stored for a Oidc user. It is the payload of the "Oidc" login provider: the authentication center
+/// fills it (<see cref="IOidcLoginPayload"/>).
 /// </summary>
-public interface IUserOidcInfo : IPoco
+public interface IUserOidcInfo : IPoco, IOidcLoginPayload
 {
     /// <summary>
     /// Gets or sets the suffix client scheme.
     /// Can be empty. Must not start with a '.' nor with "Oidc".
     /// </summary>
-    string SchemeSuffix { get; set; }
+    new string SchemeSuffix { get; set; }
 
     /// <summary>
     /// Gets or sets the Subject identifier.
     /// </summary>
-    string Sub { get; set; }
+    new string Sub { get; set; }
 
     /// <summary>
     /// Gets or sets the claims of the identity, as received from the provider: a JSON object (the values as they are:
@@ -31,7 +32,7 @@ public interface IUserOidcInfo : IPoco
     /// They may hold personal data (address, phone, birth date...) as soon as the requested scopes include them.
     /// </para>
     /// </summary>
-    string Claims { get; set; }
+    new string Claims { get; set; }
 }
 
 /// <summary>
