@@ -5,7 +5,7 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.AuthenticationInfo.Oidc" Version="15.0.0-0.uc.1.ci.37" />
+    <PackageReference Include="CK.AuthenticationInfo.Oidc" Version="15.0.0-0.uc.2" />
     <ProjectReference Include="..\CK.DB.Auth\CK.DB.Auth.csproj" />
     <ProjectReference Include="..\CK.IO.User.UserOidc\CK.IO.User.UserOidc.csproj" />
   </ItemGroup>
